@@ -1,0 +1,14 @@
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --taskbarBg: #444;
+  --taskbarColor: #fff;
+  --taskbarWidth: 40px;
+  --hoverColor: rgba(150, 150, 150, 0.2);
+}
+
+@import "./Windows.scss";
+@import "./Desktop.scss";
+@import "./Taskbar.scss";
