@@ -56,6 +56,13 @@ class Taskbar {
         method: () => {
           this.select.hide()
         }
+      },
+      {
+        id: 2,
+        name: "显示桌面",
+        method: () => {
+          console.log("显示桌面")
+        }
       }
     ])
   }
