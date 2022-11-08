@@ -1,6 +1,6 @@
 import { Menu } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
-import { winIcon, messageIcon, selectIcon } from "../svg/index"
+import { winIcon, messageIcon } from "../svg/index"
 import TaskbarSelect from "./TaskbarSelect";
 /**
  * 任务栏
@@ -44,26 +44,40 @@ class Taskbar {
   private setMenu() {
     new Menu(this.box, [
       {
-        id: 0,
+        id: 1,
         name: "显示搜索框",
         method: () => {
           this.select.show()
         }
       },
       {
-        id: 1,
+        id: 2,
         name: "隐藏搜索框",
         method: () => {
           this.select.hide()
         }
       },
       {
-        id: 2,
+        id: 3,
         name: "显示桌面",
         method: () => {
           console.log("显示桌面")
         }
-      }
+      },
+      {
+        id: 4,
+        name: "任务管理器",
+        method: () => {
+          console.log("显示桌面")
+        }
+      },
+      {
+        id: 5,
+        name: "任务栏设置",
+        method: () => {
+          console.log("显示桌面")
+        }
+      },
     ])
   }
 

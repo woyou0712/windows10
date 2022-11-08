@@ -30,10 +30,13 @@ class TaskbarSelect {
         this.query((this.input as HTMLInputElement).value)
       }
     })
+    this.button.addEventListener("click", () => {
+      this.query((this.input as HTMLInputElement).value)
+    })
   }
   private query(key: string) {
     new Win({
-      title: "百度一下，你就知道",
+      title: "Microsoft Bing",
       url: `https://cn.bing.com/search?q=${key}`
     })
   }
