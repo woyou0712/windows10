@@ -1,0 +1,51 @@
+.windows10-taskbar-win {
+  width: var(--taskbarWidth);
+  height: var(--taskbarWidth);
+
+  .windows10-taskbar-win-icon {
+    width: 100%;
+    height: 100%;
+    padding: 10px;
+
+    &:hover {
+      background-color: var(--hoverColor);
+    }
+
+    &>svg {
+      width: 100%;
+      height: 100%;
+    }
+
+  }
+
+  &>.windows10-taskbar-win-view {
+    position: absolute;
+    left: 0;
+    background-color: var(--taskbarBg);
+    color: var(--taskbarColor);
+    width: 500px;
+    height: 600px;
+    display: none;
+
+    &.show {
+      display: flex;
+    }
+
+    &>.windows10-taskbar-win-view-left {
+      width: var(--taskbarWidth);
+      height: 100%;
+    }
+
+    &>.windows10-taskbar-win-view-content {
+      width: 220px;
+      height: 100%;
+      border-left: 1px solid var(--hoverColor);
+    }
+
+    &>.windows10-taskbar-win-view-right {
+      width: calc(100% - var(--taskbarWidth) - 220px);
+      height: 100%;
+      border-left: 1px solid var(--hoverColor);
+    }
+  }
+}

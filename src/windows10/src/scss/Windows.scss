@@ -20,6 +20,10 @@
     &>.windows10-taskbar {
       width: 100%;
       height: var(--taskbarWidth);
+
+      .windows10-taskbar-win-view {
+        top: var(--taskbarWidth);
+      }
     }
   }
 
@@ -34,32 +38,10 @@
     &>.windows10-taskbar {
       width: 100%;
       height: var(--taskbarWidth);
-    }
-  }
 
-  &.left {
-    flex-direction: row-reverse;
-
-    &>.windows10-desktop {
-      width: calc(100% - var(--taskbarWidth));
-      height: 100%;
-    }
-
-    &>.windows10-taskbar {
-      width: var(--taskbarWidth);
-      height: 100%;
-    }
-  }
-
-  &.right {
-    &>.windows10-desktop {
-      width: calc(100% - var(--taskbarWidth));
-      height: 100%;
-    }
-
-    &>.windows10-taskbar {
-      width: var(--taskbarWidth);
-      height: 100%;
+      .windows10-taskbar-win-view {
+        bottom: var(--taskbarWidth);
+      }
     }
   }
 }
