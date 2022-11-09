@@ -1,9 +1,11 @@
-import { Menu } from "new-dream";
+import { Menu, Win } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
-import { winIcon, messageIcon } from "../svg/index"
+import { messageIcon, selectIcon, setIcon, taskIcon } from "../svg/index"
 import TaskbarSelect from "./TaskbarSelect";
 import TaskbarTime from "./TaskbarTime";
 import TaskbarWin from "./TaskbarWin";
+
+import TaskManager from "../systemApps/TaskManager.vue"
 /**
  * 任务栏
  */
@@ -32,6 +34,7 @@ class Taskbar {
       {
         id: 1,
         name: "显示搜索框",
+        icon: selectIcon,
         method: () => {
           this.select.show()
         }
@@ -53,13 +56,25 @@ class Taskbar {
       {
         id: 4,
         name: "任务管理器",
+        icon: taskIcon,
         method: () => {
-          console.log("显示桌面")
+          new Win({
+            id: "system-task-manager",
+            title: "任务管理器",
+            icon: taskIcon,
+            resize: true,
+            miniBtn: true,
+            maxBtn: true,
+            width: "350px",
+            height: "350px",
+            component: TaskManager
+          })
         }
       },
       {
         id: 5,
         name: "任务栏设置",
+        icon: setIcon,
         method: () => {
           console.log("显示桌面")
         }

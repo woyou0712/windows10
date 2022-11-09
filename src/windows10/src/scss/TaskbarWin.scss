@@ -26,6 +26,7 @@
     width: 500px;
     height: 600px;
     display: none;
+    border-bottom: 1px solid var(--hoverColor);
 
     &.show {
       display: flex;
@@ -34,12 +35,61 @@
     &>.windows10-taskbar-win-view-left {
       width: var(--taskbarWidth);
       height: 100%;
+      position: relative;
+      z-index: 1;
+
+      &>.win-view-left-content {
+        width: 100%;
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        justify-content: flex-end;
+        background-color: var(--taskbarBg);
+        overflow: hidden;
+        transition: 0.3s;
+
+        &:hover {
+          width: 180px;
+          border-right: 1px solid var(--hoverColor);
+        }
+
+        &>.win-view-left-content-item {
+          width: 179px;
+          height: var(--taskbarWidth);
+          display: flex;
+          align-items: center;
+
+          &:hover {
+            background-color: var(--hoverColor);
+          }
+
+          &>.win-view-left-content-item-icon {
+            width: var(--taskbarWidth);
+            height: 100%;
+            padding: 10px;
+
+            img,
+            svg {
+              width: 100%;
+              height: 100%;
+            }
+          }
+
+          &>.win-view-left-content-item-name {
+            width: calc(100% - var(--taskbarWidth));
+            height: 100%;
+            line-height: var(--taskbarWidth);
+            font-size: 16px;
+          }
+        }
+      }
     }
 
     &>.windows10-taskbar-win-view-content {
       width: 220px;
       height: 100%;
       border-left: 1px solid var(--hoverColor);
+
     }
 
     &>.windows10-taskbar-win-view-right {

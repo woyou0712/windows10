@@ -2,11 +2,15 @@ import createElement from "new-dream/src/utils/createElement";
 import Desktop from "./components/Desktop";
 import Taskbar from "./components/Taskbar";
 import "new-dream/dist/index.css";
+import { Win } from "new-dream";
 type Direaction = "top" | "bottom";
 
 
 
+
 class Windows {
+  static methods: { [key: string]: (data?: any) => void } = {}
+
   private box: HTMLElement; // 盒子
   private desktop: Desktop; // 桌面
   private taskbar: Taskbar; // 任务栏
@@ -17,6 +21,7 @@ class Windows {
     this.taskbar = new Taskbar(this.box);
     this.__direaction = "bottom"; // 任务栏默认在下方
     document.body.appendChild(this.box);
+    this.__init__();
   }
 
   private get __direaction() {
@@ -39,6 +44,22 @@ class Windows {
         this.box.classList.remove("left");
         break;
     }
+  }
+
+  private __init__() {
+    // 监听窗口打开
+    const p: { [key: string | symbol]: Win } = {}
+    Win.WinIdMap = new Proxy(p, {
+      get(target, key) {
+        return target[key]
+      },
+      set(target, key, app: Win) {
+        target[key] = app
+        if (Windows.methods.onOpenApp) Windows.methods.onOpenApp(target)
+        return true
+      }
+    })
+
   }
 
   /**
@@ -65,6 +86,13 @@ class Windows {
       }
     `;
     return this
+  }
+
+  /**
+   * 监听应用打开
+   */
+  static onOpenApp(fn: (data: { [key: string]: Win }) => void) {
+    Windows.methods.onOpenApp = fn
   }
 }
 
