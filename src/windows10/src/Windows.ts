@@ -47,15 +47,23 @@ class Windows {
   }
 
   private __init__() {
-    // 监听应用打开
+    // 监听应用打开/关闭
     const p: { [key: string | symbol]: Win } = {}
     Win.WinIdMap = new Proxy(p, {
-      get(target, key) {
-        return target[key]
+      // 监听打开
+      set: (target, key, app: Win) => {
+        target[key] = app;
+        if (Windows.methods.onTask) Windows.methods.onTask(target); // 通知监听函数
+        // 通知任务栏
+        this.taskbar.setOpenApp(app);
+        return true
       },
-      set(target, key, app: Win) {
-        target[key] = app
-        if (Windows.methods.onOpenApp) Windows.methods.onOpenApp(target)
+      // 监听关闭
+      deleteProperty: (target, key) => {
+        delete target[key];
+        if (Windows.methods.onTask) Windows.methods.onTask(target); // 通知监听函数
+        // 通知任务栏
+        this.taskbar.setCloseApp(key);
         return true
       }
     })
@@ -89,10 +97,10 @@ class Windows {
   }
 
   /**
-   * 监听应用打开
+   * 监听任务变化(应用打开/关闭)
    */
-  static onOpenApp(fn: (data: { [key: string]: Win }) => void) {
-    Windows.methods.onOpenApp = fn
+  static onTask(fn: (data: { [key: string]: Win }) => void) {
+    Windows.methods.onTask = fn
   }
 }
 

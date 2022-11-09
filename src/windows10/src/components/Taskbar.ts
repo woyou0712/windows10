@@ -92,8 +92,25 @@ class Taskbar {
     this.box.appendChild(this.message);
     this.setMenu();
   }
-
-
+  /**
+   * APP打开
+   */
+  public setOpenApp(app: Win) {
+    const appBox = createElement("taskbar-app-list-item");
+    console.log(app)
+  }
+  /**
+   * APP置顶
+   */
+  public setTopApp(appId: string | symbol) {
+    console.log(appId)
+  }
+  /**
+   * APP关闭
+   */
+  public setCloseApp(appId: string | symbol) {
+    console.log(appId)
+  }
 }
 
 

@@ -13,6 +13,7 @@
 </template>
 
 <script>
+import { Win } from 'new-dream';
 import Windows from "../Windows";
 export default {
   data() {
@@ -22,7 +23,14 @@ export default {
     }
   },
   created() {
-    Windows.onOpenApp((data) => {
+    // 查找到所有打开的应用
+    for (let key in Win.WinIdMap) {
+      const app = Win.WinIdMap[key]
+      this.openAppList.push(app)
+    }
+    // 监听任务变化
+    Windows.onTask((data) => {
+      this.openAppList = [];
       for (let key in data) {
         const app = data[key]
         this.openAppList.push(app)
@@ -30,6 +38,7 @@ export default {
     });
   },
   methods: {
+    // 关闭应用
     close() {
       const app = this.openAppList[this.selectIndex];
       app.close()
