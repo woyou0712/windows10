@@ -47,7 +47,7 @@ class Windows {
   }
 
   private __init__() {
-    // 监听窗口打开
+    // 监听应用打开
     const p: { [key: string | symbol]: Win } = {}
     Win.WinIdMap = new Proxy(p, {
       get(target, key) {

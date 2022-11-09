@@ -9,6 +9,18 @@
   --hoverColor: rgba(150, 150, 150, 0.2);
 }
 
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+  background-color: #F1F1F1;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb {
+  background-color: #CCC;
+  border-radius: 4px;
+}
+
 @import "./Windows.scss";
 @import "./Desktop.scss";
 @import "./Taskbar.scss";
