@@ -1,7 +1,8 @@
 <template>
   <div class="system-task-manager">
     <div class="system-task-manager-content">
-      <div class="system-task-manager-content-item" tabindex v-for="(app,index) in openAppList" :key="app.id" @click="selectIndex = index" :class="selectIndex === index?'select':''">
+      <div class="system-task-manager-content-item" tabindex v-for="(app, index) in openAppList" :key="app.id"
+        @click="selectIndex = index" :class="selectIndex === index ? 'select' : ''">
         <div class="system-task-manager-content-ite-icon" v-html="app.config.icon"> </div>
         <div class="system-task-manager-content-ite-name" v-html="app.config.title"> </div>
       </div>
@@ -15,7 +16,16 @@
 <script>
 import { Win } from 'new-dream';
 import Windows from "../Windows";
+import { taskIcon } from '../svg';
 export default {
+  id: "system-task-manager",
+  title: "任务管理器",
+  icon: taskIcon,
+  resize: true,
+  miniBtn: true,
+  maxBtn: true,
+  width: "350px",
+  height: "350px",
   data() {
     return {
       openAppList: [],
@@ -47,73 +57,58 @@ export default {
 };
 </script>
 
-<style>
+<style lang="scss">
 .system-task-manager {
   width: 100%;
   height: 100%;
   padding: 5px 0;
-}
 
-.system-task-manager > .system-task-manager-content {
-  width: 100%;
-  height: calc(100% - 40px);
-  overflow-y: auto;
-}
+  &>.system-task-manager-content {
+    width: 100%;
+    height: calc(100% - 40px);
+    overflow-y: auto;
 
-.system-task-manager
-  > .system-task-manager-content
-  > .system-task-manager-content-item {
-  width: 100%;
-  height: 30px;
-  line-height: 30px;
-  display: flex;
-  align-items: center;
-  padding: 0 5px;
-}
-.system-task-manager
-  > .system-task-manager-content
-  > .system-task-manager-content-item:hover {
-  background-color: rgba(98, 153, 243, 0.1);
-}
-.system-task-manager
-  > .system-task-manager-content
-  > .system-task-manager-content-item.select {
-  background-color: rgba(98, 153, 243, 0.2);
-}
+    &>.system-task-manager-content-item {
+      width: 100%;
+      height: 30px;
+      line-height: 30px;
+      display: flex;
+      align-items: center;
+      padding: 0 5px;
 
-.system-task-manager
-  > .system-task-manager-content
-  > .system-task-manager-content-item
-  > .system-task-manager-content-ite-icon {
-  width: 30px;
-  height: 30px;
-  padding: 5px;
-}
-.system-task-manager
-  > .system-task-manager-content
-  > .system-task-manager-content-item
-  > .system-task-manager-content-ite-icon
-  > svg,
-.system-task-manager
-  > .system-task-manager-content
-  > .system-task-manager-content-item
-  > .system-task-manager-content-ite-icon
-  > img {
-  width: 100%;
-  height: 100%;
-}
-.system-task-manager
-  > .system-task-manager-content
-  > .system-task-manager-content-item
-  > .system-task-manager-content-ite-name {
-  font-size: 12px;
-}
+      &:hover {
+        background-color: rgba(98, 153, 243, 0.1);
+      }
 
-.system-task-manager > .system-task-manager-footer {
-  width: 100%;
-  height: 40px;
-  line-height: 40px;
-  text-align: right;
-  padding: 0 20px;
+      &.select {
+        background-color: rgba(98, 153, 243, 0.2);
+      }
+
+      &>.system-task-manager-content-ite-icon {
+        width: 30px;
+        height: 30px;
+        padding: 5px;
+
+        &>svg,
+        &>img {
+          width: 100%;
+          height: 100%;
+        }
+
+      }
+
+      &>.system-task-manager-content-ite-name {
+        font-size: 12px;
+      }
+    }
+  }
+
+  &>.system-task-manager-footer {
+    width: 100%;
+    height: 40px;
+    line-height: 40px;
+    text-align: right;
+    padding: 0 20px;
+  }
 }
 </style>
