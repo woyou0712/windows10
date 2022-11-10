@@ -2,23 +2,23 @@
   <div class="system-set-taskbar">
     <div class="system-set-taskbar-title">任务栏</div>
     <div class="system-set-taskbar-content">
-      <WinFormItem label="背景颜色">
-        <input type="color" v-model="taskbarTheme.backgroundColor" class="windwos10-color-select" @input="onChange">
-      </WinFormItem>
-      <WinFormItem label="字体颜色">
-        <input type="color" v-model="taskbarTheme.color" class="windwos10-color-select" @input="onChange">
-      </WinFormItem>
-      <WinFormItem label="任务栏方向">
+      <WinFormItem label="任务栏方向" labelAlign="right">
         <select v-model="taskbarDireaction" @change="onChange" class="windwos10-select">
           <option value="top">顶部</option>
           <option value="bottom">底部</option>
         </select>
       </WinFormItem>
-      <WinFormItem label="搜索框">
+      <WinFormItem label="搜索框" labelAlign="right">
         <select v-model="taskbarSelectDisplay" @change="onChange" class="windwos10-select">
           <option value="flex">显示</option>
           <option value="none">隐藏</option>
         </select>
+      </WinFormItem>
+      <WinFormItem label="背景颜色" labelAlign="right">
+        <input type="color" v-model="taskbarTheme.backgroundColor" class="windwos10-color-select" @input="onChange">
+      </WinFormItem>
+      <WinFormItem label="字体颜色" labelAlign="right">
+        <input type="color" v-model="taskbarTheme.color" class="windwos10-color-select" @input="onChange">
       </WinFormItem>
     </div>
   </div>
@@ -34,7 +34,7 @@ export default {
   resize: true,
   miniBtn: true,
   maxBtn: true,
-  width: "520",
+  width: "520px",
   height: "500px",
   components: { WinFormItem },
   props: {
@@ -100,13 +100,13 @@ export default {
 .system-set-taskbar {
   width: 100%;
   height: 100%;
-  padding: 0 20px;
+  padding: 0 40px;
 
   & > .system-set-taskbar-title {
     width: 100%;
     font-size: 26px;
-    height: 70px;
-    line-height: 70px;
+    height: 80px;
+    line-height: 80px;
   }
   & > .system-set-taskbar-content {
     font-size: 16px;

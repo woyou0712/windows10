@@ -14,12 +14,10 @@ const defaultOptions: WindowsOptions = {
     selectDisplay: "flex"
   }
 }
-
-
+// 任务变化监听回调函数（请勿直接访问）
+let TaskChangeCallback: (data: { [key: string]: Win }) => void = () => true
 
 class Windows {
-  static TaskChangeCallback: (data: { [key: string]: Win }) => void
-
   public options: WindowsOptions = defaultOptions;
   private box: HTMLElement; // 盒子
   private desktop: Desktop; // 桌面
@@ -69,14 +67,17 @@ class Windows {
 
 
   private __init__() {
-    // 监听应用启动和关闭
-    this.__on_app_change__();
+    Win.showMiniList = false; // 隐藏最小化列表
     // 设置任务栏方向
     this.setTaskbarDireaction(this.__options.taskbar.direaction);
     // 设置任务栏主题
     this.setTaskbarTheme(this.__options.taskbar.theme);
     // 设置任务栏搜索框状态
     this.setTaskbarSelect(this.__options.taskbar.selectDisplay);
+    /**
+     * 监听应用启动和关闭
+     */
+    this.__on_app_change__();
     /**
      * 监听配置项变化
      */
@@ -91,7 +92,7 @@ class Windows {
       // 监听打开
       set: (target, key, app: Win) => {
         target[key] = app;
-        if (Windows.TaskChangeCallback) Windows.TaskChangeCallback(target); // 通知监听函数
+        if (TaskChangeCallback) TaskChangeCallback(target); // 通知监听函数
         // 通知任务栏
         this.taskbar.setOpenApp(app);
         return true
@@ -99,9 +100,9 @@ class Windows {
       // 监听关闭
       deleteProperty: (target, key) => {
         delete target[key];
-        if (Windows.TaskChangeCallback) Windows.TaskChangeCallback(target); // 通知监听函数
+        if (TaskChangeCallback) TaskChangeCallback(target); // 通知监听函数
         // 通知任务栏
-        this.taskbar.setCloseApp(key);
+        this.taskbar.setCloseApp(key as string);
         return true
       }
     })
@@ -171,7 +172,7 @@ class Windows {
    * 监听任务变化(应用打开/关闭)
    */
   static onTask(fn: (data: { [key: string]: Win }) => void) {
-    Windows.TaskChangeCallback = fn
+    TaskChangeCallback = fn
   }
 }
 

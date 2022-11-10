@@ -9,6 +9,7 @@ import TaskManager from "../systemApps/TaskManager.vue";
 import SetTaskbar from "../systemApps/SetTaskbar.vue";
 import { Direaction, SelectDisplay, Theme } from "../types/style.d";
 import { OptionsCallback, OptionsData } from "../types/windows";
+import { chromeSvg } from "new-dream/src/svg/button";
 
 export interface TaskbarOptions {
   theme: Theme;
@@ -20,21 +21,26 @@ export interface TaskbarOptions {
  * 任务栏
  */
 class Taskbar {
+  static SetAppTopTime: number;
+
   public box: HTMLElement;
-  public win: TaskbarWin;
-  public appList: HTMLElement;
+  private win: TaskbarWin;
+  private appListBox: HTMLElement;
   private select: TaskbarSelect;
   private time: TaskbarTime;
-  public message: HTMLElement;
+  private message: HTMLElement;
   private theme?: Theme;
   private selectDisplay?: SelectDisplay;
   private direaction?: Direaction;
   private callback: OptionsCallback = () => true
 
+  private openAppList: Win[] = []; // 打开的APP列表
+  private appIconMap: { [key: string]: HTMLElement } = {}; // 打开的APP图标Map
+
   constructor(windowsBox: HTMLElement, direaction: Direaction) {
     this.box = createElement("windows10-taskbar");
     this.win = new TaskbarWin();
-    this.appList = createElement("windows10-taskbar-app-list");
+    this.appListBox = createElement("windows10-taskbar-app-list");
     this.select = new TaskbarSelect();
     this.time = new TaskbarTime();
     this.message = createElement("windows10-taskbar-message");
@@ -70,8 +76,8 @@ class Taskbar {
   private __init__() {
     this.message.innerHTML = messageIcon;
     this.box.appendChild(this.win.box);
-    this.appList.appendChild(this.select.box);
-    this.box.appendChild(this.appList);
+    this.appListBox.appendChild(this.select.box);
+    this.box.appendChild(this.appListBox);
     this.box.appendChild(this.time.box);
     this.box.appendChild(this.message);
     this.__init_menu__();
@@ -201,20 +207,85 @@ class Taskbar {
    * APP打开
    */
   public setOpenApp(app: Win) {
-    // const appBox = createElement("taskbar-app-list-item");
-    console.log(app)
+    // 在任务栏添加一个图标
+    const appIcon = createElement("taskbar-app-list-item");
+    if (app.config.icon) {
+      if (typeof app.config.icon === "string") {
+        appIcon.innerHTML = app.config.icon
+      } else if (app.config.icon.nodeName) {
+        appIcon.appendChild(app.config.icon)
+      }
+    } else {
+      appIcon.innerHTML = chromeSvg
+    }
+    // 点击任务栏图标
+    appIcon.addEventListener("click", () => {
+      if (app.status === "mini") {
+        // 如果在最小化状态，则恢复
+        app.setMini()
+      }
+      // 设置应用置顶
+      app.setTop();
+    })
+    this.appListBox.appendChild(appIcon);
+    this.appIconMap[app.id] = appIcon;
+    this.openAppList.push(app)
+    // 新窗口打开
+    app.onmounted(() => {
+      this.setTopAppIcon()
+    })
+    // 监听窗口置顶
+    app.ontop(() => {
+      this.setTopAppIcon()
+    })
+    // 监听窗口最小化
+    app.onmini(() => {
+      this.setTopAppIcon()
+    })
   }
   /**
-   * APP置顶
+   * 设置置顶应用图标高亮
    */
-  public setTopApp(appId: string | symbol) {
-    console.log(appId)
+  private setTopAppIcon() {
+    console.log("窗口置顶中？")
+    // 防抖
+    clearTimeout(Taskbar.SetAppTopTime)
+    Taskbar.SetAppTopTime = setTimeout(() => {
+      console.log("窗口置顶")
+      // 修改窗口的置顶状态
+      let topIndex = 0, topId = "";
+      this.openAppList.forEach(app => {
+        // 取消所有窗口的置顶状态
+        this.appIconMap[app.id].classList.remove("top")
+        // 最小化的窗口取消置顶状态
+        if (app.status === "mini") {
+          return
+        }
+        // 找到除了最新化之外的最顶层窗口
+        if (app.zIndex > topIndex) {
+          topIndex = app.zIndex
+          topId = app.id
+        }
+      })
+      if (topId && topId !== "") {
+        this.appIconMap[topId].classList.add("top")
+      }
+
+    }, 50);
   }
   /**
    * APP关闭
    */
-  public setCloseApp(appId: string | symbol) {
-    console.log(appId)
+  public setCloseApp(appId: string) {
+    // 关闭图标
+    this.appListBox.removeChild(this.appIconMap[appId])
+    // 从打开的应用列表移除
+    for (let i = 0; i < this.openAppList.length; i++) {
+      const app = this.openAppList[i];
+      if (app.id === appId) {
+        this.openAppList.splice(i, 1)
+      }
+    }
   }
 
 }
