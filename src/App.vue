@@ -16,7 +16,7 @@ export default Vue.extend({
       taskbar: {
         theme: { backgroundColor: "#aa5500", color: "#ffffff" },
         direaction: "bottom",
-        selectStatus: "show",
+        queryStatus: "show",
       },
     });
     windows.onOptionChange((data) => {

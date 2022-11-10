@@ -3,19 +3,23 @@ import Desktop from "./components/Desktop";
 import Taskbar from "./components/Taskbar";
 import "new-dream/dist/index.css";
 import { Win } from "new-dream";
-import { Theme, Direaction, SelectStatus } from "./types/style.d";
-import { OptionsCallback, Methods, WindowsOptions, OptionsData } from "./types/windows.d";
+import { Theme, Direaction, QueryStatus } from "./types/style.d";
+import { OptionsCallback, Methods, WindowsOptions, OptionsData, GlobalTask } from "./types/windows.d";
 
 
 const defaultOptions: WindowsOptions = {
   taskbar: {
     theme: { backgroundColor: "#444444", color: "#FFFFFF" },
     direaction: "bottom",
-    selectStatus: "show"
+    queryStatus: "show"
   }
 }
-// 任务变化监听回调函数（请勿直接访问）
-let TaskChangeCallback: (data: { [key: string]: Win }) => void = () => true
+// 全局任务对象
+const globalTask: GlobalTask = {
+  TaskChangeCallback: () => true,
+  OptionsChangeTime: 0
+}
+
 
 class Windows {
   public options: WindowsOptions = defaultOptions;
@@ -39,7 +43,7 @@ class Windows {
   private set __options(v) {
     if (!v.taskbar.theme) v.taskbar.theme = defaultOptions.taskbar.theme;
     if (!v.taskbar.direaction) v.taskbar.direaction = defaultOptions.taskbar.direaction;
-    if (!v.taskbar.selectStatus) v.taskbar.selectStatus = defaultOptions.taskbar.selectStatus;
+    if (!v.taskbar.queryStatus) v.taskbar.queryStatus = defaultOptions.taskbar.queryStatus;
     this.options = v
   }
 
@@ -73,7 +77,7 @@ class Windows {
     // 设置任务栏主题
     this.setTaskbarTheme(this.__options.taskbar.theme);
     // 设置任务栏搜索框状态
-    this.setTaskbarSelect(this.__options.taskbar.selectStatus);
+    this.setTaskbarQuery(this.__options.taskbar.queryStatus);
     /**
      * 监听应用启动和关闭
      */
@@ -92,7 +96,7 @@ class Windows {
       // 监听打开
       set: (target, key, app: Win) => {
         target[key] = app;
-        if (TaskChangeCallback) TaskChangeCallback(target); // 通知监听函数
+        if (globalTask.TaskChangeCallback) globalTask.TaskChangeCallback(target); // 通知监听函数
         // 通知任务栏
         this.taskbar.setOpenApp(app);
         return true
@@ -100,7 +104,7 @@ class Windows {
       // 监听关闭
       deleteProperty: (target, key) => {
         delete target[key];
-        if (TaskChangeCallback) TaskChangeCallback(target); // 通知监听函数
+        if (globalTask.TaskChangeCallback) globalTask.TaskChangeCallback(target); // 通知监听函数
         // 通知任务栏
         this.taskbar.setCloseApp(key as string);
         return true
@@ -111,29 +115,34 @@ class Windows {
    * 设置监听配置项改变
    */
   private __on_option_change__() {
-    this.taskbar.onOptionChange(this.__option_change_callback__()); // 监听任务栏配置项改变
+    const changeCallback = this.__option_change_callback__()
+    this.taskbar.onOptionChange(changeCallback); // 监听任务栏配置项改变
   }
   /**
-   * 监听配置项改变的回调函数
+   * 配置项改变触发的回调函数
    */
   private __option_change_callback__() {
     // 包一层箭头函数，避免传递过去调用时导致this发生变化
     return (data: OptionsData) => {
-      // 任务栏主题改变
-      if (data.taskbar && data.taskbar.theme) {
-        this.setTaskbarTheme(data.taskbar.theme)
-      }
-      // 方向
-      if (data.taskbar && data.taskbar.direaction) {
-        this.setTaskbarDireaction(data.taskbar.direaction)
-      }
-      if (data.taskbar && data.taskbar.selectStatus) {
-        this.setTaskbarSelect(data.taskbar.selectStatus)
-      }
-      // 如果有用户监听，则向用户发送消息
-      if (this.methods && this.methods.onOptionChange) {
-        this.methods.onOptionChange(data)
-      }
+      // 设置防抖
+      clearTimeout(globalTask.OptionsChangeTime)
+      globalTask.OptionsChangeTime = setTimeout(() => {
+        // 任务栏主题改变
+        if (data.taskbar && data.taskbar.theme) {
+          this.setTaskbarTheme(data.taskbar.theme)
+        }
+        // 方向
+        if (data.taskbar && data.taskbar.direaction) {
+          this.setTaskbarDireaction(data.taskbar.direaction)
+        }
+        if (data.taskbar && data.taskbar.queryStatus) {
+          this.setTaskbarQuery(data.taskbar.queryStatus)
+        }
+        // 如果有用户监听，则向用户发送消息
+        if (this.methods && this.methods.onOptionChange) {
+          this.methods.onOptionChange(data)
+        }
+      }, 50)
     }
   }
 
@@ -155,8 +164,8 @@ class Windows {
   /**
    * 设置任务栏搜索框
    */
-  public setTaskbarSelect(display: SelectStatus) {
-    this.taskbar.setSelectShow(display)
+  public setTaskbarQuery(display: QueryStatus) {
+    this.taskbar.setQueryShow(display)
     return this
   }
 
@@ -172,7 +181,7 @@ class Windows {
    * 监听任务变化(应用打开/关闭)
    */
   static onTask(fn: (data: { [key: string]: Win }) => void) {
-    TaskChangeCallback = fn
+    globalTask.TaskChangeCallback = fn
   }
 }
 

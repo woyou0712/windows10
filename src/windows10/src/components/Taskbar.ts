@@ -1,20 +1,20 @@
 import { Menu, Win } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
-import { messageIcon, selectIcon, setIcon, taskIcon } from "../svg/index"
-import TaskbarSelect from "./TaskbarSelect";
+import { messageIcon, queryIcon, setIcon, taskIcon, topIcon } from "../svg/index"
+import TaskbarQuery from "./TaskbarQuery";
 import TaskbarTime from "./TaskbarTime";
 import TaskbarWin from "./TaskbarWin";
 
 import TaskManager from "../systemApps/TaskManager.vue";
 import SetTaskbar from "../systemApps/SetTaskbar.vue";
-import { Direaction, SelectStatus, Theme } from "../types/style.d";
+import { Direaction, QueryStatus, Theme } from "../types/style.d";
 import { OptionsCallback, OptionsData } from "../types/windows";
-import { chromeSvg } from "new-dream/src/svg/button";
+import { chromeSvg, closeSvg, maxSvg, miniSvg } from "new-dream/src/svg/button";
 
 export interface TaskbarOptions {
   theme: Theme;
   direaction: Direaction;
-  selectStatus: SelectStatus;
+  queryStatus: QueryStatus;
 }
 
 /**
@@ -26,11 +26,11 @@ class Taskbar {
   public box: HTMLElement;
   private win: TaskbarWin;
   private appListBox: HTMLElement;
-  private select: TaskbarSelect;
+  private query: TaskbarQuery;
   private time: TaskbarTime;
   private message: HTMLElement;
   private theme?: Theme;
-  private selectStatus?: SelectStatus;
+  private queryStatus?: QueryStatus;
   private direaction?: Direaction;
   private callback: OptionsCallback = () => true
 
@@ -41,7 +41,7 @@ class Taskbar {
     this.box = createElement("windows10-taskbar");
     this.win = new TaskbarWin();
     this.appListBox = createElement("windows10-taskbar-app-list");
-    this.select = new TaskbarSelect();
+    this.query = new TaskbarQuery();
     this.time = new TaskbarTime();
     this.message = createElement("windows10-taskbar-message");
     this.direaction = direaction; // 记录初始化状态(设置需要)，无需跟踪，则不需要走set方法
@@ -65,18 +65,18 @@ class Taskbar {
     this.pushOptionsChange()
   }
 
-  private get __selectStatus() {
-    return this.selectStatus
+  private get __queryStatus() {
+    return this.queryStatus
   }
-  private set __selectStatus(v) {
-    this.selectStatus = v
+  private set __queryStatus(v) {
+    this.queryStatus = v
     this.pushOptionsChange()
   }
 
   private __init__() {
     this.message.innerHTML = messageIcon;
     this.box.appendChild(this.win.box);
-    this.appListBox.appendChild(this.select.box);
+    this.appListBox.appendChild(this.query.box);
     this.box.appendChild(this.appListBox);
     this.box.appendChild(this.time.box);
     this.box.appendChild(this.message);
@@ -93,13 +93,13 @@ class Taskbar {
       {
         id: 1,
         name: "显示搜索框",
-        icon: selectIcon,
+        icon: queryIcon,
         method: () => {
           const display = "show";
-          if (this.__selectStatus === display) {
+          if (this.__queryStatus === display) {
             return
           }
-          this.__selectStatus = display
+          this.__queryStatus = display
         }
       },
       {
@@ -107,17 +107,21 @@ class Taskbar {
         name: "隐藏搜索框",
         method: () => {
           const display = "none";
-          if (this.__selectStatus === display) {
+          if (this.__queryStatus === display) {
             return
           }
-          this.__selectStatus = display
+          this.__queryStatus = display
         }
       },
       {
         id: 3,
         name: "显示桌面",
         method: () => {
-          console.log("显示桌面")
+          // 将所有的窗口都最小化
+          this.openAppList.forEach((app) => {
+            if (app.status === "mini") { return }
+            app.setMini()
+          })
         }
       },
       {
@@ -140,17 +144,27 @@ class Taskbar {
             props: {
               theme: this.theme,
               direaction: this.__direaction,
-              selectStatus: this.selectStatus,
+              queryStatus: this.queryStatus,
               change: (data: OptionsData) => {
                 if (data.taskbar) {
                   // 修改状态
                   if (data.taskbar.theme) this.__theme = data.taskbar.theme;
                   if (data.taskbar.direaction) this.__direaction = data.taskbar.direaction;
-                  if (data.taskbar.selectStatus) this.__selectStatus = data.taskbar.selectStatus;
+                  if (data.taskbar.queryStatus) this.__queryStatus = data.taskbar.queryStatus;
                 }
               }
             }
           })
+        }
+      },
+      {
+        id: 6,
+        name: "关闭全部任务",
+        method: () => {
+          // 关闭所有窗口（因为关闭窗口会触发删除操作，故需要从后往前遍历）
+          for (let i = this.openAppList.length - 1; i >= 0; i--) {
+            this.openAppList[i].close()
+          }
         }
       },
     ])
@@ -163,7 +177,7 @@ class Taskbar {
       taskbar: {
         theme: this.__theme,
         direaction: this.__direaction,
-        selectStatus: this.__selectStatus
+        queryStatus: this.__queryStatus
       }
     }
     this.callback(data)
@@ -199,16 +213,17 @@ class Taskbar {
   /**
    * 搜索框显示/隐藏
    */
-  public setSelectShow(display: SelectStatus) {
-    this.selectStatus = display;
-    this.select.setDisplay(display)
+  public setQueryShow(display: QueryStatus) {
+    this.queryStatus = display;
+    this.query.setDisplay(display)
   }
   /**
    * APP打开
    */
   public setOpenApp(app: Win) {
+    const className = "taskbar-app-list-item"
     // 在任务栏添加一个图标
-    const appIcon = createElement("taskbar-app-list-item");
+    const appIcon = createElement(className);
     if (app.config.icon) {
       if (typeof app.config.icon === "string") {
         appIcon.innerHTML = app.config.icon
@@ -219,17 +234,23 @@ class Taskbar {
       appIcon.innerHTML = chromeSvg
     }
     // 点击任务栏图标
-    appIcon.addEventListener("click", () => {
-      if (app.status === "mini") {
-        // 如果在最小化状态，则恢复
-        app.setMini()
+    appIcon.addEventListener("click", (e) => {
+      const clickNode = e.target as HTMLElement;
+      // 只有点击的是图标，才触发最小化
+      if (clickNode === appIcon || (clickNode.nodeName === "svg" && clickNode.parentNode === appIcon)) {
+        // 判断点击元素
+        if (app.status === "mini") {
+          // 如果在最小化状态，则恢复
+          app.setMini()
+        }
+        // 设置应用置顶
+        app.setTop();
       }
-      // 设置应用置顶
-      app.setTop();
     })
-    this.appListBox.appendChild(appIcon);
+    this.openAppList.push(app);
     this.appIconMap[app.id] = appIcon;
-    this.openAppList.push(app)
+    this.__set_app_menu__(appIcon, app);
+    this.appListBox.appendChild(appIcon);
     // 新窗口打开
     app.onmounted(() => {
       this.setTopAppIcon()
@@ -243,15 +264,55 @@ class Taskbar {
       this.setTopAppIcon()
     })
   }
+
+  private __set_app_menu__(appIcon: HTMLElement, app: Win) {
+    new Menu(appIcon, [
+      {
+        id: 1,
+        name: "置顶显示",
+        icon: topIcon,
+        method: () => {
+          if (app.status === "mini") {
+            // 如果在最小化状态，则恢复
+            app.setMini()
+          }
+          // 设置应用置顶
+          app.setTop();
+        }
+      },
+      {
+        id: 2,
+        name: "最大化窗口",
+        icon: maxSvg,
+        method: () => {
+          app.setMax();
+        }
+      },
+      {
+        id: 3,
+        name: "最小化窗口",
+        icon: miniSvg,
+        method: () => {
+          app.setMini();
+        }
+      },
+      {
+        id: 10,
+        name: "关闭窗口",
+        icon: closeSvg,
+        method: () => {
+          app.close();
+        }
+      },
+    ])
+  }
   /**
    * 设置置顶应用图标高亮
    */
   private setTopAppIcon() {
-    console.log("窗口置顶中？")
     // 防抖
     clearTimeout(Taskbar.SetAppTopTime)
     Taskbar.SetAppTopTime = setTimeout(() => {
-      console.log("窗口置顶")
       // 修改窗口的置顶状态
       let topIndex = 0, topId = "";
       this.openAppList.forEach(app => {
@@ -277,6 +338,7 @@ class Taskbar {
    * APP关闭
    */
   public setCloseApp(appId: string) {
+    console.log(appId)
     // 关闭图标
     this.appListBox.removeChild(this.appIconMap[appId]);
     delete this.appIconMap[appId];

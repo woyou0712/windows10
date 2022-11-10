@@ -1,4 +1,4 @@
-.windows10-taskbar-select {
+.windows10-taskbar-query {
   width: 0px;
   height: 100%;
   background-color: #f5f5f5;
@@ -11,12 +11,13 @@
     width: 320px;
   }
 
-  &>.windows10-taskbar-select-box {
+  &>.windows10-taskbar-query-box {
     display: flex;
     align-items: center;
     width: 318px;
+    height: 100%;
 
-    &>.windows10-taskbar-select-icon {
+    &>.windows10-taskbar-query-icon {
       width: calc(var(--taskbarWidth) - 2px);
       height: calc(var(--taskbarWidth) - 2px);
       padding: 10px;
@@ -27,12 +28,12 @@
       }
     }
 
-    &>.windows10-taskbar-select-input {
+    &>.windows10-taskbar-query-input {
       width: calc(100% - var(--taskbarWidth) - 60px);
       height: 100%;
       border: none;
       padding: 0 10px;
-      background-color: #f5f5f5;
+      background-color: #fff;
 
       &:focus-visible {
         outline: none;
@@ -43,7 +44,7 @@
       }
     }
 
-    &>.windows10-taskbar-select-button {
+    &>.windows10-taskbar-query-button {
       width: 55px;
       height: calc(var(--taskbarWidth) - 6px);
       background-color: var(--taskbarBg);
