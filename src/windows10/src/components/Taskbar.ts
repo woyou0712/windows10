@@ -278,7 +278,8 @@ class Taskbar {
    */
   public setCloseApp(appId: string) {
     // 关闭图标
-    this.appListBox.removeChild(this.appIconMap[appId])
+    this.appListBox.removeChild(this.appIconMap[appId]);
+    delete this.appIconMap[appId];
     // 从打开的应用列表移除
     for (let i = 0; i < this.openAppList.length; i++) {
       const app = this.openAppList[i];
