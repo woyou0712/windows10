@@ -1,10 +1,10 @@
-import { Direaction, SelectDisplay, Theme } from "./style";
+import { Direaction, SelectStatus, Theme } from "./style";
 
 export interface WindowsOptions {
   taskbar: {
     theme: Theme; // 任务栏主题
     direaction: Direaction; // 任务栏方向
-    selectDisplay: SelectDisplay; // 是否显示搜索框
+    selectStatus: SelectStatus; // 是否显示搜索框
   }
 }
 
@@ -15,7 +15,7 @@ export interface OptionsData {
   taskbar?: {
     theme?: Theme; // 任务栏主题
     direaction?: Direaction; // 任务栏方向
-    selectDisplay?: SelectDisplay; // 任务栏方向
+    selectStatus?: SelectStatus; // 任务栏方向
   }
 }
 

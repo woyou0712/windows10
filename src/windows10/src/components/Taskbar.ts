@@ -7,14 +7,14 @@ import TaskbarWin from "./TaskbarWin";
 
 import TaskManager from "../systemApps/TaskManager.vue";
 import SetTaskbar from "../systemApps/SetTaskbar.vue";
-import { Direaction, SelectDisplay, Theme } from "../types/style.d";
+import { Direaction, SelectStatus, Theme } from "../types/style.d";
 import { OptionsCallback, OptionsData } from "../types/windows";
 import { chromeSvg } from "new-dream/src/svg/button";
 
 export interface TaskbarOptions {
   theme: Theme;
   direaction: Direaction;
-  selectDisplay: SelectDisplay;
+  selectStatus: SelectStatus;
 }
 
 /**
@@ -30,7 +30,7 @@ class Taskbar {
   private time: TaskbarTime;
   private message: HTMLElement;
   private theme?: Theme;
-  private selectDisplay?: SelectDisplay;
+  private selectStatus?: SelectStatus;
   private direaction?: Direaction;
   private callback: OptionsCallback = () => true
 
@@ -65,11 +65,11 @@ class Taskbar {
     this.pushOptionsChange()
   }
 
-  private get __selectDisplay() {
-    return this.selectDisplay
+  private get __selectStatus() {
+    return this.selectStatus
   }
-  private set __selectDisplay(v) {
-    this.selectDisplay = v
+  private set __selectStatus(v) {
+    this.selectStatus = v
     this.pushOptionsChange()
   }
 
@@ -95,11 +95,11 @@ class Taskbar {
         name: "显示搜索框",
         icon: selectIcon,
         method: () => {
-          const display = "flex";
-          if (this.__selectDisplay === display) {
+          const display = "show";
+          if (this.__selectStatus === display) {
             return
           }
-          this.__selectDisplay = display
+          this.__selectStatus = display
         }
       },
       {
@@ -107,10 +107,10 @@ class Taskbar {
         name: "隐藏搜索框",
         method: () => {
           const display = "none";
-          if (this.__selectDisplay === display) {
+          if (this.__selectStatus === display) {
             return
           }
-          this.__selectDisplay = display
+          this.__selectStatus = display
         }
       },
       {
@@ -140,13 +140,13 @@ class Taskbar {
             props: {
               theme: this.theme,
               direaction: this.__direaction,
-              selectDisplay: this.selectDisplay,
+              selectStatus: this.selectStatus,
               change: (data: OptionsData) => {
                 if (data.taskbar) {
                   // 修改状态
                   if (data.taskbar.theme) this.__theme = data.taskbar.theme;
                   if (data.taskbar.direaction) this.__direaction = data.taskbar.direaction;
-                  if (data.taskbar.selectDisplay) this.__selectDisplay = data.taskbar.selectDisplay;
+                  if (data.taskbar.selectStatus) this.__selectStatus = data.taskbar.selectStatus;
                 }
               }
             }
@@ -163,7 +163,7 @@ class Taskbar {
       taskbar: {
         theme: this.__theme,
         direaction: this.__direaction,
-        selectDisplay: this.__selectDisplay
+        selectStatus: this.__selectStatus
       }
     }
     this.callback(data)
@@ -199,8 +199,8 @@ class Taskbar {
   /**
    * 搜索框显示/隐藏
    */
-  public setSelectShow(display: SelectDisplay) {
-    this.selectDisplay = display;
+  public setSelectShow(display: SelectStatus) {
+    this.selectStatus = display;
     this.select.setDisplay(display)
   }
   /**

@@ -9,8 +9,8 @@
         </select>
       </WinFormItem>
       <WinFormItem label="搜索框" labelAlign="right">
-        <select v-model="taskbarSelectDisplay" @change="onChange" class="windwos10-select">
-          <option value="flex">显示</option>
+        <select v-model="taskbarSelectStatus" @change="onChange" class="windwos10-select">
+          <option value="show">显示</option>
           <option value="none">隐藏</option>
         </select>
       </WinFormItem>
@@ -53,7 +53,7 @@ export default {
         return "button"
       }
     },
-    selectDisplay: {
+    selectStatus: {
       type: String,
       default() {
         return "flex"
@@ -73,13 +73,13 @@ export default {
         color: "#FFFFFF"
       },
       taskbarDireaction: "bottom",
-      taskbarSelectDisplay: "flex"
+      taskbarSelectStatus: "flex"
     }
   },
   mounted() {
     this.taskbarTheme = this.theme;
     this.taskbarDireaction = this.direaction;
-    this.taskbarSelectDisplay = this.selectDisplay;
+    this.taskbarSelectStatus = this.selectStatus;
   },
   methods: {
     onChange() {
@@ -87,7 +87,7 @@ export default {
         taskbar: {
           theme: this.taskbarTheme,
           direaction: this.taskbarDireaction,
-          selectDisplay: this.taskbarSelectDisplay
+          selectStatus: this.taskbarSelectStatus
         }
       }
       this.change(opptionData)

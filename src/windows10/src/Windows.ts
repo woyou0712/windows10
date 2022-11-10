@@ -3,7 +3,7 @@ import Desktop from "./components/Desktop";
 import Taskbar from "./components/Taskbar";
 import "new-dream/dist/index.css";
 import { Win } from "new-dream";
-import { Theme, Direaction, SelectDisplay } from "./types/style.d";
+import { Theme, Direaction, SelectStatus } from "./types/style.d";
 import { OptionsCallback, Methods, WindowsOptions, OptionsData } from "./types/windows.d";
 
 
@@ -11,7 +11,7 @@ const defaultOptions: WindowsOptions = {
   taskbar: {
     theme: { backgroundColor: "#444444", color: "#FFFFFF" },
     direaction: "bottom",
-    selectDisplay: "flex"
+    selectStatus: "show"
   }
 }
 // 任务变化监听回调函数（请勿直接访问）
@@ -39,7 +39,7 @@ class Windows {
   private set __options(v) {
     if (!v.taskbar.theme) v.taskbar.theme = defaultOptions.taskbar.theme;
     if (!v.taskbar.direaction) v.taskbar.direaction = defaultOptions.taskbar.direaction;
-    if (!v.taskbar.selectDisplay) v.taskbar.selectDisplay = defaultOptions.taskbar.selectDisplay;
+    if (!v.taskbar.selectStatus) v.taskbar.selectStatus = defaultOptions.taskbar.selectStatus;
     this.options = v
   }
 
@@ -73,7 +73,7 @@ class Windows {
     // 设置任务栏主题
     this.setTaskbarTheme(this.__options.taskbar.theme);
     // 设置任务栏搜索框状态
-    this.setTaskbarSelect(this.__options.taskbar.selectDisplay);
+    this.setTaskbarSelect(this.__options.taskbar.selectStatus);
     /**
      * 监听应用启动和关闭
      */
@@ -127,8 +127,8 @@ class Windows {
       if (data.taskbar && data.taskbar.direaction) {
         this.setTaskbarDireaction(data.taskbar.direaction)
       }
-      if (data.taskbar && data.taskbar.selectDisplay) {
-        this.setTaskbarSelect(data.taskbar.selectDisplay)
+      if (data.taskbar && data.taskbar.selectStatus) {
+        this.setTaskbarSelect(data.taskbar.selectStatus)
       }
       // 如果有用户监听，则向用户发送消息
       if (this.methods && this.methods.onOptionChange) {
@@ -155,7 +155,7 @@ class Windows {
   /**
    * 设置任务栏搜索框
    */
-  public setTaskbarSelect(display: SelectDisplay) {
+  public setTaskbarSelect(display: SelectStatus) {
     this.taskbar.setSelectShow(display)
     return this
   }

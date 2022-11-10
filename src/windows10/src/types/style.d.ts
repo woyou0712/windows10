@@ -5,4 +5,4 @@ export interface Theme {
 
 export type Direaction = "top" | "bottom";
 
-export type SelectDisplay = "flex" | "none"
+export type SelectStatus = "show" | "none"

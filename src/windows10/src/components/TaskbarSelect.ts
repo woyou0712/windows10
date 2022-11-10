@@ -1,7 +1,7 @@
 import { Win } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
 import { selectIcon } from "../svg";
-import { SelectDisplay } from "../types/style";
+import { SelectStatus } from "../types/style";
 
 
 
@@ -10,20 +10,23 @@ class TaskbarSelect {
   private icon: HTMLElement;
   private input: HTMLElement;
   private button: HTMLElement;
-  private display?: SelectDisplay
+  private display?: SelectStatus
 
   constructor() {
     this.box = createElement("windows10-taskbar-select");
     this.icon = createElement("windows10-taskbar-select-icon");
     this.icon.innerHTML = selectIcon;
-    this.box.appendChild(this.icon);
-
     this.input = createElement({ name: "input", class: "windows10-taskbar-select-input" });
     this.input.setAttribute("placeholder", "在这里输入你要搜索的内容");
-    this.box.appendChild(this.input);
     this.button = createElement("windows10-taskbar-select-button");
     this.button.innerText = "搜索";
-    this.box.appendChild(this.button);
+    
+    const iptBox = createElement("windows10-taskbar-select-box");
+    iptBox.appendChild(this.icon);
+    iptBox.appendChild(this.input);
+    iptBox.appendChild(this.button);
+
+    this.box.appendChild(iptBox);
     this.setEvent();
   }
 
@@ -32,14 +35,21 @@ class TaskbarSelect {
   }
 
   private set __display(v) {
-    if (!v || ["flex", "none"].indexOf(v) === -1) {
+    if (!v || ["show", "none"].indexOf(v) === -1) {
       v = "none"
     }
     this.display = v
-    this.box.style["display"] = v
+    switch (v) {
+      case "show":
+        this.box.classList.add("show")
+        break;
+      default:
+        this.box.classList.remove("show")
+        break;
+    }
   }
 
-  public setDisplay(display: SelectDisplay) {
+  public setDisplay(display: SelectStatus) {
     this.__display = display
   }
 
