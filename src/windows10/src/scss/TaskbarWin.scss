@@ -26,6 +26,7 @@
     width: 500px;
     height: 600px;
     display: none;
+    border-top: 1px solid var(--hoverColor);
     border-bottom: 1px solid var(--hoverColor);
 
     &.show {

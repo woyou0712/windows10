@@ -12,7 +12,16 @@ import axios from "axios";
 export default Vue.extend({
   name: "App",
   mounted() {
-    const windows = new Windows();
+    const windows = new Windows({
+      taskbar: {
+        theme: { backgroundColor: "#aa5500", color: "#ffffff" },
+        direaction: "bottom",
+        selectDisplay: "flex",
+      },
+    });
+    windows.onOptionChange((data) => {
+      console.log(data);
+    });
   },
 });
 </script>

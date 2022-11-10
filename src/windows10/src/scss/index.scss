@@ -6,7 +6,7 @@
   --taskbarBg: #444;
   --taskbarColor: #fff;
   --taskbarWidth: 40px;
-  --hoverColor: rgba(150, 150, 150, 0.2);
+  --hoverColor: rgba(200, 200, 200, 0.2);
 }
 
 ::-webkit-scrollbar {
@@ -19,6 +19,21 @@
 ::-webkit-scrollbar-thumb {
   background-color: #CCC;
   border-radius: 4px;
+}
+
+.windwos10-color-select {
+  width: 30px;
+  height: 30px;
+  padding: 0;
+}
+
+select {
+  width: 240px;
+  height: 30px;
+
+  &:focus-visible {
+    outline: none;
+  }
 }
 
 @import "./Windows.scss";

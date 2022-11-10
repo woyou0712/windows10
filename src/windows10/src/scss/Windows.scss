@@ -23,6 +23,10 @@
 
       .windows10-taskbar-win-view {
         top: var(--taskbarWidth);
+
+        .win-view-left-content {
+          flex-direction: column-reverse;
+        }
       }
     }
   }

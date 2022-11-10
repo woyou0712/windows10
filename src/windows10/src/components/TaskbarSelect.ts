@@ -1,12 +1,16 @@
 import { Win } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
 import { selectIcon } from "../svg";
+import { SelectDisplay } from "../types/style";
+
+
 
 class TaskbarSelect {
   public box: HTMLElement;
   private icon: HTMLElement;
   private input: HTMLElement;
   private button: HTMLElement;
+  private display?: SelectDisplay
 
   constructor() {
     this.box = createElement("windows10-taskbar-select");
@@ -20,9 +24,25 @@ class TaskbarSelect {
     this.button = createElement("windows10-taskbar-select-button");
     this.button.innerText = "搜索";
     this.box.appendChild(this.button);
-
     this.setEvent();
   }
+
+  private get __display() {
+    return this.display
+  }
+
+  private set __display(v) {
+    if (!v || ["flex", "none"].indexOf(v) === -1) {
+      v = "none"
+    }
+    this.display = v
+    this.box.style["display"] = v
+  }
+
+  public setDisplay(display: SelectDisplay) {
+    this.__display = display
+  }
+
 
   private setEvent() {
     this.input.addEventListener("keydown", (e) => {
@@ -39,13 +59,6 @@ class TaskbarSelect {
       title: "Microsoft Bing",
       url: `https://cn.bing.com/search?q=${key}`
     })
-  }
-
-  public show() {
-    this.box.style["display"] = "flex"
-  }
-  public hide() {
-    this.box.style["display"] = "none"
   }
 }
 

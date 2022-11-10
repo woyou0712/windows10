@@ -3,25 +3,46 @@ import Desktop from "./components/Desktop";
 import Taskbar from "./components/Taskbar";
 import "new-dream/dist/index.css";
 import { Win } from "new-dream";
-type Direaction = "top" | "bottom";
+import { Theme, Direaction, SelectDisplay } from "./types/style.d";
+import { OptionsCallback, Methods, WindowsOptions, OptionsData } from "./types/windows.d";
 
+
+const defaultOptions: WindowsOptions = {
+  taskbar: {
+    theme: { backgroundColor: "#444444", color: "#FFFFFF" },
+    direaction: "bottom",
+    selectDisplay: "flex"
+  }
+}
 
 
 
 class Windows {
-  static methods: { [key: string]: (data?: any) => void } = {}
+  static TaskChangeCallback: (data: { [key: string]: Win }) => void
 
+  public options: WindowsOptions = defaultOptions;
   private box: HTMLElement; // 盒子
   private desktop: Desktop; // 桌面
   private taskbar: Taskbar; // 任务栏
   private direaction?: Direaction; // 任务栏所在方向
-  constructor() {
+  private methods: Methods = {};
+
+  constructor(options?: WindowsOptions) {
+    this.__options = options ? options : defaultOptions;
     this.box = createElement("windows10-app");
     this.desktop = new Desktop(this.box);
-    this.taskbar = new Taskbar(this.box);
-    this.__direaction = "bottom"; // 任务栏默认在下方
+    this.taskbar = new Taskbar(this.box, this.__options.taskbar.direaction);
     document.body.appendChild(this.box);
     this.__init__();
+  }
+  private get __options() {
+    return this.options
+  }
+  private set __options(v) {
+    if (!v.taskbar.theme) v.taskbar.theme = defaultOptions.taskbar.theme;
+    if (!v.taskbar.direaction) v.taskbar.direaction = defaultOptions.taskbar.direaction;
+    if (!v.taskbar.selectDisplay) v.taskbar.selectDisplay = defaultOptions.taskbar.selectDisplay;
+    this.options = v
   }
 
   private get __direaction() {
@@ -29,31 +50,48 @@ class Windows {
   }
 
   private set __direaction(v) {
-    this.direaction = v
+    if (!v || ["top", "bottom"].indexOf(v) == -1) {
+      v = "bottom"
+    }
     switch (v) {
       case "top":
         this.box.classList.add("top");
-        this.box.classList.remove("right");
         this.box.classList.remove("bottom");
-        this.box.classList.remove("left");
         break;
       default:
         this.box.classList.add("bottom");
         this.box.classList.remove("top");
-        this.box.classList.remove("right");
-        this.box.classList.remove("left");
         break;
     }
+    this.direaction = v
   }
 
+
+
   private __init__() {
-    // 监听应用打开/关闭
+    // 监听应用启动和关闭
+    this.__on_app_change__();
+    // 设置任务栏方向
+    this.setTaskbarDireaction(this.__options.taskbar.direaction);
+    // 设置任务栏主题
+    this.setTaskbarTheme(this.__options.taskbar.theme);
+    // 设置任务栏搜索框状态
+    this.setTaskbarSelect(this.__options.taskbar.selectDisplay);
+    /**
+     * 监听配置项变化
+     */
+    this.__on_option_change__()
+  }
+  /**
+   * 监听应用启动/关闭
+   */
+  private __on_app_change__() {
     const p: { [key: string | symbol]: Win } = {}
     Win.WinIdMap = new Proxy(p, {
       // 监听打开
       set: (target, key, app: Win) => {
         target[key] = app;
-        if (Windows.methods.onTask) Windows.methods.onTask(target); // 通知监听函数
+        if (Windows.TaskChangeCallback) Windows.TaskChangeCallback(target); // 通知监听函数
         // 通知任务栏
         this.taskbar.setOpenApp(app);
         return true
@@ -61,13 +99,41 @@ class Windows {
       // 监听关闭
       deleteProperty: (target, key) => {
         delete target[key];
-        if (Windows.methods.onTask) Windows.methods.onTask(target); // 通知监听函数
+        if (Windows.TaskChangeCallback) Windows.TaskChangeCallback(target); // 通知监听函数
         // 通知任务栏
         this.taskbar.setCloseApp(key);
         return true
       }
     })
-
+  }
+  /**
+   * 设置监听配置项改变
+   */
+  private __on_option_change__() {
+    this.taskbar.onOptionChange(this.__option_change_callback__()); // 监听任务栏配置项改变
+  }
+  /**
+   * 监听配置项改变的回调函数
+   */
+  private __option_change_callback__() {
+    // 包一层箭头函数，避免传递过去调用时导致this发生变化
+    return (data: OptionsData) => {
+      // 任务栏主题改变
+      if (data.taskbar && data.taskbar.theme) {
+        this.setTaskbarTheme(data.taskbar.theme)
+      }
+      // 方向
+      if (data.taskbar && data.taskbar.direaction) {
+        this.setTaskbarDireaction(data.taskbar.direaction)
+      }
+      if (data.taskbar && data.taskbar.selectDisplay) {
+        this.setTaskbarSelect(data.taskbar.selectDisplay)
+      }
+      // 如果有用户监听，则向用户发送消息
+      if (this.methods && this.methods.onOptionChange) {
+        this.methods.onOptionChange(data)
+      }
+    }
   }
 
   /**
@@ -81,26 +147,31 @@ class Windows {
   /**
    * 设置任务栏主题
    */
-  public setTaskbarTheme({ backgroundColor, color }: { backgroundColor: string; color: string }) {
-    let style = document.getElementById("style-taskbar-theme")
-    if (!style) {
-      style = createElement({ name: "style", id: "style-taskbar-theme" });
-      document.head.appendChild(style);
-    }
-    style.innerHTML = `
-      :root{
-        --taskbarBg: ${backgroundColor} !important;
-        --taskbarColor: ${color} !important;
-      }
-    `;
+  public setTaskbarTheme(theme: Theme) {
+    this.taskbar.setTheme(theme)
     return this
+  }
+  /**
+   * 设置任务栏搜索框
+   */
+  public setTaskbarSelect(display: SelectDisplay) {
+    this.taskbar.setSelectShow(display)
+    return this
+  }
+
+
+  /**
+   * 监听配置项发送变化
+   */
+  public onOptionChange(fn: OptionsCallback) {
+    this.methods.onOptionChange = fn;
   }
 
   /**
    * 监听任务变化(应用打开/关闭)
    */
   static onTask(fn: (data: { [key: string]: Win }) => void) {
-    Windows.methods.onTask = fn
+    Windows.TaskChangeCallback = fn
   }
 }
 
