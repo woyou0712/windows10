@@ -1,5 +1,5 @@
 <template>
-  <div class="system-task-manager">
+  <div class="windows10-system-task-manager">
     <div class="system-task-manager-content">
       <div class="system-task-manager-content-item" tabindex v-for="(app, index) in openAppList" :key="app.id"
         @click="selectIndex = index" :class="selectIndex === index ? 'select' : ''">
@@ -58,7 +58,7 @@ export default {
 </script>
 
 <style lang="scss">
-.system-task-manager {
+.windows10-system-task-manager {
   width: 100%;
   height: 100%;
   padding: 5px 0;

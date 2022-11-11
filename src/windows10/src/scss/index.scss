@@ -37,8 +37,9 @@ select {
 }
 
 @import "./Windows.scss";
-@import "./Desktop.scss";
 @import "./Taskbar.scss";
 @import "./TaskbarQuery.scss";
 @import "./TaskbarTime.scss";
 @import "./TaskbarWin.scss";
+@import "./Desktop.scss";
+@import "./DesktopBg.scss";

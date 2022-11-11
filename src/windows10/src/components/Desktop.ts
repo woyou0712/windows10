@@ -1,11 +1,19 @@
 import { Win, Message, MessageBox, Menu } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
+import { DesktopBackground } from "../types/style";
+import { OptionsCallback } from "../types/windows";
+import DesktopBg from "./DesktopBg";
 
 // 桌面
 class Desktop {
   public box: HTMLElement;
+  private background: DesktopBg;
+
+  private callback: OptionsCallback = () => true
   constructor(windowsBox: HTMLElement) {
     this.box = createElement("windows10-desktop");
+    this.background = new DesktopBg();
+    this.box.appendChild(this.background.box);
     windowsBox.appendChild(this.box);
     this.__init__();
   }
@@ -15,6 +23,18 @@ class Desktop {
     Message.defaultContentBox = this.box; // 将消息提示框的默认盒子设定为桌面
     MessageBox.defaultContentBox = this.box;
     new Menu(this.box, [])
+  }
+
+  /**
+   * 设置背景
+   */
+  public setBackground(background: DesktopBackground) {
+    this.background.setBackground(background);
+    return this
+  }
+
+  public onOptionChange(fn: OptionsCallback) {
+    this.callback = fn
   }
 }
 

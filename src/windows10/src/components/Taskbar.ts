@@ -7,12 +7,12 @@ import TaskbarWin from "./TaskbarWin";
 
 import TaskManager from "../systemApps/TaskManager.vue";
 import SetTaskbar from "../systemApps/SetTaskbar.vue";
-import { Direaction, QueryStatus, Theme } from "../types/style.d";
-import { OptionsCallback, OptionsData } from "../types/windows";
+import { Direaction, QueryStatus, TtaskbarTheme } from "../types/style.d";
+import { OptionsCallback, OptionsData, UserInfo } from "../types/windows";
 import { chromeSvg, closeSvg, maxSvg, miniSvg } from "new-dream/src/svg/button";
 
 export interface TaskbarOptions {
-  theme: Theme;
+  theme: TtaskbarTheme;
   direaction: Direaction;
   queryStatus: QueryStatus;
 }
@@ -29,7 +29,7 @@ class Taskbar {
   private query: TaskbarQuery;
   private time: TaskbarTime;
   private message: HTMLElement;
-  private theme?: Theme;
+  private theme?: TtaskbarTheme;
   private queryStatus?: QueryStatus;
   private direaction?: Direaction;
   private callback: OptionsCallback = () => true
@@ -52,6 +52,7 @@ class Taskbar {
   private get __theme() {
     return this.theme
   }
+
   private set __theme(v) {
     this.theme = v
     this.pushOptionsChange()
@@ -83,9 +84,7 @@ class Taskbar {
     this.__init_menu__();
   }
 
-
-
-  /**
+  /*
    * 初始化右键菜单
    */
   private __init_menu__() {
@@ -95,22 +94,22 @@ class Taskbar {
         name: "显示搜索框",
         icon: queryIcon,
         method: () => {
-          const display = "show";
-          if (this.__queryStatus === display) {
+          const status = "show";
+          if (this.__queryStatus === status) {
             return
           }
-          this.__queryStatus = display
+          this.__queryStatus = status
         }
       },
       {
         id: 2,
         name: "隐藏搜索框",
         method: () => {
-          const display = "none";
-          if (this.__queryStatus === display) {
+          const status = "none";
+          if (this.__queryStatus === status) {
             return
           }
-          this.__queryStatus = display
+          this.__queryStatus = status
         }
       },
       {
@@ -182,89 +181,9 @@ class Taskbar {
     }
     this.callback(data)
   }
-
   /**
-   * 监听配置项改变
+   * 为任务栏的应用图标设置右键菜单
    */
-  public onOptionChange(fn: OptionsCallback) {
-    this.callback = fn
-    return this
-  }
-
-  /**
-   * 设置任务栏主题
-   */
-  public setTheme(theme: Theme) {
-    let style = document.getElementById("style-taskbar-theme")
-    if (!style) {
-      // 如果没有主题样式，则创建
-      style = createElement({ name: "style", id: "style-taskbar-theme" });
-      document.head.appendChild(style);
-    }
-    style.innerHTML = `
-          :root{
-            --taskbarBg: ${theme.backgroundColor} !important;
-            --taskbarColor: ${theme.color} !important;
-          }
-        `;
-    this.theme = theme;
-    return this
-  }
-  /**
-   * 搜索框显示/隐藏
-   */
-  public setQueryShow(display: QueryStatus) {
-    this.queryStatus = display;
-    this.query.setDisplay(display)
-  }
-  /**
-   * APP打开
-   */
-  public setOpenApp(app: Win) {
-    const className = "taskbar-app-list-item"
-    // 在任务栏添加一个图标
-    const appIcon = createElement(className);
-    if (app.config.icon) {
-      if (typeof app.config.icon === "string") {
-        appIcon.innerHTML = app.config.icon
-      } else if (app.config.icon.nodeName) {
-        appIcon.appendChild(app.config.icon)
-      }
-    } else {
-      appIcon.innerHTML = chromeSvg
-    }
-    // 点击任务栏图标
-    appIcon.addEventListener("click", (e) => {
-      const clickNode = e.target as HTMLElement;
-      // 只有点击的是图标，才触发最小化
-      if (clickNode === appIcon || (clickNode.nodeName === "svg" && clickNode.parentNode === appIcon)) {
-        // 判断点击元素
-        if (app.status === "mini") {
-          // 如果在最小化状态，则恢复
-          app.setMini()
-        }
-        // 设置应用置顶
-        app.setTop();
-      }
-    })
-    this.openAppList.push(app);
-    this.appIconMap[app.id] = appIcon;
-    this.__set_app_menu__(appIcon, app);
-    this.appListBox.appendChild(appIcon);
-    // 新窗口打开
-    app.onmounted(() => {
-      this.setTopAppIcon()
-    })
-    // 监听窗口置顶
-    app.ontop(() => {
-      this.setTopAppIcon()
-    })
-    // 监听窗口最小化
-    app.onmini(() => {
-      this.setTopAppIcon()
-    })
-  }
-
   private __set_app_menu__(appIcon: HTMLElement, app: Win) {
     new Menu(appIcon, [
       {
@@ -334,8 +253,92 @@ class Taskbar {
 
     }, 50);
   }
+
+
+
+
+
+
+
   /**
-   * APP关闭
+   * 设置用户信息
+   */
+  public setUserInfo(userInfo: UserInfo) {
+    this.win.setUserInfo(userInfo)
+    return this
+  }
+
+  /**
+   * 设置任务栏主题
+   */
+  public setTheme(theme: TtaskbarTheme) {
+    let style = document.getElementById("style-taskbar-theme")
+    if (!style) {
+      // 如果没有主题样式，则创建
+      style = createElement({ name: "style", id: "style-taskbar-theme" });
+      document.head.appendChild(style);
+    }
+    style.innerHTML = `
+            :root{
+              --taskbarBg: ${theme.backgroundColor} !important;
+              --taskbarColor: ${theme.color} !important;
+            }
+          `;
+    this.theme = theme;
+    return this
+  }
+
+  /**
+   * 接收APP打开通知 
+   */
+  public setOpenApp(app: Win) {
+    const className = "taskbar-app-list-item"
+    // 设置打开APP对应的图标
+    const appIcon = createElement(className);
+    if (app.config.icon) {
+      if (typeof app.config.icon === "string") {
+        appIcon.innerHTML = app.config.icon
+      } else if (app.config.icon.nodeName) {
+        appIcon.appendChild(app.config.icon)
+      }
+    } else {
+      appIcon.innerHTML = chromeSvg
+    }
+    // 点击任务栏图标
+    appIcon.addEventListener("click", (e) => {
+      const clickNode = e.target as HTMLElement;
+      // 只有点击的是图标，才触发最小化
+      if (clickNode === appIcon || (clickNode.nodeName === "svg" && clickNode.parentNode === appIcon)) {
+        // 判断点击元素
+        if (app.status === "mini") {
+          // 如果在最小化状态，则恢复
+          app.setMini()
+        }
+        // 设置应用置顶
+        app.setTop();
+      }
+    })
+    this.openAppList.push(app);
+    this.appIconMap[app.id] = appIcon;
+    this.__set_app_menu__(appIcon, app);
+    this.appListBox.appendChild(appIcon);
+    // 新窗口打开
+    app.onmounted(() => {
+      this.setTopAppIcon()
+    })
+    // 监听窗口置顶
+    app.ontop(() => {
+      this.setTopAppIcon()
+    })
+    // 监听窗口最小化
+    app.onmini(() => {
+      this.setTopAppIcon()
+    })
+    return this
+  }
+
+  /**
+   * 接收APP关闭通知
    */
   public setCloseApp(appId: string) {
     console.log(appId)
@@ -349,6 +352,24 @@ class Taskbar {
         this.openAppList.splice(i, 1)
       }
     }
+    return this
+  }
+
+  /**
+   * 监听配置项改变
+   */
+  public onOptionChange(fn: OptionsCallback) {
+    this.callback = fn
+    return this
+  }
+
+  /**
+   * 搜索框显示/隐藏
+   */
+  public setQueryShow(status: QueryStatus) {
+    this.queryStatus = status;
+    this.query.setStatus(status)
+    return this
   }
 
 }

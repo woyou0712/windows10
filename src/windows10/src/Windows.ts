@@ -3,16 +3,32 @@ import Desktop from "./components/Desktop";
 import Taskbar from "./components/Taskbar";
 import "new-dream/dist/index.css";
 import { Win } from "new-dream";
-import { Theme, Direaction, QueryStatus } from "./types/style.d";
-import { OptionsCallback, Methods, WindowsOptions, OptionsData, GlobalTask } from "./types/windows.d";
+import { TtaskbarTheme, Direaction, QueryStatus, DesktopBackground } from "./types/style.d";
+import { OptionsCallback, Methods, WindowsOptions, OptionsData, GlobalTask, UserInfo } from "./types/windows.d";
+import { userIcon } from "./svg";
 
 
 const defaultOptions: WindowsOptions = {
+  userInfo: {
+    nickName: "小妖",
+    avatar: userIcon,
+    avatarType: "svg"
+  },
   taskbar: {
     theme: { backgroundColor: "#444444", color: "#FFFFFF" },
     direaction: "bottom",
     queryStatus: "show"
-  }
+  },
+  desktop: {
+    theme: {
+      background: {
+        type: "color",
+        backgroundColor: "#808080",
+      },
+      color: "#ffffff",
+      fontSize: "14px",
+    },
+  },
 }
 // 全局任务对象
 const globalTask: GlobalTask = {
@@ -41,6 +57,11 @@ class Windows {
     return this.options
   }
   private set __options(v) {
+    // 用户信息
+    if (!v.userInfo.nickName) v.userInfo.nickName = defaultOptions.userInfo.nickName;
+    if (!v.userInfo.avatar) v.userInfo.avatar = defaultOptions.userInfo.avatar;
+    if (!v.userInfo.avatarType) v.userInfo.avatar = defaultOptions.userInfo.avatar;
+    // 任务栏配置项
     if (!v.taskbar.theme) v.taskbar.theme = defaultOptions.taskbar.theme;
     if (!v.taskbar.direaction) v.taskbar.direaction = defaultOptions.taskbar.direaction;
     if (!v.taskbar.queryStatus) v.taskbar.queryStatus = defaultOptions.taskbar.queryStatus;
@@ -72,12 +93,17 @@ class Windows {
 
   private __init__() {
     Win.showMiniList = false; // 隐藏最小化列表
-    // 设置任务栏方向
-    this.setTaskbarDireaction(this.__options.taskbar.direaction);
-    // 设置任务栏主题
-    this.setTaskbarTheme(this.__options.taskbar.theme);
-    // 设置任务栏搜索框状态
-    this.setTaskbarQuery(this.__options.taskbar.queryStatus);
+    // 设置用户信息
+    this.setUserInfo(this.__options.userInfo)
+      // 设置任务栏方向
+      .setTaskbarDireaction(this.__options.taskbar.direaction)
+      // 设置任务栏主题
+      .setTaskbarTheme(this.__options.taskbar.theme)
+      // 设置任务栏搜索框状态
+      .setTaskbarQuery(this.__options.taskbar.queryStatus)
+      // 设置背景
+      .setDesktopBackground(this.__options.desktop.theme.background)
+
     /**
      * 监听应用启动和关闭
      */
@@ -112,11 +138,12 @@ class Windows {
     })
   }
   /**
-   * 设置监听配置项改变
+   * 监听配置项改变
    */
   private __on_option_change__() {
     const changeCallback = this.__option_change_callback__()
-    this.taskbar.onOptionChange(changeCallback); // 监听任务栏配置项改变
+    this.taskbar.onOptionChange(changeCallback); // 监听任务栏 改变 配置项
+    this.desktop.onOptionChange(changeCallback); // 监听桌面 改变 配置项
   }
   /**
    * 配置项改变触发的回调函数
@@ -146,6 +173,19 @@ class Windows {
     }
   }
 
+
+
+
+
+
+  /**
+   * 设置用户信息
+   */
+  public setUserInfo(userInfo: UserInfo) {
+    this.taskbar.setUserInfo(userInfo)
+    return this
+  }
+
   /**
    * 设置任务栏方向
    */
@@ -157,7 +197,7 @@ class Windows {
   /**
    * 设置任务栏主题
    */
-  public setTaskbarTheme(theme: Theme) {
+  public setTaskbarTheme(theme: TtaskbarTheme) {
     this.taskbar.setTheme(theme)
     return this
   }
@@ -169,6 +209,19 @@ class Windows {
     return this
   }
 
+  /**
+   * 桌面背景
+   */
+  public setDesktopBackground(background: DesktopBackground) {
+    this.desktop.setBackground(background);
+    return this
+  }
+
+
+
+
+
+
 
   /**
    * 监听配置项发送变化
@@ -176,6 +229,15 @@ class Windows {
   public onOptionChange(fn: OptionsCallback) {
     this.methods.onOptionChange = fn;
   }
+
+
+
+
+
+
+
+
+
 
   /**
    * 监听任务变化(应用打开/关闭)

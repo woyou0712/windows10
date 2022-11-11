@@ -2,6 +2,7 @@ import { Win } from "new-dream"
 import createElement from "new-dream/src/utils/createElement"
 import { Config } from "new-dream/src/Win/win"
 import { quitIcon, setIcon, userIcon, winIcon } from "../svg/index"
+import { UserInfo } from "../types/windows"
 class TaskbarWin {
   public box: HTMLElement // 盒子
   private icon: HTMLElement // 图标
@@ -43,8 +44,6 @@ class TaskbarWin {
     this.viewConten = createElement("windows10-taskbar-win-view-content");
     this.viewRight = createElement("windows10-taskbar-win-view-right");
     this.__init__();
-
-
   }
 
   private __init__() {
@@ -87,18 +86,7 @@ class TaskbarWin {
       // this.view.classList.remove("show");
     })
   }
-  /**
-   * 设置用户信息
-   * @param userName 用户名
-   * @param icon 头像图标（可以是<img />元素或者是svg字符串）
-   */
-  public setUser(userName: string, icon?: HTMLImageElement | string) {
-    this.userName.innerText = userName;
-    if (icon) {
-      if (typeof icon === "string") this.userIcons.innerHTML = icon
-      else if (icon.nodeName) this.userIcons.appendChild(icon)
-    }
-  }
+
 
   private setApp(app: Config) {
     const item = createElement("win-view-content-item");
@@ -114,12 +102,35 @@ class TaskbarWin {
     this.viewConten.appendChild(item);
     return item
   }
+
+  /**
+   * 设置用户信息
+   */
+  public setUserInfo(userInfo: UserInfo) {
+    this.userName.innerText = userInfo.nickName;
+    if (userInfo.avatar) {
+      // 如果头像类型是图片
+      if (userInfo.avatarType === "image") {
+        const avatar = createElement({ name: "img" }) as HTMLImageElement
+        avatar.setAttribute("src", userInfo.avatar)
+        this.userIcons.appendChild(avatar)
+      } else {
+        // 负责按SVG处理
+        this.userIcons.innerHTML = userInfo.avatar
+      }
+    }
+
+    return this
+  }
+
   public setAppData(appList: Config[]) {
     appList.forEach(app => {
       this.setApp(app).addEventListener("click", () => {
         new Win(app)
       })
     })
+
+    return this
   }
 
 

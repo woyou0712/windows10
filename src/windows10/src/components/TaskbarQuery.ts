@@ -10,7 +10,7 @@ class TaskbarQuery {
   private icon: HTMLElement;
   private input: HTMLElement;
   private button: HTMLElement;
-  private display?: QueryStatus
+  private status?: QueryStatus
 
   constructor() {
     this.box = createElement("windows10-taskbar-query");
@@ -30,15 +30,15 @@ class TaskbarQuery {
     this.setEvent();
   }
 
-  private get __display() {
-    return this.display
+  private get __status() {
+    return this.status
   }
 
-  private set __display(v) {
+  private set __status(v) {
     if (!v || ["show", "none"].indexOf(v) === -1) {
       v = "none"
     }
-    this.display = v
+    this.status = v
     switch (v) {
       case "show":
         this.box.classList.add("show")
@@ -48,11 +48,6 @@ class TaskbarQuery {
         break;
     }
   }
-
-  public setDisplay(display: QueryStatus) {
-    this.__display = display
-  }
-
 
   private setEvent() {
     this.input.addEventListener("keydown", (e) => {
@@ -74,6 +69,15 @@ class TaskbarQuery {
       icon: chromeIcon
     })
   }
+
+  /**
+   * 设置状态
+   */
+  public setStatus(status: QueryStatus) {
+    this.__status = status
+    return this
+  }
+
 }
 
 export default TaskbarQuery;
