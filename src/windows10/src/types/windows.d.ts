@@ -43,7 +43,7 @@ export interface WindowsOptions {
    * 桌面配置项
    */
   desktop: {
-    /** 主题     */
+    /** 主题 */
     theme: DesktopTheme;
   }
 
@@ -65,6 +65,13 @@ export interface OptionsData {
     direaction?: Direaction;
     /**  任务栏方向     */
     queryStatus?: QueryStatus;
+  }
+  /**
+   * 桌面配置项
+   */
+  desktop?: {
+    /** 主题 */
+    theme?: DesktopTheme;
   }
 }
 
