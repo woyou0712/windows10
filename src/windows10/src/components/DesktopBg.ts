@@ -13,7 +13,6 @@ class DesktopBg {
   public setBackground(background: DesktopBackground) {
     if (background.type === "image") {
       this.box.style["backgroundImage"] = `url(${background.backgroundImage})`
-      
       if (background.backgroundSize) {
         this.box.style["backgroundSize"] = background.backgroundSize
       }

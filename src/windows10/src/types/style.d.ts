@@ -3,9 +3,9 @@
  * 图片背景
  */
 interface imageBg {
+  type: "image";
   /** 背景图片URL */
   backgroundImage: string;
-  type: "image";
   /** 背景大小   * initial:默认   * contain:原图尺寸   * 100% 100%:拉伸  */
   backgroundSize?: "initial" | "contain" | "100% 100%" | "50% 50%";
   /** 背景契合度   * repeat：铺满   * no-repeat：不平铺   * repeat-x：横向铺满   * repeat-y：纵向铺满   */
@@ -17,9 +17,9 @@ interface imageBg {
  * 纯色背景
  */
 interface colorBg {
+  type: "color";
   /** 背景颜色16进制色号 */
   backgroundColor: string;
-  type: "color";
 }
 
 /**

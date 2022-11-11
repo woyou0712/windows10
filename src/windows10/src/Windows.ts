@@ -4,37 +4,8 @@ import Taskbar from "./components/Taskbar";
 import "new-dream/dist/index.css";
 import { Win } from "new-dream";
 import { TtaskbarTheme, Direaction, QueryStatus, DesktopBackground } from "./types/style.d";
-import { OptionsCallback, Methods, WindowsOptions, OptionsData, GlobalTask, UserInfo } from "./types/windows.d";
-import { userIcon } from "./svg";
-
-
-const defaultOptions: WindowsOptions = {
-  userInfo: {
-    nickName: "小妖",
-    avatar: userIcon,
-    avatarType: "svg"
-  },
-  taskbar: {
-    theme: { backgroundColor: "#444444", color: "#FFFFFF" },
-    direaction: "bottom",
-    queryStatus: "show"
-  },
-  desktop: {
-    theme: {
-      background: {
-        type: "color",
-        backgroundColor: "#808080",
-      },
-      color: "#ffffff",
-      fontSize: "14px",
-    },
-  },
-}
-// 全局任务对象
-const globalTask: GlobalTask = {
-  TaskChangeCallback: () => true,
-  OptionsChangeTime: 0
-}
+import { OptionsCallback, Methods, WindowsOptions, OptionsData, UserInfo } from "./types/windows.d";
+import { defaultOptions, globalTask } from "./systemData";
 
 
 class Windows {
@@ -246,6 +217,5 @@ class Windows {
     globalTask.TaskChangeCallback = fn
   }
 }
-
 
 export default Windows
