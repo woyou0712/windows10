@@ -3,6 +3,9 @@ import createElement from "new-dream/src/utils/createElement"
 import { Config } from "new-dream/src/Win/win"
 import { quitIcon, setIcon, userIcon } from "../svg/index"
 import { UserInfo } from "../types/windows"
+import SystemSetting from "../systemApps/SystemSetting/index.vue";
+
+
 class TaskbarWinView {
   public box: HTMLElement // 盒子
   // 左侧小菜单
@@ -63,11 +66,22 @@ class TaskbarWinView {
     this.quit.appendChild(this.quitName);
     this.leftContent.appendChild(this.quit);
     this.viewLeft.appendChild(this.leftContent);
+    this.__set_left_event();
 
     // 组装大盒子
     this.box.appendChild(this.viewLeft);
     this.box.appendChild(this.viewConten);
     this.box.appendChild(this.viewRight);
+  }
+
+  /**
+   * 设置左侧按钮点击事件
+   */
+  private __set_left_event() {
+    // 点击设置
+    this.setter.addEventListener("click", () => {
+      new Win({ component: SystemSetting })
+    })
   }
 
 

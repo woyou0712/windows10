@@ -1,6 +1,6 @@
 import { Menu, Win } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
-import { messageIcon, queryIcon, setIcon, taskIcon, topIcon } from "../svg/index"
+import { chromeIcon, messageIcon, queryIcon, setIcon, taskIcon, topIcon } from "../svg/index"
 import TaskbarQuery from "./TaskbarQuery";
 import TaskbarTime from "./TaskbarTime";
 import TaskbarWin from "./TaskbarWin";
@@ -9,7 +9,6 @@ import TaskManager from "../systemApps/TaskManager.vue";
 import SetTaskbar from "../systemApps/SetTaskbar.vue";
 import { Direaction, QueryStatus, TtaskbarTheme } from "../types/style.d";
 import { OptionsCallback, OptionsData, UserInfo } from "../types/windows";
-import { chromeSvg, closeSvg, maxSvg, miniSvg } from "new-dream/src/svg/button";
 
 export interface TaskbarOptions {
   theme: TtaskbarTheme;
@@ -202,7 +201,6 @@ class Taskbar {
       {
         id: 2,
         name: "最大化窗口",
-        icon: maxSvg,
         method: () => {
           app.setMax();
         }
@@ -210,7 +208,6 @@ class Taskbar {
       {
         id: 3,
         name: "最小化窗口",
-        icon: miniSvg,
         method: () => {
           app.setMini();
         }
@@ -218,7 +215,6 @@ class Taskbar {
       {
         id: 10,
         name: "关闭窗口",
-        icon: closeSvg,
         method: () => {
           app.close();
         }
@@ -302,7 +298,7 @@ class Taskbar {
         appIcon.appendChild(app.config.icon)
       }
     } else {
-      appIcon.innerHTML = chromeSvg
+      appIcon.innerHTML = chromeIcon
     }
     // 点击任务栏图标
     appIcon.addEventListener("click", (e) => {
