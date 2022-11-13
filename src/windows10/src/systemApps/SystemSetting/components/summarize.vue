@@ -2,7 +2,7 @@
   <div class="system-setting-summarize">
     <div class="summarize-title">Windows 设置</div>
     <div class="summarize-content">
-      <div class="summarize-content-item" v-for="item in summarizeContent" :key="item.type">
+      <div class="summarize-content-item" v-for="item in summarizeContent" :key="item.type" @click="selectItem(item)">
         <div class="summarize-content-item-icon" v-html="item.icon"></div>
         <div class="summarize-content-item-text">
           <div class="summarize-content-item-name" v-text="item.name"> </div>
@@ -28,17 +28,28 @@ export default {
         },
         {
           type: 2,
-          name: "个性化",
+          name: "桌面",
           icon: indIcon,
-          message: "桌面、状态栏"
+          message: "颜色、背景"
         },
         {
           type: 3,
+          name: "任务栏",
+          icon: indIcon,
+          message: "主题、方向、搜索框"
+        },
+        {
+          type: 4,
           name: "应用",
           icon: appIcon,
           message: "卸载、默认应用"
         },
       ]
+    }
+  },
+  methods: {
+    selectItem(item) {
+      this.$emit("type-change", item.type)
     }
   }
 }

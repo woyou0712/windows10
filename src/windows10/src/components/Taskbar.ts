@@ -6,7 +6,7 @@ import TaskbarTime from "./TaskbarTime";
 import TaskbarWin from "./TaskbarWin";
 
 import TaskManager from "../systemApps/TaskManager.vue";
-import SetTaskbar from "../systemApps/SetTaskbar.vue";
+// import SetTaskbar from "../systemApps/SystemSetting/components/SetTaskbar.vue";
 import { Direaction, QueryStatus, TtaskbarTheme } from "../types/style.d";
 import { OptionsCallback, OptionsData, UserInfo } from "../types/windows";
 
@@ -137,22 +137,22 @@ class Taskbar {
         name: "任务栏设置",
         icon: setIcon,
         method: () => {
-          new Win({
-            component: SetTaskbar,
-            props: {
-              theme: this.theme,
-              direaction: this.__direaction,
-              queryStatus: this.queryStatus,
-              change: (data: OptionsData) => {
-                if (data.taskbar) {
-                  // 修改状态
-                  if (data.taskbar.theme) this.__theme = data.taskbar.theme;
-                  if (data.taskbar.direaction) this.__direaction = data.taskbar.direaction;
-                  if (data.taskbar.queryStatus) this.__queryStatus = data.taskbar.queryStatus;
-                }
-              }
-            }
-          })
+          // new Win({
+            // component: SetTaskbar,
+            // props: {
+            //   theme: this.theme,
+            //   direaction: this.__direaction,
+            //   queryStatus: this.queryStatus,
+            //   change: (data: OptionsData) => {
+            //     if (data.taskbar) {
+            //       // 修改状态
+            //       if (data.taskbar.theme) this.__theme = data.taskbar.theme;
+            //       if (data.taskbar.direaction) this.__direaction = data.taskbar.direaction;
+            //       if (data.taskbar.queryStatus) this.__queryStatus = data.taskbar.queryStatus;
+            //     }
+            //   }
+            // }
+          // })
         }
       },
       {
