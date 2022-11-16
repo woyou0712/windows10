@@ -5,16 +5,23 @@ import "new-dream/dist/index.css";
 import { Win } from "new-dream";
 import { TtaskbarTheme, Direaction, QueryStatus, DesktopBackground } from "./types/style.d";
 import { OptionsCallback, Methods, WindowsOptions, OptionsData, UserInfo } from "./types/windows.d";
-import { defaultOptions, globalTask } from "./systemData";
+import { defaultOptions } from "./systemData";
 
 
 class Windows {
+  /** 监听任务变化(应用打开/关闭)   */
+  static onTask: (data: { [key: string]: Win }) => void = () => null;
+
+
+
+
   public options: WindowsOptions = defaultOptions;
   private box: HTMLElement; // 盒子
   private desktop: Desktop; // 桌面
   private taskbar: Taskbar; // 任务栏
   private direaction?: Direaction; // 任务栏所在方向
   private methods: Methods = {};
+  private OptionsChangeTime = 0;
 
   constructor(options?: WindowsOptions) {
     this.__options = options ? options : defaultOptions;
@@ -93,7 +100,7 @@ class Windows {
       // 监听打开
       set: (target, key, app: Win) => {
         target[key] = app;
-        if (globalTask.TaskChangeCallback) globalTask.TaskChangeCallback(target); // 通知监听函数
+        Windows.onTask(target); // 通知监听函数
         // 通知任务栏
         this.taskbar.setOpenApp(app);
         return true
@@ -101,7 +108,7 @@ class Windows {
       // 监听关闭
       deleteProperty: (target, key) => {
         delete target[key];
-        if (globalTask.TaskChangeCallback) globalTask.TaskChangeCallback(target); // 通知监听函数
+        Windows.onTask(target); // 通知监听函数
         // 通知任务栏
         this.taskbar.setCloseApp(key as string);
         return true
@@ -123,8 +130,8 @@ class Windows {
     // 包一层箭头函数，避免传递过去调用时导致this发生变化
     return (data: OptionsData) => {
       // 设置防抖
-      clearTimeout(globalTask.OptionsChangeTime)
-      globalTask.OptionsChangeTime = setTimeout(() => {
+      clearTimeout(this.OptionsChangeTime)
+      this.OptionsChangeTime = setTimeout(() => {
         // 任务栏主题改变
         if (data.taskbar && data.taskbar.theme) {
           this.setTaskbarTheme(data.taskbar.theme)
@@ -210,12 +217,7 @@ class Windows {
 
 
 
-  /**
-   * 监听任务变化(应用打开/关闭)
-   */
-  static onTask(fn: (data: { [key: string]: Win }) => void) {
-    globalTask.TaskChangeCallback = fn
-  }
+
 }
 
 export default Windows

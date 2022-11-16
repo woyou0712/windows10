@@ -1,19 +1,5 @@
 import { DesktopTheme, Direaction, QueryStatus, TtaskbarTheme } from "./style";
 
-/**
- * 全局任务对象
- */
-export interface GlobalTask {
-  /**
-   * 任务变化监听回调函数(应用打开/关闭回调)
-   */
-  TaskChangeCallback: (data: { [key: string]: Win }) => void;
-  /**
-   * 配置变化监听防抖定时器
-   */
-  OptionsChangeTime: number;
-}
-
 export interface UserInfo {
   nickName: string;
   avatar?: string;

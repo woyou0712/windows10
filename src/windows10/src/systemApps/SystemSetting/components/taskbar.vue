@@ -74,7 +74,7 @@ export default {
   mounted() {
     this.taskbar.theme = this.data.theme;
     this.taskbar.direaction = this.data.direaction;
-    this.Taskbar.queryStatus = this.data.queryStatus;
+    this.taskbar.queryStatus = this.data.queryStatus;
   },
   methods: {
     onChange() {
