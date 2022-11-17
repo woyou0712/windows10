@@ -21,25 +21,25 @@ export default {
     return {
       summarizeContent: [
         {
-          type: 1,
+          type: "system",
           name: "系统",
           icon: systemIcon,
           message: "显示、电源"
         },
         {
-          type: 2,
+          type: "desktop",
           name: "桌面",
           icon: indIcon,
           message: "颜色、背景"
         },
         {
-          type: 3,
+          type: "taskbar",
           name: "任务栏",
           icon: indIcon,
           message: "主题、方向、搜索框"
         },
         {
-          type: 4,
+          type: "app",
           name: "应用",
           icon: appIcon,
           message: "卸载、默认应用"
@@ -60,21 +60,21 @@ export default {
   width: 100%;
   color: #444444;
 
-  &>.summarize-title {
+  & > .summarize-title {
     width: 100%;
     font-size: 24px;
     line-height: 80px;
     text-align: center;
   }
 
-  &>.summarize-content {
+  & > .summarize-content {
     width: 500px;
     display: flex;
     justify-content: space-between;
     flex-wrap: wrap;
     margin: auto;
 
-    &>.summarize-content-item {
+    & > .summarize-content-item {
       width: 240px;
       height: 88px;
       display: flex;
@@ -87,7 +87,7 @@ export default {
         border-color: #aaa;
       }
 
-      &>.summarize-content-item-icon {
+      & > .summarize-content-item-icon {
         width: 60px;
         height: 60px;
         padding: 15px;
@@ -99,16 +99,16 @@ export default {
         }
       }
 
-      &>.summarize-content-item-text {
+      & > .summarize-content-item-text {
         width: calc(100% - 60px);
         height: 100%;
         padding: 12px 0;
 
-        &>.summarize-content-item-name {
+        & > .summarize-content-item-name {
           font-size: 14px;
         }
 
-        &>.summarize-content-item-message {
+        & > .summarize-content-item-message {
           font-size: 13px;
           line-height: 26px;
           color: #888888;
@@ -116,6 +116,5 @@ export default {
       }
     }
   }
-
 }
 </style>

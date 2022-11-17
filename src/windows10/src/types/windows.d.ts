@@ -70,3 +70,5 @@ export interface Methods {
 }
 
 
+
+export type SettingPageType = "default" | "taskbar" | "system" | "desktop" | "app";

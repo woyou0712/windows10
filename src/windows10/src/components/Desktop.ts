@@ -6,10 +6,10 @@ import DesktopBg from "./DesktopBg";
 
 // 桌面
 class Desktop {
-  public box: HTMLElement;
+  private box: HTMLElement;
   private background: DesktopBg;
 
-  private callback: OptionsCallback = () => true
+  private optionChange: OptionsCallback = () => true
   constructor(windowsBox: HTMLElement) {
     this.box = createElement("windows10-desktop");
     this.background = new DesktopBg();
@@ -34,7 +34,7 @@ class Desktop {
   }
 
   public onOptionChange(fn: OptionsCallback) {
-    this.callback = fn
+    this.optionChange = fn
   }
 }
 

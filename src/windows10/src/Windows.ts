@@ -4,16 +4,14 @@ import Taskbar from "./components/Taskbar";
 import "new-dream/dist/index.css";
 import { Win } from "new-dream";
 import { TtaskbarTheme, Direaction, QueryStatus, DesktopBackground } from "./types/style.d";
-import { OptionsCallback, Methods, WindowsOptions, OptionsData, UserInfo } from "./types/windows.d";
+import { OptionsCallback, Methods, WindowsOptions, OptionsData, UserInfo, SettingPageType } from "./types/windows.d";
 import { defaultOptions } from "./systemData";
+import SystemSetting from "./systemApps/SystemSetting/index.vue";
 
 
 class Windows {
   /** 监听任务变化(应用打开/关闭)   */
   static onTask: (data: { [key: string]: Win }) => void = () => null;
-
-
-
 
   public options: WindowsOptions = defaultOptions;
   private box: HTMLElement; // 盒子
@@ -27,7 +25,7 @@ class Windows {
     this.__options = options ? options : defaultOptions;
     this.box = createElement("windows10-app");
     this.desktop = new Desktop(this.box);
-    this.taskbar = new Taskbar(this.box, this.__options.taskbar.direaction);
+    this.taskbar = new Taskbar(this.box);
     document.body.appendChild(this.box);
     this.__init__();
   }
@@ -119,39 +117,57 @@ class Windows {
    * 监听配置项改变
    */
   private __on_option_change__() {
-    const changeCallback = this.__option_change_callback__()
-    this.taskbar.onOptionChange(changeCallback); // 监听任务栏 改变 配置项
-    this.desktop.onOptionChange(changeCallback); // 监听桌面 改变 配置项
+    // 监听搜索框显示切换
+    this.taskbar
+      .onQueryStatusChange((queryStatus: QueryStatus) => {
+        this.__options.taskbar.queryStatus = queryStatus;
+        this.__option_change_callback__(this.__options);
+      })
+      // 设置【打开设置】方法
+      .setShowSetting((pageType: SettingPageType) => {
+        this.showSetting(pageType);
+      })
+
   }
   /**
    * 配置项改变触发的回调函数
    */
-  private __option_change_callback__() {
-    // 包一层箭头函数，避免传递过去调用时导致this发生变化
-    return (data: OptionsData) => {
-      // 设置防抖
-      clearTimeout(this.OptionsChangeTime)
-      this.OptionsChangeTime = setTimeout(() => {
-        // 任务栏主题改变
-        if (data.taskbar && data.taskbar.theme) {
-          this.setTaskbarTheme(data.taskbar.theme)
-        }
-        // 方向
-        if (data.taskbar && data.taskbar.direaction) {
-          this.setTaskbarDireaction(data.taskbar.direaction)
-        }
-        if (data.taskbar && data.taskbar.queryStatus) {
-          this.setTaskbarQuery(data.taskbar.queryStatus)
-        }
-        // 如果有用户监听，则向用户发送消息
-        if (this.methods && this.methods.onOptionChange) {
-          this.methods.onOptionChange(data)
-        }
-      }, 50)
-    }
+  private __option_change_callback__(options: OptionsData) {
+    // 设置防抖
+    clearTimeout(this.OptionsChangeTime)
+    this.OptionsChangeTime = setTimeout(() => {
+      // 任务栏主题改变
+      if (options.taskbar && options.taskbar.theme) {
+        this.setTaskbarTheme(options.taskbar.theme)
+      }
+      // 方向
+      if (options.taskbar && options.taskbar.direaction) {
+        this.setTaskbarDireaction(options.taskbar.direaction)
+      }
+      if (options.taskbar && options.taskbar.queryStatus) {
+        this.setTaskbarQuery(options.taskbar.queryStatus)
+      }
+      // 如果有用户监听，则向用户发送消息
+      if (this.methods && this.methods.onOptionChange) {
+        this.methods.onOptionChange(options)
+      }
+    }, 50)
+
   }
 
 
+  private showSetting(pageType: SettingPageType = "default") {
+    new Win({
+      component: SystemSetting,
+      props: {
+        pageType,
+        option: this.__options,
+        optionChange: (option: OptionsData) => {
+          this.__option_change_callback__(option)
+        }
+      }
+    })
+  }
 
 
 
@@ -182,8 +198,8 @@ class Windows {
   /**
    * 设置任务栏搜索框
    */
-  public setTaskbarQuery(display: QueryStatus) {
-    this.taskbar.setQueryShow(display)
+  public setTaskbarQuery(queryStatus: QueryStatus) {
+    this.taskbar.setQueryShow(queryStatus)
     return this
   }
 

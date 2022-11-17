@@ -6,63 +6,36 @@ import TaskbarTime from "./TaskbarTime";
 import TaskbarWin from "./TaskbarWin";
 
 import TaskManager from "../systemApps/TaskManager.vue";
-// import SetTaskbar from "../systemApps/SystemSetting/components/SetTaskbar.vue";
 import { Direaction, QueryStatus, TtaskbarTheme } from "../types/style.d";
-import { OptionsCallback, OptionsData, UserInfo } from "../types/windows";
-
-export interface TaskbarOptions {
-  theme: TtaskbarTheme;
-  direaction: Direaction;
-  queryStatus: QueryStatus;
-}
-
+import { OptionsCallback, OptionsData, SettingPageType, UserInfo } from "../types/windows";
 /**
  * 任务栏
  */
 class Taskbar {
   static SetAppTopTime: number;
 
-  public box: HTMLElement;
+  private box: HTMLElement;
   private win: TaskbarWin;
   private appListBox: HTMLElement;
   private query: TaskbarQuery;
   private time: TaskbarTime;
   private message: HTMLElement;
-  private theme?: TtaskbarTheme;
-  private queryStatus?: QueryStatus;
-  private direaction?: Direaction;
-  private callback: OptionsCallback = () => true
+  private queryStatus: QueryStatus = "show";
+  private queryStatusChange: (data: QueryStatus) => void = () => true;
+  private showSetting: (pageType: SettingPageType) => void = () => true;
 
   private openAppList: Win[] = []; // 打开的APP列表
   private appIconMap: { [key: string]: HTMLElement } = {}; // 打开的APP图标Map
 
-  constructor(windowsBox: HTMLElement, direaction: Direaction) {
+  constructor(windowsBox: HTMLElement) {
     this.box = createElement("windows10-taskbar");
     this.win = new TaskbarWin();
     this.appListBox = createElement("windows10-taskbar-app-list");
     this.query = new TaskbarQuery();
     this.time = new TaskbarTime();
     this.message = createElement("windows10-taskbar-message");
-    this.direaction = direaction; // 记录初始化状态(设置需要)，无需跟踪，则不需要走set方法
     this.__init__();
     windowsBox.appendChild(this.box);
-  }
-
-  private get __theme() {
-    return this.theme
-  }
-
-  private set __theme(v) {
-    this.theme = v
-    this.pushOptionsChange()
-  }
-
-  private get __direaction() {
-    return this.direaction
-  }
-  private set __direaction(v) {
-    this.direaction = v
-    this.pushOptionsChange()
   }
 
   private get __queryStatus() {
@@ -70,7 +43,7 @@ class Taskbar {
   }
   private set __queryStatus(v) {
     this.queryStatus = v
-    this.pushOptionsChange()
+    this.queryStatusChange(v)
   }
 
   private __init__() {
@@ -137,22 +110,7 @@ class Taskbar {
         name: "任务栏设置",
         icon: setIcon,
         method: () => {
-          // new Win({
-            // component: SetTaskbar,
-            // props: {
-            //   theme: this.theme,
-            //   direaction: this.__direaction,
-            //   queryStatus: this.queryStatus,
-            //   change: (data: OptionsData) => {
-            //     if (data.taskbar) {
-            //       // 修改状态
-            //       if (data.taskbar.theme) this.__theme = data.taskbar.theme;
-            //       if (data.taskbar.direaction) this.__direaction = data.taskbar.direaction;
-            //       if (data.taskbar.queryStatus) this.__queryStatus = data.taskbar.queryStatus;
-            //     }
-            //   }
-            // }
-          // })
+          this.showSetting("taskbar")
         }
       },
       {
@@ -166,19 +124,6 @@ class Taskbar {
         }
       },
     ])
-  }
-  /**
-   * 向监听对象发送配置项改变的消息通知
-   */
-  private pushOptionsChange() {
-    const data: OptionsData = {
-      taskbar: {
-        theme: this.__theme,
-        direaction: this.__direaction,
-        queryStatus: this.__queryStatus
-      }
-    }
-    this.callback(data)
   }
   /**
    * 为任务栏的应用图标设置右键菜单
@@ -280,7 +225,6 @@ class Taskbar {
               --taskbarColor: ${theme.color} !important;
             }
           `;
-    this.theme = theme;
     return this
   }
 
@@ -352,14 +296,6 @@ class Taskbar {
   }
 
   /**
-   * 监听配置项改变
-   */
-  public onOptionChange(fn: OptionsCallback) {
-    this.callback = fn
-    return this
-  }
-
-  /**
    * 搜索框显示/隐藏
    */
   public setQueryShow(status: QueryStatus) {
@@ -368,6 +304,24 @@ class Taskbar {
     return this
   }
 
+  /**
+   * 监听搜索框状态改变
+   */
+  public onQueryStatusChange(fn: (data: QueryStatus) => void) {
+    this.queryStatusChange = fn;
+    return this
+  }
+
+  /**
+   * 设置【打开设置】方法
+   * @param fn 打开设置的方法
+   * @returns 
+   */
+  public setShowSetting(fn: (pageType: SettingPageType) => void) {
+    this.showSetting = fn;
+    this.win.view.setShowSetting(fn);
+    return this
+  }
 }
 
 

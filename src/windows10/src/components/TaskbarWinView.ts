@@ -2,7 +2,7 @@ import { Win } from "new-dream"
 import createElement from "new-dream/src/utils/createElement"
 import { Config } from "new-dream/src/Win/win"
 import { quitIcon, setIcon, userIcon } from "../svg/index"
-import { UserInfo } from "../types/windows"
+import { OptionsCallback, OptionsData, SettingPageType, UserInfo } from "../types/windows"
 import SystemSetting from "../systemApps/SystemSetting/index.vue";
 
 
@@ -24,6 +24,7 @@ class TaskbarWinView {
   private viewConten: HTMLElement
   // 右侧开始屏幕
   private viewRight: HTMLElement
+  private showSetting: (pageType: SettingPageType) => void = () => true;
 
   constructor() {
     this.box = createElement("windows10-taskbar-win-view");
@@ -80,7 +81,7 @@ class TaskbarWinView {
   private __set_left_event() {
     // 点击设置
     this.setter.addEventListener("click", () => {
-      new Win({ component: SystemSetting })
+      this.showSetting("default")
     })
   }
 
@@ -130,6 +131,15 @@ class TaskbarWinView {
     return this
   }
 
+  /**
+   * 设置【打开设置】方法
+   * @param fn 打开设置的方法
+   * @returns 
+   */
+  public setShowSetting(fn: (pageType: SettingPageType) => void) {
+    this.showSetting = fn;
+    return this
+  }
 
 
 }

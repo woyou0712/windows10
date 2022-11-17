@@ -5,8 +5,8 @@ import { UserInfo } from "../types/windows"
 import TaskbarWinView from "./TaskbarWinView"
 class TaskbarWin {
   public box: HTMLElement // 盒子
+  public view: TaskbarWinView // 视图
   private icon: HTMLElement // 图标
-  private view: TaskbarWinView // 视图
 
   constructor() {
     this.box = createElement("windows10-taskbar-win");

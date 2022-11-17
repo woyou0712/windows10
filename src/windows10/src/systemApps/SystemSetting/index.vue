@@ -1,8 +1,16 @@
 <template>
   <div class="windows10-system-setting">
-    <summarize v-if="type === 0" @type-change="typeChange" />
+    <summarize v-if="type === 'default'" @type-change="typeChange" />
     <div class="windows10-system-setting-content" v-else>
-      <taskbar v-if="type === 3" />
+      <div class="system-set-taskbar-left">
+        <div class="set-taskbar-left-head" @click="type = 'default'">
+          <div class="set-taskbar-left-head-icon" v-html="homeIcon"></div>
+          <div class="set-taskbar-left-head-name">主页</div>
+        </div>
+      </div>
+      <div class="system-set-taskbar-right">
+        <taskbar v-if="type === 'taskbar'" :data="data.taskbar" @change="taskbarChange" />
+      </div>
     </div>
   </div>
 </template>
@@ -12,6 +20,7 @@ import { setIcon } from '../../svg';
 import { defaultOptions } from '../../systemData'
 import summarize from "./components/summarize.vue";
 import taskbar from "./components/taskbar.vue";
+import { homeIcon } from "../../svg/index"
 export default {
   name: "SystemSetting",
   id: "windows10-system-setting",
@@ -24,39 +33,83 @@ export default {
   props: {
     /** 当前显示的页面 */
     pageType: {
-      type: Number,
+      type: String,
       default() {
-        return 0
+        return "default"
       }
     },
     /**
-     * 配置项默认数据
+     * 配置项默认数据（任务栏）
      */
-    optionsData: {
+    options: {
       type: Object,
       default() {
         return defaultOptions
       }
+    },
+    optionChange: {
+      type: Function,
+      required: true
     }
   },
   data() {
     return {
+      homeIcon,
       type: 0,
-      options: {}
+      data: defaultOptions
     }
   },
   created() {
-    this.type = this.pageType
-    this.options = this.optionsData
+    this.type = this.pageType;
+    this.data = this.options;
   },
   methods: {
     typeChange(type) {
       this.type = type
+    },
+    taskbarChange(taskbarOption) {
+      this.data.taskbar = taskbarOption
+      this.optionChange(this.data)
     }
   }
 }
 </script>
 
 <style lang="scss">
-
+.windows10-system-setting {
+  width: 100%;
+  height: 100%;
+  & > .windows10-system-setting-content {
+    width: 100%;
+    height: 100%;
+    display: flex;
+    & > .system-set-taskbar-left {
+      width: 240px;
+      height: 100%;
+      background-color: #eee;
+      & > .set-taskbar-left-head {
+        width: 100%;
+        height: 40px;
+        line-height: 20px;
+        font-size: 16px;
+        padding: 10px;
+        display: flex;
+        .set-taskbar-left-head-icon {
+          width: 20px;
+          height: 20px;
+          margin-right: 10px;
+          svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
+      }
+    }
+  }
+  & > .system-set-taskbar-right {
+    width: calc(100% - 240px);
+    height: 100%;
+    padding: 0 40px;
+  }
+}
 </style>
