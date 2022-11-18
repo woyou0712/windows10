@@ -106,7 +106,7 @@ export default {
         cursor: pointer;
         transition: 0.3s;
         &:hover {
-          background-color: #f8f8f8;
+          background-color: var(--hoverColor);
         }
         & > .set-taskbar-left-head-icon {
           width: 20px;
@@ -123,7 +123,7 @@ export default {
     & > .system-set-taskbar-right {
       width: calc(100% - 240px);
       height: 100%;
-      padding: 0 40px;
+      padding-left: 40px;
     }
   }
 }

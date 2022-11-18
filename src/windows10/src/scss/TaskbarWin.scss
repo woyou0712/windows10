@@ -26,8 +26,8 @@
     width: 500px;
     height: 600px;
     display: none;
-    border-top: 1px solid var(--hoverColor);
-    border-bottom: 1px solid var(--hoverColor);
+    border-top: var(--border);
+    border-bottom: var(--border);
 
     &.show {
       display: flex;
@@ -51,7 +51,7 @@
 
         &:hover {
           width: 180px;
-          border-right: 1px solid var(--hoverColor);
+          border-right: var(--border);
         }
 
         &>.win-view-left-content-item {
@@ -89,14 +89,14 @@
     &>.windows10-taskbar-win-view-content {
       width: 220px;
       height: 100%;
-      border-left: 1px solid var(--hoverColor);
+      border-left: var(--border);
 
     }
 
     &>.windows10-taskbar-win-view-right {
       width: calc(100% - var(--taskbarWidth) - 220px);
       height: 100%;
-      border-left: 1px solid var(--hoverColor);
+      border-left: var(--border);
     }
   }
 }

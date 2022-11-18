@@ -6,19 +6,21 @@
         <div class="window10-desktop-mini" :style="miniDesktop"> </div>
       </div>
       <div class="set-individuation-content-item title">
-        搜索框
+        背景
       </div>
       <div class="set-individuation-content-item method">
-        <select v-model="individuation.queryStatus" @change="onChange" class="windwos10-select">
-          <option value="show">显示搜索框</option>
-          <option value="none">隐藏搜索框</option>
+        <select v-model="individuation.background.type" @change="onChange" class="windwos10-select">
+          <option value="image">图片</option>
+          <option value="color">纯色</option>
         </select>
       </div>
       <div class="set-individuation-content-item title">
-        任务栏背景颜色
+        <span v-text="individuation.background.type === 'image'?'选择图片':'选择颜色'"></span>
       </div>
       <div class="set-individuation-content-item method">
-        <input type="color" v-model="individuation.backgroundColor" class="windwos10-color-select" @input="onChange">
+        <div class="individuation-images">
+          
+        </div>
       </div>
       <div class="set-individuation-content-item title">
         字体颜色
@@ -27,7 +29,7 @@
         <input type="color" v-model="individuation.color" class="windwos10-color-select" @input="onChange">
       </div>
       <div class="set-individuation-content-item title">
-        字体大小
+        图标大小
       </div>
       <div class="set-individuation-content-item method">
         <select v-model="individuation.iconSize" @input="onChange">
@@ -42,6 +44,7 @@
 
 <script>
 import { defaultOptions } from '../../../systemData';
+import { desktopImage0, desktopImage1, desktopImage2 } from "../../../images/index";
 export default {
   name: "SettingIndividuation",
   props: {
@@ -58,6 +61,9 @@ export default {
     }
   },
   computed: {
+    systemImages() {
+      return [desktopImage0, desktopImage1, desktopImage2]
+    },
     miniDesktop() {
       const style = {};
       const background = this.individuation.background;
@@ -98,6 +104,7 @@ export default {
 .windows10-system-set-individuation {
   width: 100%;
   height: 100%;
+  overflow-y: auto;
   & > .system-set-individuation-title {
     width: 100%;
     font-size: 26px;
@@ -120,7 +127,8 @@ export default {
   }
   .window10-desktop-mini {
     width: 450px;
-    height: 300px;
+    height: 260px;
+    border: var(--border);
   }
 }
 </style>

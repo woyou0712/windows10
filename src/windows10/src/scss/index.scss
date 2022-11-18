@@ -7,6 +7,7 @@
   --taskbarColor: #fff;
   --taskbarWidth: 40px;
   --hoverColor: rgba(200, 200, 200, 0.2);
+  --border: 1px solid var(--hoverColor);
 }
 
 ::-webkit-scrollbar {

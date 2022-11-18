@@ -23,7 +23,7 @@ export const defaultOptions: WindowsOptions = {
         backgroundImage: desktopImage0,
         backgroundPosition: "center",
         backgroundRepeat: "repeat",
-        backgroundSize: "100% 100%"
+        backgroundSize: "100% 100%",
       },
       color: "#ffffff",
       iconSize: "55px",
