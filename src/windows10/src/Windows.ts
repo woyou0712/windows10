@@ -69,15 +69,15 @@ class Windows {
 
   private __init__() {
     Win.showMiniList = false; // 隐藏最小化列表
-    // 设置用户信息
+    /** 设置用户信息 */
     this.setUserInfo(this.__options.userInfo)
-      // 设置任务栏方向
+      /** 设置任务栏方向 */
       .setTaskbarDireaction(this.__options.taskbar.direaction)
-      // 设置任务栏主题
+      /** 设置任务栏主题 */
       .setTaskbarTheme(this.__options.taskbar.theme)
-      // 设置任务栏搜索框状态
+      /** 设置任务栏搜索框状态 */
       .setTaskbarQuery(this.__options.taskbar.queryStatus)
-      // 设置背景
+      /** 设置背景 */
       .setDesktopBackground(this.__options.desktop.theme.background)
 
     /**
@@ -94,6 +94,7 @@ class Windows {
    */
   private __on_app_change__() {
     const p: { [key: string | symbol]: Win } = {}
+    // 代理Win窗口MAP对象
     Win.WinIdMap = new Proxy(p, {
       // 监听打开
       set: (target, key, app: Win) => {
@@ -117,13 +118,12 @@ class Windows {
    * 监听配置项改变
    */
   private __on_option_change__() {
-    // 监听搜索框显示切换
-    this.taskbar
-      .onQueryStatusChange((queryStatus: QueryStatus) => {
-        this.__options.taskbar.queryStatus = queryStatus;
-        this.__option_change_callback__(this.__options);
-      })
-      // 设置【打开设置】方法
+    /** 监听搜索框显示切换 */
+    this.taskbar.onQueryStatusChange((queryStatus: QueryStatus) => {
+      this.__options.taskbar.queryStatus = queryStatus;
+      this.__option_change_callback__(this.__options);
+    })
+      /** 设置【打开设置】方法 */
       .setShowSetting((pageType: SettingPageType) => {
         this.showSetting(pageType);
       })

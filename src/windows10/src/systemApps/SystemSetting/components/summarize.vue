@@ -27,10 +27,10 @@ export default {
           message: "显示、电源"
         },
         {
-          type: "desktop",
-          name: "桌面",
+          type: "individuation",
+          name: "个性化",
           icon: indIcon,
-          message: "颜色、背景"
+          message: "桌面、颜色、背景"
         },
         {
           type: "taskbar",

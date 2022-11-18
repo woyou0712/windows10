@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { defaultOptions } from '@/windows10/src/systemData';
+import { defaultOptions } from '../../../systemData';
 
 export default {
   name: "SettingTaskbar",

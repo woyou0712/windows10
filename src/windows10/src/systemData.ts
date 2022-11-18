@@ -22,10 +22,11 @@ export const defaultOptions: WindowsOptions = {
         type: "image",
         backgroundImage: desktopImage0,
         backgroundPosition: "center",
-        backgroundRepeat: "repeat"
+        backgroundRepeat: "repeat",
+        backgroundSize: "100% 100%"
       },
       color: "#ffffff",
-      fontSize: "14px",
+      iconSize: "55px",
     },
   },
 }

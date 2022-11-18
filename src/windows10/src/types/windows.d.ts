@@ -71,4 +71,4 @@ export interface Methods {
 
 
 
-export type SettingPageType = "default" | "taskbar" | "system" | "desktop" | "app";
+export type SettingPageType = "default" | "taskbar" | "system" | "individuation" | "app";

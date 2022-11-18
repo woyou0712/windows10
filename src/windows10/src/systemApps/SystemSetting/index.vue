@@ -9,7 +9,10 @@
         </div>
       </div>
       <div class="system-set-taskbar-right">
+        <!-- 任务栏设置 -->
         <taskbar v-if="type === 'taskbar'" :data="data.taskbar" @change="taskbarChange" />
+        <!-- 个性化设置 -->
+        <individuation v-if="type === 'individuation'" :data="data.desktop.theme" @change="individuationChange" />
       </div>
     </div>
   </div>
@@ -20,6 +23,7 @@ import { setIcon } from '../../svg';
 import { defaultOptions } from '../../systemData'
 import summarize from "./components/summarize.vue";
 import taskbar from "./components/taskbar.vue";
+import individuation from "./components/individuation.vue";
 import { homeIcon } from "../../svg/index"
 export default {
   name: "SystemSetting",
@@ -29,7 +33,7 @@ export default {
   resize: true,
   miniBtn: true,
   maxBtn: true,
-  components: { summarize, taskbar },
+  components: { summarize, taskbar, individuation },
   props: {
     /** 当前显示的页面 */
     pageType: {
@@ -65,11 +69,15 @@ export default {
   },
   methods: {
     typeChange(type) {
-      this.type = type
+      this.type = type;
     },
     taskbarChange(taskbarOption) {
-      this.data.taskbar = taskbarOption
-      this.optionChange(this.data)
+      this.data.taskbar = taskbarOption;
+      this.optionChange(this.data);
+    },
+    individuationChange(individuationOption) {
+      this.data.desktop.theme = individuationOption;
+      this.optionChange(this.data);
     }
   }
 }
@@ -86,7 +94,7 @@ export default {
     & > .system-set-taskbar-left {
       width: 240px;
       height: 100%;
-      background-color: #eee;
+      background-color: #eeeeee;
       & > .set-taskbar-left-head {
         width: 100%;
         height: 40px;
@@ -94,10 +102,17 @@ export default {
         font-size: 16px;
         padding: 10px;
         display: flex;
-        .set-taskbar-left-head-icon {
+        color: #444444;
+        cursor: pointer;
+        transition: 0.3s;
+        &:hover {
+          background-color: #f8f8f8;
+        }
+        & > .set-taskbar-left-head-icon {
           width: 20px;
           height: 20px;
-          margin-right: 10px;
+          margin-right: 5px;
+          padding: 2px;
           svg {
             width: 100%;
             height: 100%;
@@ -105,11 +120,11 @@ export default {
         }
       }
     }
-  }
-  & > .system-set-taskbar-right {
-    width: calc(100% - 240px);
-    height: 100%;
-    padding: 0 40px;
+    & > .system-set-taskbar-right {
+      width: calc(100% - 240px);
+      height: 100%;
+      padding: 0 40px;
+    }
   }
 }
 </style>
