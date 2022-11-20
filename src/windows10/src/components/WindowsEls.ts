@@ -1,4 +1,6 @@
+import { Win } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
+import { UserInfo } from "../types/windows";
 import TaskbarEls from "./TaskbarEls";
 
 
@@ -31,5 +33,29 @@ export default class WindowsEls {
     this.appBox.appendChild(this.desktopEls.box);
     this.appBox.appendChild(this.taskbarEls.box);
     document.body.appendChild(this.appBox);
+  }
+  /**
+   * 通知任务栏应用打开
+   * @param app 
+   */
+  public pushTaskbarOpenApp(app: Win) {
+    this.taskbarEls.setOpenApp(app)
+    return this
+  }
+  /**
+   * 通知任务栏关闭APP
+   * @param app 
+   */
+  public pushTaskbarCloseApp(appId: string) {
+    this.taskbarEls.setCloseApp(appId)
+    return this
+  }
+  /**
+   * 设置用户信息
+   * @param userInfo 
+   */
+  public setUserInfo(userInfo: UserInfo) {
+    this.taskbarEls.setWinUserInfo(userInfo)
+    return this
   }
 }

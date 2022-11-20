@@ -68,34 +68,6 @@ class TaskbarWinEls {
     })
   }
 
-  /**
-   * 监听左侧按钮点击
-   */
-  public onLeftClick({ onStting, onQuit }: { onStting: () => void; onQuit: () => void }) {
-    // 点击设置
-    this.setter.addEventListener("click", onStting);
-    // 点击退出
-    this.quit.addEventListener("click", onQuit);
-  }
-  /**
-   * 设置用户信息
-   */
-  public setUserInfo(userInfo: UserInfo) {
-    this.userName.innerText = userInfo.nickName;
-    if (userInfo.avatar) {
-      // 如果头像类型是图片
-      if (userInfo.avatarType === "image") {
-        const avatar = createElement({ name: "img" }) as HTMLImageElement;
-        avatar.setAttribute("src", userInfo.avatar)
-        this.userIcons.appendChild(avatar)
-      } else {
-        // 负责按SVG处理
-        this.userIcons.innerHTML = userInfo.avatar
-      }
-    }
-
-    return this
-  }
 
 
 }
@@ -178,6 +150,9 @@ class TaskbarTimeEls {
 /** 任务栏消息 */
 class TaskbarMsgEls {
   public messageBox = createElement("windows10-taskbar-message");
+  constructor() {
+    this.messageBox.innerHTML = messageIcon;
+  }
 }
 
 
@@ -195,22 +170,22 @@ export default class TaskbarEls {
   /** 任务栏盒子 */
   public box = createElement("windows10-taskbar");
   /** WIN键 */
-  public win = new TaskbarWinEls();
+  private win = new TaskbarWinEls();
   /** 任务区域 */
-  public appList = new TaskbarAppListEls();
+  private appList = new TaskbarAppListEls();
 
   /** 时间 */
-  public taskbarTime = new TaskbarTimeEls();
+  private taskbarTime = new TaskbarTimeEls();
   /** 消息 */
-  public taskbarMessage = new TaskbarMsgEls();
+  private taskbarMessage = new TaskbarMsgEls();
 
   /** 打开是应用列表 */
   private openAppList: Win[] = []
   /** 打开的APP图标Map */
   private appIconMap: { [key: string]: HTMLElement } = {};
   /** 监听函数MAP */
-  private methods: { [Key: string]: () => void } = {
-    clickSetting: () => true,
+  private methods = {
+    clickSetting: () => { /** 点击设置任务栏 */ },
   };
   constructor() {
     this.box.appendChild(this.win.winBox);
@@ -282,6 +257,47 @@ export default class TaskbarEls {
   }
 
   /**
+   * 为任务栏的应用图标设置右键菜单
+   */
+  private setAppRmenu(appIcon: HTMLElement, app: Win) {
+    new Menu(appIcon, [
+      {
+        id: 1,
+        name: "置顶显示",
+        icon: topIcon,
+        method: () => {
+          if (app.status === "mini") {
+            // 如果在最小化状态，则恢复
+            app.setMini()
+          }
+          // 设置应用置顶
+          app.setTop();
+        }
+      },
+      {
+        id: 2,
+        name: "最大化窗口",
+        method: () => {
+          app.setMax();
+        }
+      },
+      {
+        id: 3,
+        name: "最小化窗口",
+        method: () => {
+          app.setMini();
+        }
+      },
+      {
+        id: 10,
+        name: "关闭窗口",
+        method: () => {
+          app.close();
+        }
+      },
+    ])
+  }
+  /**
  * 设置置顶应用图标高亮
  */
   private setTopAppIcon() {
@@ -330,10 +346,105 @@ export default class TaskbarEls {
   }
 
   /**
-   * 监听点击设置
+   * 监听点击设置菜单
    */
-  onClickSetting(fn: () => void) {
-    this.methods["clickSetting"] = fn;
+  public onClickSetting(fn: () => void) {
+    this.methods.clickSetting = fn;
     return this;
   }
+  /**
+   * 打开APP（图标）
+   */
+  public setOpenApp(app: Win) {
+    const className = "taskbar-app-list-item"
+    // 设置打开APP对应的图标
+    const appIcon = createElement(className);
+    if (app.config.icon) {
+      if (typeof app.config.icon === "string") {
+        appIcon.innerHTML = app.config.icon
+      } else if (app.config.icon.nodeName) {
+        appIcon.appendChild(app.config.icon)
+      }
+    } else {
+      appIcon.innerHTML = chromeIcon
+    }
+    // 点击任务栏图标
+    appIcon.addEventListener("click", (e) => {
+      const clickNode = e.target as HTMLElement;
+      // 只有点击的是图标，才触发最小化
+      if (clickNode === appIcon || (clickNode.nodeName === "svg" && clickNode.parentNode === appIcon)) {
+        // 判断点击元素
+        if (app.status === "mini") {
+          // 如果在最小化状态，则恢复
+          app.setMini()
+        }
+        // 设置应用置顶
+        app.setTop();
+      }
+    })
+    this.openAppList.push(app);
+    this.appIconMap[app.id] = appIcon;
+    this.setAppRmenu(appIcon, app);
+    this.appList.appListBox.appendChild(appIcon);
+    // 新窗口打开
+    app.onmounted(() => {
+      this.setTopAppIcon()
+    })
+    // 监听窗口置顶
+    app.ontop(() => {
+      this.setTopAppIcon()
+    })
+    // 监听窗口最小化
+    app.onmini(() => {
+      this.setTopAppIcon()
+    })
+    return this
+  }
+
+  /**
+   * 关闭APP关闭（图标）
+   */
+  public setCloseApp(appId: string) {
+    // 关闭图标
+    this.appList.appListBox.removeChild(this.appIconMap[appId]);
+    delete this.appIconMap[appId];
+    // 从打开的应用列表移除
+    for (let i = 0; i < this.openAppList.length; i++) {
+      const app = this.openAppList[i];
+      if (app.id === appId) {
+        this.openAppList.splice(i, 1)
+      }
+    }
+    return this
+  }
+
+  /**
+   * 监听Win左侧按钮点击
+   */
+  public onWinLeftClick({ onStting, onQuit }: { onStting: () => void; onQuit: () => void }) {
+    // 点击设置
+    this.win.setter.addEventListener("click", onStting);
+    // 点击退出
+    this.win.quit.addEventListener("click", onQuit);
+  }
+  /**
+   * 设置Win菜单用户信息
+   */
+  public setWinUserInfo(userInfo: UserInfo) {
+    this.win.userName.innerText = userInfo.nickName;
+    if (userInfo.avatar) {
+      // 如果头像类型是图片
+      if (userInfo.avatarType === "image") {
+        const avatar = createElement({ name: "img" }) as HTMLImageElement;
+        avatar.setAttribute("src", userInfo.avatar)
+        this.win.userIcons.appendChild(avatar)
+      } else {
+        // 负责按SVG处理
+        this.win.userIcons.innerHTML = userInfo.avatar
+      }
+    }
+
+    return this
+  }
+
 }

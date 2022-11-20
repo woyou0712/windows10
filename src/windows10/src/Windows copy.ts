@@ -27,9 +27,8 @@ class Windows {
     this.box = createElement("windows10-app");
     this.desktop = new Desktop(this.box);
     this.taskbar = new Taskbar(this.box);
-    // document.body.appendChild(this.box);
-    // this.__init__();
-    new WindowsEls()
+    document.body.appendChild(this.box);
+    this.__init__();
   }
   private get __options() {
     return this.options

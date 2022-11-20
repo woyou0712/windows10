@@ -89,13 +89,13 @@ export default class Option {
   }
 
   /**
- * 配置项改变触发的回调函数
- */
+   * 配置项改变触发的回调函数
+   */
   private setOptions(option: WindowsOption) {
     // 设置防抖
     clearTimeout(this.optionsChangeTime)
     this.optionsChangeTime = setTimeout(() => {
-      // 像监听函数发送通知
+      // 向监听函数发送通知
       this.methods.onChange(this)
     }, 50)
     return this

@@ -59,6 +59,7 @@
           height: var(--taskbarWidth);
           display: flex;
           align-items: center;
+          cursor: default;
 
           &:hover {
             background-color: var(--hoverColor);
