@@ -84,6 +84,9 @@ class Desktop {
     this.background.setBackground(background);
     return this
   }
+  /**
+   * 设置图标大小
+   */
 
   /**
    * 设置【打开设置】方法

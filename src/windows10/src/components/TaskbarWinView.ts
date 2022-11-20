@@ -2,7 +2,7 @@ import { Win } from "new-dream"
 import createElement from "new-dream/src/utils/createElement"
 import { Config } from "new-dream/src/Win/win"
 import { quitIcon, setIcon, userIcon } from "../svg/index"
-import { OptionsCallback, OptionsData, SettingPageType, UserInfo } from "../types/windows"
+import { OptionsCallback, SettingPageType, UserInfo } from "../types/windows"
 import SystemSetting from "../systemApps/SystemSetting/index.vue";
 
 

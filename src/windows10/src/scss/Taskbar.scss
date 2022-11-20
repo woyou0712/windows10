@@ -5,8 +5,14 @@
   position: relative;
   z-index: 100;
 
-  &>div {
+  .windows10-taskbar-win-icon,
+  .windows10-taskbar-datetime,
+  .windows10-taskbar-message {
     cursor: default;
+
+    &:hover {
+      background-color: var(--hoverColor);
+    }
   }
 
   &>.windows10-taskbar-app-list {
@@ -40,10 +46,6 @@
     width: var(--taskbarWidth);
     height: var(--taskbarWidth);
     padding: 10px;
-
-    &:hover {
-      background-color: var(--hoverColor);
-    }
 
     &>svg {
       width: 100%;

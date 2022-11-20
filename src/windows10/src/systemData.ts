@@ -1,11 +1,12 @@
-import { WindowsOptions } from "./types/windows.d";
 import { userIcon } from "./svg";
 import { desktopImage0, desktopImage1, desktopImage2, loginImage } from "./images";
+import Option from "./components/Option";
+import { WindowsOption } from "./types/windows";
 
 /**
  * 默认配置项
  */
-export const defaultOptions: WindowsOptions = {
+export const defaultOptions: WindowsOption = {
   userInfo: {
     nickName: "小妖",
     avatar: userIcon,
@@ -25,8 +26,9 @@ export const defaultOptions: WindowsOptions = {
         backgroundRepeat: "repeat",
         backgroundSize: "100% 100%",
       },
+      backgroundList: ["http://bauble.vip/static/images/bg001.jpg"],
       color: "#ffffff",
-      iconSize: "55px",
+      iconSize: "mini",
     },
   },
 }

@@ -13,9 +13,9 @@ export default Vue.extend({
   name: "App",
   mounted() {
     const windows = new Windows();
-    windows.onOptionChange((data) => {
-      console.log(data);
-    });
+    // windows.onOptionChange((data) => {
+    //   console.log(data);
+    // });
   },
 });
 </script>

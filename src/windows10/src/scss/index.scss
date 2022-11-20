@@ -3,11 +3,13 @@
 }
 
 :root {
-  --taskbarBg: #444;
+  --taskbarBg: #444444;
   --taskbarColor: #fff;
   --taskbarWidth: 40px;
   --hoverColor: rgba(200, 200, 200, 0.2);
   --border: 1px solid var(--hoverColor);
+  --selectBorderColor: #c02410;
+  --boxShadow: 0 2px 4px 0 #888888;
 }
 
 ::-webkit-scrollbar {

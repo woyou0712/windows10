@@ -25,7 +25,7 @@ interface colorBg {
 /**
  * 任务栏主题
  */
-export interface TtaskbarTheme {
+export interface TaskbarTheme {
   /** 任务栏背景颜色   */
   backgroundColor: string;
   /** 任务栏字体颜色   */
@@ -40,14 +40,16 @@ export type Direaction = "top" | "bottom";
  * 搜索框显示状态
  */
 export type QueryStatus = "show" | "none"
-
+/** 桌面背景 */
 export type DesktopBackground = imageBg | colorBg
 
 export interface DesktopTheme {
-  /**  背景（图片或纯色）   */
+  /** 背景（图片或纯色）   */
   background: DesktopBackground;
+  /** 背景图片URL列表 */
+  backgroundList: string[];
   /**  桌面字体颜色（16进制色号）   */
   color: string;
   /**  桌面图标大小   */
-  iconSize: string;
+  iconSize: "mini" | "default" | "max";
 }

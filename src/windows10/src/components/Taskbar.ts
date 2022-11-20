@@ -6,8 +6,8 @@ import TaskbarTime from "./TaskbarTime";
 import TaskbarWin from "./TaskbarWin";
 
 import TaskManager from "../systemApps/TaskManager.vue";
-import { Direaction, QueryStatus, TtaskbarTheme } from "../types/style.d";
-import { OptionsCallback, OptionsData, SettingPageType, UserInfo } from "../types/windows";
+import { Direaction, QueryStatus, TaskbarTheme } from "../types/style.d";
+import { OptionsCallback, SettingPageType, UserInfo } from "../types/windows";
 /**
  * 任务栏
  */
@@ -212,7 +212,7 @@ class Taskbar {
   /**
    * 设置任务栏主题
    */
-  public setTheme(theme: TtaskbarTheme) {
+  public setTheme(theme: TaskbarTheme) {
     let style = document.getElementById("style-taskbar-theme")
     if (!style) {
       // 如果没有主题样式，则创建

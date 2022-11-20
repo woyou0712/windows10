@@ -15,12 +15,13 @@
         </select>
       </div>
       <div class="set-individuation-content-item title">
-        <span v-text="individuation.background.type === 'image'?'选择图片':'选择颜色'"></span>
+        <span v-text="individuation.background.type === 'image'?'选择背景图片':'选择背景颜色'"></span>
       </div>
       <div class="set-individuation-content-item method">
-        <div class="individuation-images">
-          
+        <div class="individuation-images" v-show="individuation.background.type === 'image'">
+          <div class="individuation-image-item" v-for="(bg,index) in backgroundList" :key="index" :style="bgItemStyle(bg)" :class="individuation.background.backgroundImage === bg?'on':''" @click="setBackground(bg)"></div>
         </div>
+        <input v-show="individuation.background.type === 'color'" type="color" v-model="individuation.background.backgroundColor" class="windwos10-color-select" @input="onChange">
       </div>
       <div class="set-individuation-content-item title">
         字体颜色
@@ -33,9 +34,9 @@
       </div>
       <div class="set-individuation-content-item method">
         <select v-model="individuation.iconSize" @input="onChange">
-          <option value="70px" label="大图标"></option>
-          <option value="55px" label="中等图标"></option>
-          <option value="40px" label="小图标"></option>
+          <option value="max" label="大图标"></option>
+          <option value="default" label="中等图标"></option>
+          <option value="mini" label="小图标"></option>
         </select>
       </div>
     </div>
@@ -61,8 +62,8 @@ export default {
     }
   },
   computed: {
-    systemImages() {
-      return [desktopImage0, desktopImage1, desktopImage2]
+    backgroundList() {
+      return [desktopImage0, desktopImage1, desktopImage2].concat(this.individuation.backgroundList)
     },
     miniDesktop() {
       const style = {};
@@ -88,13 +89,31 @@ export default {
       return style
     }
   },
+  watch: {
+    "individuation.background.type"(v) {
+      if (v === "color" && !this.individuation.background.backgroundColor) {
+        this.individuation.background.backgroundColor = "#808080"
+      }
+    }
+  },
   mounted() {
     this.individuation = this.data;
-    console.log(this.data)
   },
   methods: {
+    // 监听配置项变化
     onChange() {
       this.$emit("change", this.individuation)
+    },
+    // 改变背景图片
+    setBackground(bg) {
+      this.individuation.background.backgroundImage = bg;
+      this.onChange();
+    },
+    bgItemStyle(bg) {
+      const style = {}
+      style["backgroundImage"] = `url(${bg})`
+      style["backgroundSize"] = "100% auto"
+      return style
     }
   }
 }
@@ -123,11 +142,26 @@ export default {
       &.method {
         margin-bottom: 10px;
       }
+      & > .individuation-images {
+        width: 100%;
+        display: flex;
+        flex-wrap: wrap;
+        & > .individuation-image-item {
+          width: 90px;
+          height: 50px;
+          margin: 0 5px 5px 0;
+          border: var(--border);
+          &.on {
+            border-color: var(--selectBorderColor);
+            box-shadow: var(--boxShadow);
+          }
+        }
+      }
     }
   }
   .window10-desktop-mini {
     width: 450px;
-    height: 260px;
+    height: 250px;
     border: var(--border);
   }
 }
