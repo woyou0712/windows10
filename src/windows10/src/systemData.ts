@@ -25,7 +25,7 @@ export const defaultOptions: WindowsOption = {
         backgroundRepeat: "repeat",
         backgroundSize: "100% 100%",
       },
-      backgroundList: ["http://bauble.vip/static/images/bg001.jpg"],
+      backgroundList: ["http://demo.bauble.vip/bg001.jpg"],
       color: "#ffffff",
       iconSize: "mini",
     },
