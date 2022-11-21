@@ -7,7 +7,7 @@ import TaskbarEls from "./TaskbarEls";
 
 export default class WindowsEls {
   /** 系统盒子 */
-  private appBox: HTMLElement;
+  public appBox: HTMLElement;
   /** 桌面盒子 */
   private desktopEls: DesktopEls;
 
@@ -24,7 +24,6 @@ export default class WindowsEls {
   private __init__() {
     this.appBox.appendChild(this.desktopEls.box);
     this.appBox.appendChild(this.taskbarEls.box);
-    document.body.appendChild(this.appBox);
   }
   /**
    * 通知任务栏应用打开

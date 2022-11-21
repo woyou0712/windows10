@@ -19,8 +19,10 @@ class Windows {
   constructor(option?: WindowsOption) {
     this.els = new WindowsEls();
     this.__option = option ? option : defaultOptions;
-    this.onAppChange();
-    this.onEvent();
+    this.onAppChange(); // 监听应用启动关闭
+    this.onEvent(); // 监听操作事件
+    // 挂载到页面
+    document.body.appendChild(this.els.appBox);
   }
 
   private get __option() {

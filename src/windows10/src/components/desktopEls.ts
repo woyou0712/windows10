@@ -21,30 +21,22 @@ export default class DesktopEls {
   private setRmenu() {
     const option = [
       {
-        id: 0,
-        icon: dirSvg,
-        name: "新建文件夹",
-        method: function () {
-          console.log("1你点击了【新建文件夹】")
-        }
-      },
-      {
         id: 1,
-        name: "查看(V)",
+        name: "时间排序",
         method: function () {
-          console.log("2你点击了【查看】")
+          console.log("你点击了【时间排序】")
         }
       },
       {
         id: 2,
-        name: "排序方式(O)",
+        name: "名称排序",
         method: function () {
-          console.log("3你点击了【排序方式】")
+          console.log("你点击了【名称排序】")
         }
       },
       {
         id: 3,
-        name: "刷新",
+        name: "重载(F5)",
         method: function () {
           location.reload()
         }
@@ -54,7 +46,7 @@ export default class DesktopEls {
         icon: disSvg,
         name: "显示设置",
         method: function () {
-          console.log("5你点击了【显示设置】")
+          console.log("你点击了【显示设置】")
         }
       },
       {
@@ -62,7 +54,7 @@ export default class DesktopEls {
         icon: indSvg,
         name: "个性化",
         method: function () {
-          console.log("6你点击了【个性化】")
+          console.log("你点击了【个性化】")
         }
       },
     ]
