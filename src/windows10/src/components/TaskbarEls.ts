@@ -1,7 +1,7 @@
 import createElement from "new-dream/src/utils/createElement";
 import { QueryStatus, TaskbarTheme } from "../types/style";
 import { chromeIcon, winIcon, queryIcon, quitIcon, setIcon, userIcon, messageIcon, taskIcon, topIcon } from "../svg";
-import { UserInfo } from "../types/windows";
+import { SettingPageType, TaskbarOption, UserInfo } from "../types/windows";
 import { Menu, Win } from "new-dream";
 import TaskManager from "../systemApps/TaskManager.vue";
 
@@ -185,7 +185,7 @@ export default class TaskbarEls {
   private appIconMap: { [key: string]: HTMLElement } = {};
   /** 监听函数MAP */
   private methods = {
-    clickSetting: () => { /** 点击设置任务栏 */ },
+    openSetting: (type?: SettingPageType) => { console.log("打开设置") },
   };
   constructor() {
     this.box.appendChild(this.win.winBox);
@@ -240,7 +240,7 @@ export default class TaskbarEls {
         name: "任务栏设置",
         icon: setIcon,
         method: () => {
-          this.methods.clickSetting()
+          this.methods.openSetting("taskbar")
         }
       },
       {
@@ -346,13 +346,6 @@ export default class TaskbarEls {
   }
 
   /**
-   * 监听点击设置菜单
-   */
-  public onClickSetting(fn: () => void) {
-    this.methods.clickSetting = fn;
-    return this;
-  }
-  /**
    * 打开APP（图标）
    */
   public setOpenApp(app: Win) {
@@ -419,13 +412,15 @@ export default class TaskbarEls {
   }
 
   /**
-   * 监听Win左侧按钮点击
+   * 事件监听
    */
-  public onWinLeftClick({ onStting, onQuit }: { onStting: () => void; onQuit: () => void }) {
-    // 点击设置
-    this.win.setter.addEventListener("click", onStting);
-    // 点击退出
+  public onEvent({ onQuit, openSetting }: { onQuit: () => void; openSetting: (type?: SettingPageType) => void }) {
+    // 点击Win菜单左侧【设置】
+    this.win.setter.addEventListener("click", () => { openSetting("default") });
+    // 点击Win菜单左侧【退出】
     this.win.quit.addEventListener("click", onQuit);
+    // 储存该方法，右键菜单也需要
+    this.methods.openSetting = openSetting;
   }
   /**
    * 设置Win菜单用户信息
@@ -445,6 +440,15 @@ export default class TaskbarEls {
     }
 
     return this
+  }
+
+  public updateView(option: TaskbarOption) {
+    if (option.theme) {
+      this.setTheme(option.theme)
+    }
+    if (option.queryStatus) {
+      this.appList.setQueryStatus(option.queryStatus)
+    }
   }
 
 }

@@ -51,7 +51,7 @@ export default {
         return defaultOptions
       }
     },
-    optionChange: {
+    change: {
       type: Function,
       required: true
     }
@@ -73,11 +73,11 @@ export default {
     },
     taskbarChange(taskbarOption) {
       this.data.taskbar = taskbarOption;
-      this.optionChange(this.data);
+      this.change(this.data);
     },
     individuationChange(individuationOption) {
       this.data.desktop.theme = individuationOption;
-      this.optionChange(this.data);
+      this.change(this.data);
     }
   }
 }

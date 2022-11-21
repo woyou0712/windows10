@@ -1,17 +1,9 @@
 import { Win } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
-import { UserInfo } from "../types/windows";
+import { SettingPageType, UserInfo, WindowsOption } from "../types/windows";
+import DesktopEls from "./desktopEls";
 import TaskbarEls from "./TaskbarEls";
 
-
-/** 桌面元素 */
-class DesktopEls {
-  public box = createElement("windows10-desktop");
-  public desktopBackground = createElement("windows10-desktop-background");
-  constructor() {
-    // pass
-  }
-}
 
 export default class WindowsEls {
   /** 系统盒子 */
@@ -58,4 +50,46 @@ export default class WindowsEls {
     this.taskbarEls.setWinUserInfo(userInfo)
     return this
   }
+
+  /**
+   * 根据配置项更新任务栏视图
+   */
+  public updateView(option: WindowsOption) {
+    // 用户信息
+    if (option.userInfo) {
+      this.setUserInfo(option.userInfo)
+    }
+    // 任务栏配置项
+    if (option.taskbar) {
+      const taskbar = option.taskbar
+      this.taskbarEls.updateView(taskbar)
+      if (taskbar.direaction) {
+        switch (taskbar.direaction) {
+          case "top":
+            this.appBox.classList.add("top");
+            this.appBox.classList.remove("bottom");
+            break;
+          default:
+            this.appBox.classList.add("bottom");
+            this.appBox.classList.remove("top");
+            break;
+        }
+      }
+    }
+    // 桌面设置
+    if (option.desktop) {
+      this.desktopEls.updateView(option.desktop)
+    }
+
+
+
+  }
+
+  /**
+   * 监听任务栏事件
+   */
+  public onTaskbarEvent({ onQuit, openSetting }: { onQuit: () => void; openSetting: (type?: SettingPageType) => void }) {
+    this.taskbarEls.onEvent({ onQuit, openSetting })
+  }
+
 }
