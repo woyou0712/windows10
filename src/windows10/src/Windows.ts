@@ -1,11 +1,8 @@
-import createElement from "new-dream/src/utils/createElement";
-import Desktop from "./components/Desktop";
-import Taskbar from "./components/TaskbarEls";
 import "new-dream/dist/index.css";
 import { Win } from "new-dream";
 Win.showMiniList = false; // 关闭组件自带的最小化列表
-import { TaskbarTheme, Direaction, QueryStatus, DesktopBackground } from "./types/style.d";
-import { OptionsCallback, Methods, WindowsOption, UserInfo, SettingPageType } from "./types/windows.d";
+
+import { WindowsOption, SettingPageType } from "./types/windows.d";
 import { defaultOptions } from "./systemData";
 import SystemSetting from "./systemApps/SystemSetting/index.vue";
 import WindowsEls from "./components/WindowsEls";

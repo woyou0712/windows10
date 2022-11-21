@@ -1,6 +1,5 @@
 import { userIcon } from "./svg";
 import { desktopImage0, desktopImage1, desktopImage2, loginImage } from "./images";
-import Option from "./components/Option";
 import { WindowsOption } from "./types/windows";
 
 /**
