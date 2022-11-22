@@ -1,3 +1,4 @@
+import { DefaultComputed } from "vue/types/options";
 import { DesktopTheme, Direaction, QueryStatus, TaskbarTheme } from "./style";
 
 /** 用户信息 */
@@ -39,6 +40,21 @@ export interface Methods {
 /** 设置显示页面类型 */
 export type SettingPageType = "default" | "taskbar" | "system" | "individuation" | "app";
 
+export interface App {
+  id: number | string;
+  title: string;
+  width: string;
+  height: string;
+  miniBtn: string;
+  maxBtn: string;
+  resize: string;
+  icon: string | HTMLIFrameElement;
+  props?: { [key]: any };
+  component?: DefaultComputed;
+  url?: string;
+}
+
+
 /** Windows配置项 */
 export interface WindowsOption {
   /** 用户信息 */
@@ -47,4 +63,8 @@ export interface WindowsOption {
   taskbar: TaskbarOption;
   /** 桌面配置项 */
   desktop: DesktopOption;
+  /** 应用列表 */
+  appList: App[]
 }
+
+

@@ -3,7 +3,7 @@ import { Win } from "new-dream";
 Win.showMiniList = false; // 关闭组件自带的最小化列表
 
 import { WindowsOption, SettingPageType } from "./types/windows.d";
-import { defaultOptions } from "./systemData";
+import { defaultOptions } from "./defaultData";
 import SystemSetting from "./systemApps/SystemSetting/index.vue";
 import WindowsEls from "./components/WindowsEls";
 
@@ -15,12 +15,16 @@ class Windows {
   public option: WindowsOption = defaultOptions;
   private els: WindowsEls;
   private updateViewTime = 0;
-
+  /** 内部监听事件 */
+  private methods = {
+    onQuit: () => {/** 监听点击退出 */ },
+    onOptionChange: (option: WindowsOption) => { /** 监听配置项变化 */ }
+  }
   constructor(option?: WindowsOption) {
     this.els = new WindowsEls();
     this.__option = option ? option : defaultOptions;
-    this.onAppChange(); // 监听应用启动关闭
-    this.onEvent(); // 监听操作事件
+    /** 监听应用启动关闭  监听用户操作事件 */
+    this.onAppChange().onEvent(); // 
     // 挂载到页面
     document.body.appendChild(this.els.appBox);
   }
@@ -34,6 +38,7 @@ class Windows {
     clearTimeout(this.updateViewTime);
     this.updateViewTime = setTimeout(() => {
       this.els.updateView(v); // 更新视图
+      this.methods.onOptionChange(v)
     }, 20)
   }
   /**
@@ -60,6 +65,7 @@ class Windows {
         return true
       }
     })
+    return this
   }
 
   /**
@@ -68,32 +74,44 @@ class Windows {
   private onEvent() {
     // 任务栏事件
     this.els.onTaskbarEvent({
-      onQuit: () => { console.log("点击了退出") },
+      onQuit: () => this.methods.onQuit(),
       openSetting: (type?: SettingPageType) => {
         this.openSetting(type)
       }
     })
+    return this
   }
   /**
    * 打开设置
    * @param pageType 默认显示页面
    */
-  public openSetting(pageType: SettingPageType = "default") {
+  private openSetting(pageType: SettingPageType = "default") {
     new Win({
       component: SystemSetting,
       props: {
         pageType,
         option: this.__option,
         change: (option: WindowsOption) => {
-          console.log(option)
           this.__option = option;
         }
       }
     })
+    return this
   }
-
-
-
+  /**
+   * 监听用户点击退出系统按钮
+   */
+  public onQuit(fn: () => void) {
+    this.methods.onQuit = fn
+    return this
+  }
+  /**
+   * 监听配置项改变
+   */
+  public onOptionChange(fn: (option: WindowsOption) => void) {
+    this.methods.onOptionChange = fn;
+    return this
+  }
 }
 
 export default Windows

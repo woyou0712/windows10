@@ -83,7 +83,9 @@ export default class DesktopEls {
     }
     return this
   }
-
+  /**
+   * 更新视图
+   */
   public updateView(option: DesktopOption) {
     if (option.theme) {
       this.setBackground(option.theme.background)

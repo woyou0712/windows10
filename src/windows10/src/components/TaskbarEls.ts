@@ -441,7 +441,9 @@ export default class TaskbarEls {
 
     return this
   }
-
+  /**
+   * 更新视图
+   */
   public updateView(option: TaskbarOption) {
     if (option.theme) {
       this.setTheme(option.theme)

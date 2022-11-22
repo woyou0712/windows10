@@ -44,7 +44,7 @@
 </template>
 
 <script>
-import { defaultOptions } from '../../../systemData';
+import { defaultOptions } from '../../../defaultData';
 import { desktopImage0, desktopImage1, desktopImage2 } from "../../../images/index";
 export default {
   name: "SettingIndividuation",

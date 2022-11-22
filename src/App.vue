@@ -13,9 +13,13 @@ export default Vue.extend({
   name: "App",
   mounted() {
     const windows = new Windows();
-    // windows.onOptionChange((data) => {
-    //   console.log(data);
-    // });
+    windows
+      .onQuit(() => {
+        console.log("点了退出？");
+      })
+      .onOptionChange((option) => {
+        console.log(option);
+      });
   },
 });
 </script>

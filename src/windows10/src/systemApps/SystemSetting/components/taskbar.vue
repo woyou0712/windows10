@@ -38,7 +38,7 @@
 </template>
 
 <script>
-import { defaultOptions } from '../../../systemData';
+import { defaultOptions } from '../../../defaultData';
 
 export default {
   name: "SettingTaskbar",

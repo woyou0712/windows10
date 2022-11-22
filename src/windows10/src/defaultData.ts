@@ -30,5 +30,5 @@ export const defaultOptions: WindowsOption = {
       iconSize: "mini",
     },
   },
+  appList: []
 }
-

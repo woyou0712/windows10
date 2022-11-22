@@ -20,7 +20,7 @@
 
 <script>
 import { setIcon } from '../../svg';
-import { defaultOptions } from '../../systemData'
+import { defaultOptions } from '../../defaultData'
 import summarize from "./components/summarize.vue";
 import taskbar from "./components/taskbar.vue";
 import individuation from "./components/individuation.vue";
