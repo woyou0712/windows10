@@ -43,6 +43,9 @@ export type QueryStatus = "show" | "none"
 /** 桌面背景 */
 export type DesktopBackground = imageBg | colorBg
 
+/** 桌面图标大小 */
+export type DesktopAppSize = "mini" | "default" | "max";
+
 export interface DesktopTheme {
   /** 背景（图片或纯色）   */
   background: DesktopBackground;
@@ -51,5 +54,5 @@ export interface DesktopTheme {
   /**  桌面字体颜色（16进制色号）   */
   color: string;
   /**  桌面图标大小   */
-  iconSize: "mini" | "default" | "max";
+  iconSize: DesktopAppSize;
 }

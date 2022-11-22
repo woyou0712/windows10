@@ -10,6 +10,7 @@
   --border: 1px solid var(--hoverColor);
   --selectBorderColor: #c02410;
   --boxShadow: 0 2px 4px 0 #888888;
+  --appIconWidth: 75px;
 }
 
 ::-webkit-scrollbar {
@@ -45,4 +46,3 @@ select {
 @import "./TaskbarTime.scss";
 @import "./TaskbarWin.scss";
 @import "./Desktop.scss";
-@import "./DesktopBg.scss";

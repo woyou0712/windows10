@@ -79,8 +79,13 @@ export default class WindowsEls {
     if (option.desktop) {
       this.desktopEls.updateView(option.desktop)
     }
-
-
+    // 设置桌面应用列表
+    const desktopAllList = option.appList.filter(app => {
+      if (app.desktopShow) {
+        return app
+      }
+    })
+    this.desktopEls.setAppList(desktopAllList);
 
   }
 

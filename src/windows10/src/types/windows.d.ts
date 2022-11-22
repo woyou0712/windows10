@@ -17,10 +17,16 @@ export interface TaskbarOption {
   queryStatus: QueryStatus;
 }
 
+export type DesktopAppOrder = 'default' | 'name' | 'time'
+
 /** 桌面配置项 */
 export interface DesktopOption {
   /** 主题 */
   theme: DesktopTheme;
+  /** 应用排序方式 */
+  order: DesktopAppOrder;
+  /** 自动网格对齐 */
+  alignAuto: boolean
 }
 
 /**
@@ -41,17 +47,34 @@ export interface Methods {
 export type SettingPageType = "default" | "taskbar" | "system" | "individuation" | "app";
 
 export interface App {
-  id: number | string;
+  /** 唯一ID，传唯一ID窗口只开一个，不传唯一ID会随机生成ID，窗口可以多开 */
+  id?: number | string;
+  /** 窗口标题 */
   title: string;
-  width: string;
-  height: string;
-  miniBtn: string;
-  maxBtn: string;
-  resize: string;
+  /** 窗口宽 */
+  width?: string;
+  /** 窗口高 */
+  height?: string;
+  /** 最小化按钮是否显示 */
+  miniBtn?: boolean;
+  /** 最大化按钮是否显示 */
+  maxBtn?: boolean;
+  /** 窗口是否可缩放 */
+  resize?: boolean;
+  /** 图标 */
   icon: string | HTMLIFrameElement;
+  /** VUE组件所需的参数 */
   props?: { [key]: any };
+  /** VUE组件 */
   component?: DefaultComputed;
+  /** 网站URL地址 */
   url?: string;
+  /** 是否在桌面显示 */
+  desktopShow?: boolean;
+  /** 在桌面上的位置X */
+  desktopX?: string;
+  /** 在桌面上的位置Y */
+  desktopY?: string;
 }
 
 

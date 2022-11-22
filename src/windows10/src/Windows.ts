@@ -20,6 +20,7 @@ class Windows {
     onQuit: () => {/** 监听点击退出 */ },
     onOptionChange: (option: WindowsOption) => { /** 监听配置项变化 */ }
   }
+
   constructor(option?: WindowsOption) {
     this.els = new WindowsEls();
     this.__option = option ? option : defaultOptions;

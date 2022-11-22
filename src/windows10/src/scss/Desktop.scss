@@ -3,4 +3,50 @@
   overflow: hidden;
   position: relative;
   z-index: 99;
+
+  &>.windows10-desktop-background {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 0;
+  }
+
+  &>.windows10-desktop-app-box {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    position: absolute;
+    top: 0;
+    left: 0;
+    z-index: 1;
+    padding: 5px;
+
+    &>.windows10-desktop-app-item {
+      width: var(--appIconWidth);
+      display: flex;
+      flex-direction: column;
+      text-align: center;
+      border: var(--border);
+      border-color: rgba($color: #000000, $alpha: 0);
+
+      &:hover {
+        border-color: rgba($color: #FFFFFF, $alpha: .3);
+        background-color: var(--hoverColor);
+      }
+
+      &>.windows10-desktop-app-icon-box {
+        width: var(--appIconWidth);
+        height: var(--appIconWidth);
+
+        &>svg,
+        &>img {
+          width: 100%;
+          height: 100%;
+        }
+      }
+    }
+  }
 }
