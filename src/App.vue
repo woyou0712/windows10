@@ -1,13 +1,11 @@
 <template>
-  <div id="app">
-
-  </div>
+  <div id="app"></div>
 </template>
 
 <script lang="ts">
 import Vue from "vue";
+import { App, WindowsOption } from "./windows10/src/types/windows";
 import Windows from "./windows10/src/Windows";
-import axios from "axios";
 
 export default Vue.extend({
   name: "App",
@@ -17,8 +15,11 @@ export default Vue.extend({
       .onQuit(() => {
         console.log("点了退出？");
       })
-      .onOptionChange((option) => {
-        console.log(option);
+      .onOptionChange((option: WindowsOption) => {
+        console.log("监听到配置项数据变化了", option);
+      })
+      .onAppChange((appList: App[]) => {
+        console.log("监听到应用数据变化了", appList);
       });
   },
 });

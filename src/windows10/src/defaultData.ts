@@ -31,36 +31,37 @@ export const defaultOptions: WindowsOption = {
     },
     alignAuto: true
   },
-  appList: [
-    {
-      id: "windows10-git-hub",
-      title: "GitHub",
-      maxBtn: true,
-      miniBtn: true,
-      resize: true,
-      icon: githubIcon,
-      url: "https://github.com/woyou0712",
-      desktopShow: true,
-    },
-    {
-      id: "windows10-bai-du",
-      title: "百度",
-      maxBtn: true,
-      miniBtn: true,
-      resize: true,
-      icon: baiduIcon,
-      url: "http://baidu.com",
-      desktopShow: true,
-    },
-    {
-      id: "windows10-git-hub",
-      title: "GitHub",
-      maxBtn: true,
-      miniBtn: true,
-      resize: true,
-      icon: githubIcon,
-      url: "https://github.com/woyou0712",
-      desktopShow: true,
-    },
-  ]
 }
+
+export const defaultAppList = [
+  {
+    id: "windows10-git-hub",
+    title: "GitHub",
+    maxBtn: true,
+    miniBtn: true,
+    resize: true,
+    icon: githubIcon,
+    url: "https://github.com/woyou0712",
+    desktopShow: true,
+  },
+  {
+    id: "windows10-bai-du",
+    title: "百度",
+    maxBtn: true,
+    miniBtn: true,
+    resize: true,
+    icon: baiduIcon,
+    url: "http://baidu.com",
+    desktopShow: true,
+  },
+  {
+    id: "windows10-git-hub",
+    title: "GitHub",
+    maxBtn: true,
+    miniBtn: true,
+    resize: true,
+    icon: githubIcon,
+    url: "https://github.com/woyou0712",
+    desktopShow: true,
+  },
+]

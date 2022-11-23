@@ -1,7 +1,7 @@
 import createElement from "new-dream/src/utils/createElement";
 import { QueryStatus, TaskbarTheme } from "../types/style";
 import { chromeIcon, winIcon, queryIcon, quitIcon, setIcon, userIcon, messageIcon, taskIcon, topIcon } from "../svg";
-import { SettingPageType, TaskbarOption, UserInfo } from "../types/windows";
+import { SettingOpenFn, SettingPageType, TaskbarOption, UserInfo } from "../types/windows";
 import { Menu, Win } from "new-dream";
 import TaskManager from "../systemApps/TaskManager.vue";
 
@@ -478,7 +478,7 @@ export default class TaskbarEls {
   /**
    * 事件监听
    */
-  public onEvent({ onQuit, openSetting }: { onQuit: () => void; openSetting: (type?: SettingPageType) => void }) {
+  public onEvent({ onQuit, openSetting }: { onQuit: () => void; openSetting: SettingOpenFn }) {
     // 点击Win菜单左侧【设置】
     this.win.setter.addEventListener("click", () => { openSetting("default") });
     // 点击Win菜单左侧【退出】

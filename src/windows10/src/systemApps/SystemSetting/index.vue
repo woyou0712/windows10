@@ -9,22 +9,38 @@
         </div>
       </div>
       <div class="system-set-taskbar-right">
-        <!-- 任务栏设置 -->
-        <taskbar v-if="type === 'taskbar'" :data="data.taskbar" @change="taskbarChange" />
+        <!-- 系统设置 -->
+        <system
+          v-if="type === 'system'"
+          :data="data.desktop.theme"
+          @change="individuationChange"
+        />
         <!-- 个性化设置 -->
-        <individuation v-if="type === 'individuation'" :data="data.desktop.theme" @change="individuationChange" />
+        <individuation
+          v-if="type === 'individuation'"
+          :data="data.desktop.theme"
+          @change="individuationChange"
+        />
+        <!-- 任务栏设置 -->
+        <taskbar
+          v-if="type === 'taskbar'"
+          :data="data.taskbar"
+          @change="taskbarChange"
+        />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { setIcon } from '../../svg';
-import { defaultOptions } from '../../defaultData'
+import { setIcon } from "../../svg";
+import { defaultOptions } from "../../defaultData";
 import summarize from "./components/summarize.vue";
-import taskbar from "./components/taskbar.vue";
+
+import system from "./components/system.vue";
 import individuation from "./components/individuation.vue";
-import { homeIcon } from "../../svg/index"
+import taskbar from "./components/taskbar.vue";
+import { homeIcon } from "../../svg/index";
 export default {
   name: "SystemSetting",
   id: "windows10-system-setting",
@@ -33,14 +49,14 @@ export default {
   resize: true,
   miniBtn: true,
   maxBtn: true,
-  components: { summarize, taskbar, individuation },
+  components: { summarize, system, individuation, taskbar },
   props: {
     /** 当前显示的页面 */
     pageType: {
       type: String,
       default() {
-        return "default"
-      }
+        return "default";
+      },
     },
     /**
      * 配置项默认数据（任务栏）
@@ -48,20 +64,20 @@ export default {
     options: {
       type: Object,
       default() {
-        return defaultOptions
-      }
+        return defaultOptions;
+      },
     },
     change: {
       type: Function,
-      required: true
-    }
+      required: true,
+    },
   },
   data() {
     return {
       homeIcon,
       type: 0,
-      data: defaultOptions
-    }
+      data: defaultOptions,
+    };
   },
   created() {
     this.type = this.pageType;
@@ -78,9 +94,9 @@ export default {
     individuationChange(individuationOption) {
       this.data.desktop.theme = individuationOption;
       this.change(this.data);
-    }
-  }
-}
+    },
+  },
+};
 </script>
 
 <style lang="scss">

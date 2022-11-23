@@ -4,19 +4,22 @@ import createElement from "new-dream/src/utils/createElement";
 import { defaultOptions } from "../defaultData";
 import { appIcon } from "../svg";
 import { DesktopAppSize, DesktopBackground } from "../types/style.d";
-import { App, DesktopAppOrder, DesktopOption, District, Shortcut } from "../types/windows.d";
+import { App, DesktopOption, District, SettingOpenFn, SettingPageType, Shortcut } from "../types/windows.d";
 import getNearNumIndex from "../utils/getNearNumIndex";
 
 interface ViewSize { width: number; height: number }
 
 /** 桌面APP列表 */
 class DesktopAppEls {
-  public box;
+  /** 桌面盒子 */
+  public box: HTMLElement;
+  /** 拖拽遮罩层 */
+  private shade: HTMLElement;
   /** 快捷方式列表 */
   private shortcutList: Shortcut[] = [];
 
   /** 是否网格对齐 */
-  private alignAuto: boolean;
+  private alignAuto = true;
   /** 应用图标大小 */
   private shortcutSize?: DesktopAppSize;
   private shortcutWidth = 76;
@@ -30,9 +33,14 @@ class DesktopAppEls {
   private rowList: number[] = [];
   /** 桌面网列表（可放置快捷方式的区域列表） */
   private districtList: District[][] = [];
+
+  private methods = {
+    onAppChange: (data: App[]) => { console.log("应用数据发生变化", data) }
+  }
   constructor() {
     this.box = createElement("windows10-desktop-app-box");
-    this.alignAuto = true;
+    this.shade = createElement("windows10-desktop-app-shade");
+    this.__alignAuto = true;
   }
 
   private get __shortcutSize() {
@@ -63,9 +71,21 @@ class DesktopAppEls {
     }
   }
 
+  private get __alignAuto() {
+    return this.alignAuto
+  }
+
+  private set __alignAuto(v) {
+    // 如果是设置网格对其
+    if (v && !this.alignAuto) {
+      // 
+    }
+    this.alignAuto = v;
+  }
+
   /** 设置图标大小 */
   private setAppIconSize(size: DesktopAppSize) {
-    console.log("设置图标大小")
+    console.log("设置桌面图标大小")
     const styleId = "style-desktop-shortcut-size";
     switch (size) {
       case "max":
@@ -210,11 +230,13 @@ class DesktopAppEls {
         break
       }
       if (app.id !== shortcut.id || app.title !== shortcut.title || app.desktopX !== shortcut.desktopX || app.desktopY !== shortcut.desktopY) {
+        console.log(app.id, shortcut.id)
         isUpdate = true;
         break
       }
     }
     if (isUpdate) {
+      console.log("新的应用数据和旧的应用数据有差异。渲染快捷方式")
       // 渲染快捷方式
       this.renderShortcut(appList);
     }
@@ -253,13 +275,14 @@ class DesktopAppEls {
 
   /** 渲染应用快捷方式 */
   private renderShortcut(appList: App[]) {
-    console.log("渲染快捷方式")
+    console.log("开始渲染快捷方式")
     // 清除之前的应用
     this.removeShortcut();
     // 重新加载快捷方式
     appList.forEach((app) => {
       this.appendShortcut(app)
     })
+    this.methods.onAppChange(appList)
     return this
   }
 
@@ -288,6 +311,12 @@ class DesktopAppEls {
     this.alignAuto = alignAuto;
     return this
   }
+
+  /** 监听事件 */
+  public onAppChange(fn: (data: App[]) => void) {
+    this.methods.onAppChange = fn;
+    return this
+  }
 }
 
 
@@ -295,18 +324,18 @@ class DesktopAppEls {
 export default class DesktopEls {
   public box = createElement("windows10-desktop");
   private background = createElement("windows10-desktop-background");
-  private appList: DesktopAppEls;
+  private desktopApp: DesktopAppEls;
+  private methods = {
+    openSetting: (type?: SettingPageType) => { console.log("打开设置") },
+  };
 
-  private backgroundOption: DesktopBackground;
+  private backgroundOption?: DesktopBackground;
   constructor() {
     Win.defaultContentBox = this.box; // 将弹窗组件的顶级盒子设定为桌面
     Message.defaultContentBox = this.box; // 将消息提示框的默认盒子设定为桌面
     MessageBox.defaultContentBox = this.box;
-
-    this.backgroundOption = Object.assign({}, defaultOptions.desktop.theme.background);
-    this.renderBackground(this.backgroundOption); // 初始化渲染背景
-    this.appList = new DesktopAppEls();
-    this.box.appendChild(this.appList.box);
+    this.desktopApp = new DesktopAppEls();
+    this.box.appendChild(this.desktopApp.box);
     this.box.appendChild(this.background);
     this.setRmenu();
   }
@@ -316,9 +345,15 @@ export default class DesktopEls {
   }
 
   private set __backgroundOption(v) {
-    const oldOption = this.backgroundOption; // 旧的配置项
+    let oldOption = this.backgroundOption; // 旧的配置项
     let isUpdate = false;
-    if (v.type === "color" && oldOption.type === "color") {
+    if (!v) {
+      v = Object.assign({}, defaultOptions.desktop.theme.background);
+      isUpdate = true;
+    } else if (!oldOption) {
+      oldOption = Object.assign({}, defaultOptions.desktop.theme.background);
+      isUpdate = true;
+    } else if (v.type === "color" && oldOption.type === "color") {
       // 如果都是是纯色,判断是否有更新
       if (v.backgroundColor !== oldOption.backgroundColor) {
         isUpdate = true
@@ -337,7 +372,9 @@ export default class DesktopEls {
     this.backgroundOption = Object.assign({}, v);
   }
 
+  /** 渲染背景 */
   private renderBackground(background: DesktopBackground) {
+    console.log("渲染桌面背景")
     if (background.type === "image") {
       this.background.style["backgroundImage"] = `url(${background.backgroundImage})`
       if (background.backgroundSize) {
@@ -365,21 +402,21 @@ export default class DesktopEls {
         id: 0,
         name: "新建应用",
         icon: appIcon,
-        method: function () {
+        method: () => {
           console.log("你点击了【新建应用】")
         }
       },
       {
         id: 1,
         name: "快捷方式自动对齐",
-        method: function () {
+        method: () => {
           console.log("你点击了【快捷方式自动对齐】")
         }
       },
       {
         id: 2,
         name: "取消自动对齐",
-        method: function () {
+        method: () => {
           console.log("你点击了【取消自动对齐】")
         }
       },
@@ -394,16 +431,16 @@ export default class DesktopEls {
         id: 4,
         icon: disSvg,
         name: "显示设置",
-        method: function () {
-          console.log("你点击了【显示设置】")
+        method: () => {
+          this.methods.openSetting("system");
         }
       },
       {
         id: 4,
         icon: indSvg,
         name: "个性化",
-        method: function () {
-          console.log("你点击了【个性化】")
+        method: () => {
+          this.methods.openSetting("individuation");
         }
       },
     ]
@@ -426,7 +463,7 @@ export default class DesktopEls {
       /** 设置桌面背景 */
       this.setBackground(option.theme.background);
       /**  设置快捷方式图标大小 、设置字体颜色 、设置网格自动对齐 */
-      this.appList.setShortcutSize(option.theme.shortcutSize).setTextColor(option.theme.color).setAlignAoto(option.alignAuto);
+      this.desktopApp.setShortcutSize(option.theme.shortcutSize).setTextColor(option.theme.color).setAlignAoto(option.alignAuto);
     }
   }
   /**
@@ -434,6 +471,14 @@ export default class DesktopEls {
    */
   public setAppShortcut(appList: App[]) {
     /** 设置桌面快捷方式 */
-    this.appList.setShortcut(appList)
+    this.desktopApp.setShortcut(appList)
+    return this
+  }
+
+  /** 事件监听 */
+  public onEvent({ onAppChange, openSetting }: { onAppChange: (data: App[]) => void, openSetting: SettingOpenFn }) {
+    this.methods.openSetting = openSetting
+    this.desktopApp.onAppChange(onAppChange)
+    return this
   }
 }

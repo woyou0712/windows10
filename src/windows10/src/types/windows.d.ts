@@ -17,8 +17,6 @@ export interface TaskbarOption {
   queryStatus: QueryStatus;
 }
 
-export type DesktopAppOrder = 'default' | 'name' | 'time'
-
 /** 桌面配置项 */
 export interface DesktopOption {
   /** 主题 */
@@ -43,6 +41,8 @@ export interface Methods {
 
 /** 设置显示页面类型 */
 export type SettingPageType = "default" | "taskbar" | "system" | "individuation" | "app";
+/** 用户打开设置监听函数 */
+export type SettingOpenFn = (type?: SettingPageType) => void;
 
 export interface App {
   /** 唯一ID，传唯一ID窗口只开一个，不传唯一ID会随机生成ID，窗口可以多开 */
@@ -87,8 +87,6 @@ export interface WindowsOption {
   taskbar: TaskbarOption;
   /** 桌面配置项 */
   desktop: DesktopOption;
-  /** 应用列表 */
-  appList: App[]
 }
 
 /** 网格区域对象 */

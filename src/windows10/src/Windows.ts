@@ -2,8 +2,8 @@ import "new-dream/dist/index.css";
 import { Win } from "new-dream";
 Win.showMiniList = false; // 关闭组件自带的最小化列表
 
-import { WindowsOption, SettingPageType } from "./types/windows.d";
-import { defaultOptions } from "./defaultData";
+import { WindowsOption, SettingPageType, App } from "./types/windows.d";
+import { defaultAppList, defaultOptions } from "./defaultData";
 import SystemSetting from "./systemApps/SystemSetting/index.vue";
 import WindowsEls from "./components/WindowsEls";
 
@@ -13,19 +13,23 @@ class Windows {
   static onTask: (data: { [key: string]: Win }) => void = () => null;
 
   public option: WindowsOption = defaultOptions;
+  private appList: App[] = [];
   private els: WindowsEls;
   private updateViewTime = 0;
+  private updateAppViewTime = 0;
   /** 内部监听事件 */
   private methods = {
     onQuit: () => {/** 监听点击退出 */ },
-    onOptionChange: (option: WindowsOption) => { /** 监听配置项变化 */ }
+    onOptionChange: (option: WindowsOption) => { console.log("配置项发生变化", option) },
+    onAppChange: (data: App[]) => { console.log("应用数据发生变化", data) },
   }
 
-  constructor(option?: WindowsOption) {
+  constructor(option?: WindowsOption, appList?: App[]) {
     this.els = new WindowsEls();
     this.__option = option ? option : defaultOptions;
+    this.__appList = appList ? appList : defaultAppList;
     /** 监听应用启动关闭  监听用户操作事件 */
-    this.onAppChange().onEvent(); // 
+    this.onAppOpenChange().onEvent(); // 
     // 挂载到页面
     document.body.appendChild(this.els.appBox);
   }
@@ -38,15 +42,35 @@ class Windows {
     // 设置防抖
     clearTimeout(this.updateViewTime);
     this.updateViewTime = setTimeout(() => {
-      // 异步更新视图
-      this.els.updateView(v); // 更新视图
-      this.methods.onOptionChange(v)
-    }, 20)
+      console.log("set __option监听到赋值，通知更新视图");
+      // 更新基础视图
+      this.els.updateView(v);
+      // 通知监听对象
+      console.log("通知onOptionChange监听函数");
+      this.methods.onOptionChange(v);
+    }, 30)
+  }
+
+  private get __appList() {
+    return this.appList
+  }
+  private set __appList(v) {
+    this.appList = v;
+    // 设置防抖
+    clearTimeout(this.updateAppViewTime);
+    this.updateAppViewTime = setTimeout(() => {
+      console.log("set __appList监听到赋值，通知更新视图")
+      // 更新基础视图 和 应用视图
+      this.els.updateAppView(v);
+      // 通知监听对象
+      console.log("通知onAppChange监听函数");
+      this.methods.onAppChange(v);
+    }, 30)
   }
   /**
    * 监听应用启动/关闭
    */
-  private onAppChange() {
+  private onAppOpenChange() {
     const p: { [key: string | symbol]: Win } = {}
     // 代理Win窗口MAP对象
     Win.WinIdMap = new Proxy(p, {
@@ -83,6 +107,16 @@ class Windows {
         this.openSetting(type)
       }
     })
+    // 监听桌面事件
+    this.els.onDesktopEvent({
+      onAppChange: (appList: App[]) => {
+        console.log("监听到桌面应用数据有变化，重新为__appList赋值")
+        this.__appList = appList;
+      },
+      openSetting: (type?: SettingPageType) => {
+        this.openSetting(type)
+      }
+    })
     return this
   }
   /**
@@ -110,10 +144,17 @@ class Windows {
     return this
   }
   /**
-   * 监听配置项改变
+   * 监听配置项变化
    */
   public onOptionChange(fn: (option: WindowsOption) => void) {
     this.methods.onOptionChange = fn;
+    return this
+  }
+  /**
+   * 监听应用数据变化
+   */
+  public onAppChange(fn: (data: App[]) => void) {
+    this.methods.onAppChange = fn;
     return this
   }
 }

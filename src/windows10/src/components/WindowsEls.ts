@@ -1,6 +1,6 @@
 import { Win } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
-import { SettingPageType, UserInfo, WindowsOption } from "../types/windows";
+import { App, SettingOpenFn, SettingPageType, UserInfo, WindowsOption } from "../types/windows";
 import DesktopEls from "./desktopEls";
 import TaskbarEls from "./TaskbarEls";
 
@@ -75,27 +75,37 @@ export default class WindowsEls {
         }
       }
     }
-    // 桌面
+    // 更新桌面视图
     if (option.desktop) {
       this.desktopEls.updateView(option.desktop)
     }
+    return this
+  }
+  /**
+   * 更新应用视图
+   */
+  public updateAppView(appList: App[]) {
     // 桌面应用列表
-    const desktopAllList = option.appList.filter(app => {
+    const desktopAllList = appList.filter(app => {
       // 过滤出桌面显示的应用列表
       if (app.desktopShow) {
-        return app
+        return Object.assign({}, app)
       }
     })
     // 设置应用快捷方式
     this.desktopEls.setAppShortcut(desktopAllList);
-
   }
-
   /**
    * 监听任务栏事件
    */
-  public onTaskbarEvent({ onQuit, openSetting }: { onQuit: () => void; openSetting: (type?: SettingPageType) => void }) {
+  public onTaskbarEvent({ onQuit, openSetting }: { onQuit: () => void; openSetting: SettingOpenFn }) {
     this.taskbarEls.onEvent({ onQuit, openSetting })
   }
 
+  /**
+   * 监听桌面事件
+   */
+  public onDesktopEvent({ onAppChange, openSetting }: { onAppChange: (data: App[]) => void; openSetting: SettingOpenFn; }) {
+    this.desktopEls.onEvent({ onAppChange, openSetting })
+  }
 }
