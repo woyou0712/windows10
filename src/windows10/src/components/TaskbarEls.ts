@@ -27,14 +27,19 @@ class TaskbarWinEls {
   public viewConten = createElement("windows10-taskbar-win-view-content");
   // 右侧开始屏幕
   public viewRight = createElement("windows10-taskbar-win-view-right");
+
+  private nickName?: string
+  private avatarType?: "svg" | "image";
+  private avatar?: string;
   constructor() {
-    // 装载图标
-    this.userIcons.innerHTML = userIcon;
+    // 装载用户信息
+    this.__avatar = userIcon;
+    this.__nickName = "用户"
+    // 设置图文
     this.setIcons.innerHTML = setIcon;
-    this.quitIcons.innerHTML = quitIcon;
-    // 装载文字
-    this.userName.innerText = "用户"
     this.setName.innerText = "设置"
+    // 退出图文
+    this.quitIcons.innerHTML = quitIcon;
     this.quitName.innerText = "退出"
 
     // 组装左侧小菜单
@@ -68,7 +73,50 @@ class TaskbarWinEls {
     })
   }
 
+  private get __nickName() {
+    return this.nickName
+  }
+  private set __nickName(v) {
+    if (v && v !== this.nickName) {
+      this.userName.innerText = v;
+      this.nickName = v
+    }
+  }
 
+  private get __avatar() {
+    return this.avatar
+  }
+  private set __avatar(v) {
+    if (v && v !== this.avatar) {
+      // 如果头像类型是图片
+      if (this.avatarType === "image") {
+        let avatar = document.getElementById("windows10-taskbar-avatar") as HTMLImageElement;
+        if (!avatar) {
+          avatar = createElement({ name: "img", id: 'windows10-taskbar-avatar' }) as HTMLImageElement;
+          this.userIcons.appendChild(avatar)
+        }
+        if (v && v !== this.avatar) {
+          avatar.setAttribute("src", v)
+        }
+      } else {
+        // 否则按SVG处理
+        if (v && v !== this.avatar) {
+          this.userIcons.innerHTML = v
+        }
+      }
+      this.avatar = v
+    }
+  }
+
+  /**
+   * 渲染用户信息
+   */
+  public renderUserInfo(userInfo: UserInfo) {
+    this.__nickName = userInfo.nickName
+    this.avatarType = userInfo.avatarType
+    this.__avatar = userInfo.avatar
+    return this
+  }
 
 }
 /** 任务栏APP */
@@ -100,26 +148,24 @@ class TaskbarAppListEls {
   }
 
   private set __queryStatus(v) {
-    if (!v || ["show", "none"].indexOf(v) === -1) {
-      v = "show"
-    }
-    this.queryStatus = v
-    switch (v) {
-      case "show":
-        this.queryBox.classList.add("show")
-        break;
-      default:
-        this.queryBox.classList.remove("show")
-        break;
+    if (this.queryStatus !== v) {
+      // 按需更新视图
+      switch (v) {
+        case "show":
+          this.queryBox.classList.add("show")
+          break;
+        default:
+          this.queryBox.classList.remove("show")
+          break;
+      }
+      this.queryStatus = v
     }
   }
 
 
   /** 设置搜索框显示状态 */
   public setQueryStatus(status: QueryStatus) {
-    if (this.__queryStatus !== status) {
-      this.__queryStatus = status;
-    }
+    this.__queryStatus = status;
     return this
   }
 
@@ -187,6 +233,8 @@ export default class TaskbarEls {
   private methods = {
     openSetting: (type?: SettingPageType) => { console.log("打开设置") },
   };
+  private theme?: TaskbarTheme;
+
   constructor() {
     this.box.appendChild(this.win.winBox);
     this.box.appendChild(this.appList.appListBox);
@@ -194,6 +242,33 @@ export default class TaskbarEls {
     this.box.appendChild(this.taskbarMessage.messageBox);
     this.setMenu()
   }
+
+  private get __theme() {
+    return this.theme
+  }
+
+  private set __theme(v) {
+    if (!v) { return }
+    if (!this.theme || this.theme.backgroundColor !== v.backgroundColor || this.theme.color !== v.color) {
+      // 按需更新
+      const styleId = "style-taskbar-theme"
+      let style = document.getElementById(styleId)
+      if (!style) {
+        // 如果没有主题样式，则创建
+        style = createElement({ name: "style", id: styleId });
+        document.head.appendChild(style);
+      }
+      style.innerHTML = `
+                :root{
+                  --taskbarBg: ${v.backgroundColor} !important;
+                  --taskbarColor: ${v.color} !important;
+                }
+              `;
+      this.theme = Object.assign({}, v)
+    }
+  }
+
+
   /**
    * 设置右键菜单
    */
@@ -298,8 +373,8 @@ export default class TaskbarEls {
     ])
   }
   /**
- * 设置置顶应用图标高亮
- */
+   * 设置置顶应用图标高亮
+   */
   private setTopAppIcon() {
     // 防抖
     clearTimeout(this.setAppTopTime)
@@ -330,19 +405,7 @@ export default class TaskbarEls {
    * 设置任务栏主题
    */
   public setTheme(theme: TaskbarTheme) {
-    const styleId = "style-taskbar-theme"
-    let style = document.getElementById(styleId)
-    if (!style) {
-      // 如果没有主题样式，则创建
-      style = createElement({ name: "style", id: styleId });
-      document.head.appendChild(style);
-    }
-    style.innerHTML = `
-              :root{
-                --taskbarBg: ${theme.backgroundColor} !important;
-                --taskbarColor: ${theme.color} !important;
-              }
-            `;
+    this.__theme = theme
     return this
   }
 
@@ -427,19 +490,7 @@ export default class TaskbarEls {
    * 设置Win菜单用户信息
    */
   public setWinUserInfo(userInfo: UserInfo) {
-    this.win.userName.innerText = userInfo.nickName;
-    if (userInfo.avatar) {
-      // 如果头像类型是图片
-      if (userInfo.avatarType === "image") {
-        const avatar = createElement({ name: "img" }) as HTMLImageElement;
-        avatar.setAttribute("src", userInfo.avatar)
-        this.win.userIcons.appendChild(avatar)
-      } else {
-        // 负责按SVG处理
-        this.win.userIcons.innerHTML = userInfo.avatar
-      }
-    }
-
+    this.win.renderUserInfo(userInfo)
     return this
   }
   /**
