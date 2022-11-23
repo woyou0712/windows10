@@ -70,11 +70,14 @@ export interface App {
   /** 是否在桌面显示 */
   desktopShow?: boolean;
   /** 在桌面上的位置X */
-  desktopX?: string;
+  desktopX?: number;
   /** 在桌面上的位置Y */
-  desktopY?: string;
+  desktopY?: number;
 }
 
+export interface Shortcut extends App {
+  shortcutEls: HTMLElement
+}
 
 /** Windows配置项 */
 export interface WindowsOption {
@@ -88,4 +91,12 @@ export interface WindowsOption {
   appList: App[]
 }
 
-
+/** 网格区域对象 */
+export interface District {
+  /** 坐标 */
+  x: number;
+  /** 坐标 */
+  y: number;
+  /** 是否被占用 */
+  occupy: boolean;
+}

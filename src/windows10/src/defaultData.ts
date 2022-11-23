@@ -27,7 +27,7 @@ export const defaultOptions: WindowsOption = {
       },
       backgroundList: ["http://demo.bauble.vip/bg001.jpg"],
       color: "#ffffff",
-      shortcutSize: "default",
+      shortcutSize: "mini",
     },
     alignAuto: true
   },

@@ -54,8 +54,10 @@ class Windows {
       set: (target, key, app: Win) => {
         target[key] = app;
         Windows.onTask(target); // 通知监听函数
-        // 通知任务栏
-        this.els.pushTaskbarOpenApp(app);
+        // 顶级窗口通知任务栏生成任务图标
+        if (!app.config.parentId) {
+          this.els.pushTaskbarOpenApp(app);
+        }
         return true
       },
       // 监听关闭

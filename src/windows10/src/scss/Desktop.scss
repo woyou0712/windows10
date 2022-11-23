@@ -32,6 +32,7 @@
       text-align: center;
       border: var(--border);
       border-color: rgba($color: #000000, $alpha: 0);
+      position: absolute;
 
       &:hover {
         border-color: rgba($color: #FFFFFF, $alpha: .3);
