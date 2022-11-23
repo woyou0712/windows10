@@ -23,10 +23,8 @@ export type DesktopAppOrder = 'default' | 'name' | 'time'
 export interface DesktopOption {
   /** 主题 */
   theme: DesktopTheme;
-  /** 应用排序方式 */
-  order: DesktopAppOrder;
   /** 自动网格对齐 */
-  alignAuto: boolean
+  alignAuto: boolean;
 }
 
 /**

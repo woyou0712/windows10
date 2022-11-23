@@ -1,20 +1,78 @@
 import { Menu, Message, MessageBox, Win } from "new-dream";
 import { dirSvg, disSvg, indSvg } from "new-dream/src/svg/button";
 import createElement from "new-dream/src/utils/createElement";
+import { appIcon } from "../svg";
 import { DesktopAppSize, DesktopBackground } from "../types/style.d";
 import { App, DesktopAppOrder, DesktopOption } from "../types/windows.d";
 
 /** 桌面APP列表 */
 class DesktopAppEls {
   public box;
-  /** 排序方式 */
-  private order: DesktopAppOrder;
+  /** 桌面图标列表 */
+  private appIcons: HTMLElement[] = [];
   /** 是否网格对齐 */
   private alignAuto: boolean;
+  /** 应用图标大小 */
+  private shortcutSize: DesktopAppSize = "default";
+  private shortcutWidth = 76;
+  private shortcutHeight = 90;
+  private shortcutPadding = "4px 12px";
+
   constructor() {
     this.box = createElement("windows10-desktop-app-box");
     this.alignAuto = true;
-    this.order = "default";
+    this.updateIconSize(this.shortcutSize);
+  }
+
+  private get __shortcutSize() {
+    return this.shortcutSize
+  }
+  private set __shortcutSize(v) {
+    if (v !== this.shortcutSize) {
+      this.updateIconSize(v)
+    }
+    this.shortcutSize = v
+  }
+
+  private updateIconSize(size: DesktopAppSize) {
+    const styleId = "style-desktop-shortcut-size";
+    switch (size) {
+      case "max":
+        this.shortcutHeight = 100
+        this.shortcutPadding = "4px"
+        break;
+      case "mini":
+        this.shortcutHeight = 76
+        this.shortcutPadding = "4px 18px"
+        break;
+      default:
+        this.shortcutHeight = 90
+        this.shortcutPadding = "4px 12px"
+    }
+
+    // 更新视图
+    let style = document.getElementById(styleId);
+    if (!style) {
+      // 如果没有主题样式，则创建
+      style = createElement({ name: "style", id: styleId });
+      document.head.appendChild(style);
+    }
+    style.innerHTML = `
+                :root{
+                  --shortcutWidth: ${this.shortcutWidth}px !important;
+                  --shortcutHeight: ${this.shortcutHeight}px !important;
+                  --shortcutPadding: ${this.shortcutPadding} !important;
+                }
+              `;
+  }
+  /**
+   * 清除桌面应用
+   */
+  private removeAll() {
+    for (let i = this.appIcons.length - 1; i >= 0; i--) {
+      this.box.removeChild(this.appIcons[i]); // 移除视图元素
+      this.appIcons.splice(i, 1); // 移除储存对象
+    }
   }
   /**
    * 在桌面添加应用
@@ -32,28 +90,27 @@ class DesktopAppEls {
     appBox.appendChild(icon);
     appBox.appendChild(title);
     this.box.appendChild(appBox);
+    this.appIcons.push(appBox);
   }
 
-  /**
-   * 清除桌面
-   */
-  private removeAll() {
-    const appList = this.box.childNodes;
-    for (let i = appList.length - 1; i >= 0; i--) {
-      this.box.removeChild(appList[i])
+  /** 设置快捷方式位置 */
+  private setShortcutPosition(appList: App[]) {
+    // 获取桌面大小
+    const vw = this.box.offsetWidth, vh = this.box.offsetWidth;
+    // 切割桌面
+    // 如果是自动对齐
+    if (this.alignAuto) {
+      // 
     }
   }
-  /** 设置应用图标位置 */
-  private setAppPosition(appList: App[]) {
-    // 
-  }
-
-  /** 设置APP列表 */
-  public setAppList(appList: App[]) {
+  /** 渲染应用快捷方式 */
+  public renderAppShortcut(appList: App[]) {
     // 清除之前的应用
     this.removeAll();
-    // 重新加载应用
-    appList.forEach(app => {
+    // 设置快捷方式位置
+    this.setShortcutPosition(appList);
+    // 重新加载快捷方式
+    appList.forEach((app) => {
       this.appendApp(app)
     })
     return this
@@ -61,7 +118,7 @@ class DesktopAppEls {
 
   /** 设置桌面应用图标大小 */
   public setIconSize(size: DesktopAppSize) {
-    this.box.className = `windows10-desktop-app-box app-${size}`
+    this.__shortcutSize = size
     return this
   }
   /** 设置桌面应用字体颜色 */
@@ -72,11 +129,6 @@ class DesktopAppEls {
   /** 设置自动对齐 */
   public setAlignAoto(alignAuto: boolean) {
     this.alignAuto = alignAuto;
-    return this
-  }
-  /** 设置自动对齐 */
-  public setOrder(order: DesktopAppOrder) {
-    this.order = order;
     return this
   }
 }
@@ -102,17 +154,25 @@ export default class DesktopEls {
   private setRmenu() {
     const option = [
       {
-        id: 1,
-        name: "时间排序",
+        id: 0,
+        name: "新建应用",
+        icon: appIcon,
         method: function () {
-          console.log("你点击了【时间排序】")
+          console.log("你点击了【新建应用】")
+        }
+      },
+      {
+        id: 1,
+        name: "快捷方式自动对齐",
+        method: function () {
+          console.log("你点击了【快捷方式自动对齐】")
         }
       },
       {
         id: 2,
-        name: "名称排序",
+        name: "取消自动对齐",
         method: function () {
-          console.log("你点击了【名称排序】")
+          console.log("你点击了【取消自动对齐】")
         }
       },
       {
@@ -170,13 +230,13 @@ export default class DesktopEls {
   public updateView(option: DesktopOption) {
     if (option.theme) {
       this.setBackground(option.theme.background);
-      this.appList.setIconSize(option.theme.iconSize).setTextColor(option.theme.color).setAlignAoto(option.alignAuto).setOrder(option.order);
+      this.appList.setIconSize(option.theme.shortcutSize).setTextColor(option.theme.color).setAlignAoto(option.alignAuto);
     }
   }
   /**
-   * 设置桌面应用列表
+   * 设置应用快捷方式
    */
-  public setAppList(appList: App[]) {
-    this.appList.setAppList(appList)
+  public setAppShortcut(appList: App[]) {
+    this.appList.renderAppShortcut(appList)
   }
 }

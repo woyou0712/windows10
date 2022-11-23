@@ -1,4 +1,4 @@
-import { githubIcon, userIcon } from "./svg";
+import { baiduIcon, githubIcon, userIcon } from "./svg";
 import { desktopImage0, desktopImage1, desktopImage2, loginImage } from "./images";
 import { WindowsOption } from "./types/windows";
 
@@ -27,9 +27,8 @@ export const defaultOptions: WindowsOption = {
       },
       backgroundList: ["http://demo.bauble.vip/bg001.jpg"],
       color: "#ffffff",
-      iconSize: "max",
+      shortcutSize: "default",
     },
-    order: "default",
     alignAuto: true
   },
   appList: [
@@ -44,13 +43,13 @@ export const defaultOptions: WindowsOption = {
       desktopShow: true,
     },
     {
-      id: "windows10-git-hub",
-      title: "GitHub",
+      id: "windows10-bai-du",
+      title: "百度",
       maxBtn: true,
       miniBtn: true,
       resize: true,
-      icon: githubIcon,
-      url: "https://github.com/woyou0712",
+      icon: baiduIcon,
+      url: "http://baidu.com",
       desktopShow: true,
     },
     {

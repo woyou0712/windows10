@@ -33,7 +33,7 @@
         图标大小
       </div>
       <div class="set-individuation-content-item method">
-        <select v-model="individuation.iconSize" @input="onChange">
+        <select v-model="individuation.shortcutSize" @input="onChange">
           <option value="max" label="大图标"></option>
           <option value="default" label="中等图标"></option>
           <option value="mini" label="小图标"></option>

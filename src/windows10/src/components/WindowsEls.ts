@@ -51,14 +51,14 @@ export default class WindowsEls {
   }
 
   /**
-   * 根据配置项更新任务栏视图
+   * 更新视图
    */
   public updateView(option: WindowsOption) {
     // 用户信息
     if (option.userInfo) {
       this.setUserInfo(option.userInfo)
     }
-    // 任务栏配置项
+    // 任务栏
     if (option.taskbar) {
       const taskbar = option.taskbar
       this.taskbarEls.updateView(taskbar)
@@ -75,17 +75,19 @@ export default class WindowsEls {
         }
       }
     }
-    // 桌面设置
+    // 桌面
     if (option.desktop) {
       this.desktopEls.updateView(option.desktop)
     }
-    // 设置桌面应用列表
+    // 桌面应用列表
     const desktopAllList = option.appList.filter(app => {
+      // 过滤出桌面显示的应用列表
       if (app.desktopShow) {
         return app
       }
     })
-    this.desktopEls.setAppList(desktopAllList);
+    // 设置应用快捷方式
+    this.desktopEls.setAppShortcut(desktopAllList);
 
   }
 

@@ -330,10 +330,11 @@ export default class TaskbarEls {
    * 设置任务栏主题
    */
   public setTheme(theme: TaskbarTheme) {
-    let style = document.getElementById("style-taskbar-theme")
+    const styleId = "style-taskbar-theme"
+    let style = document.getElementById(styleId)
     if (!style) {
       // 如果没有主题样式，则创建
-      style = createElement({ name: "style", id: "style-taskbar-theme" });
+      style = createElement({ name: "style", id: styleId });
       document.head.appendChild(style);
     }
     style.innerHTML = `

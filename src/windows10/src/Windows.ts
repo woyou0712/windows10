@@ -38,6 +38,7 @@ class Windows {
     // 设置防抖
     clearTimeout(this.updateViewTime);
     this.updateViewTime = setTimeout(() => {
+      // 异步更新视图
       this.els.updateView(v); // 更新视图
       this.methods.onOptionChange(v)
     }, 20)

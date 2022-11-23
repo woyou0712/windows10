@@ -54,5 +54,5 @@ export interface DesktopTheme {
   /**  桌面字体颜色（16进制色号）   */
   color: string;
   /**  桌面图标大小   */
-  iconSize: DesktopAppSize;
+  shortcutSize: DesktopAppSize;
 }
