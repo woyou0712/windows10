@@ -10,37 +10,24 @@
       </div>
       <div class="system-set-taskbar-right">
         <!-- 系统设置 -->
-        <system
-          v-if="type === 'system'"
-          :data="data.desktop.theme"
-          @change="individuationChange"
-        />
+        <system v-if="type === 'system'" :data="data.desktop.theme" @change="individuationChange" />
         <!-- 个性化设置 -->
-        <individuation
-          v-if="type === 'individuation'"
-          :data="data.desktop.theme"
-          @change="individuationChange"
-        />
+        <individuation v-if="type === 'individuation'" :data="data.desktop.theme" @change="individuationChange" />
         <!-- 任务栏设置 -->
-        <taskbar
-          v-if="type === 'taskbar'"
-          :data="data.taskbar"
-          @change="taskbarChange"
-        />
+        <taskbar v-if="type === 'taskbar'" :data="data.taskbar" @change="taskbarChange" />
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import { setIcon } from "../../svg";
+import { setIcon, homeIcon } from "../../svg/index";
 import { defaultOptions } from "../../defaultData";
 import summarize from "./components/summarize.vue";
 
 import system from "./components/system.vue";
 import individuation from "./components/individuation.vue";
 import taskbar from "./components/taskbar.vue";
-import { homeIcon } from "../../svg/index";
 export default {
   name: "SystemSetting",
   id: "windows10-system-setting",

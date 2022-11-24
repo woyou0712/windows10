@@ -14,7 +14,7 @@
 </template>
 
 <script>
-import { appIcon, indIcon, systemIcon } from '@/windows10/src/svg'
+import { appIcon, desktopIcon, indIcon, systemIcon } from '@/windows10/src/svg'
 export default {
   name: "SystemSummarize",
   data() {
@@ -29,7 +29,7 @@ export default {
         {
           type: "individuation",
           name: "个性化",
-          icon: indIcon,
+          icon: desktopIcon,
           message: "桌面、颜色、背景"
         },
         {

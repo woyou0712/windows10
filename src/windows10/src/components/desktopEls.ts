@@ -358,9 +358,7 @@ class DesktopAppEls {
       let left = parseInt(node.style.left), top = parseInt(node.style.top); // 获取初始值
       const appX = e.offsetX, appY = e.offsetY;
       this.box.appendChild(this.shade); // 挂载遮罩层
-
       this.shade.onmousemove = (s) => {
-        console.log("s", s)
         const sX = s.offsetX, sY = s.offsetY;
         left = sX - appX;
         top = sY - appY;
@@ -515,14 +513,14 @@ export default class DesktopEls {
       },
       {
         id: 1,
-        name: "快捷方式自动对齐",
+        name: "自动对齐锁定",
         method: () => {
           this.desktopApp.setAlignAoto(true);
         }
       },
       {
         id: 2,
-        name: "取消自动对齐",
+        name: "解锁自动对齐",
         method: () => {
           this.desktopApp.setAlignAoto(false);
         }
