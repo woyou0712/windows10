@@ -2,7 +2,7 @@ import { Menu, Message, MessageBox, Win } from "new-dream";
 import { dirSvg, disSvg, indSvg } from "new-dream/src/svg/button";
 import createElement from "new-dream/src/utils/createElement";
 import { defaultOptions } from "../defaultData";
-import { appIcon } from "../svg";
+import { appIcon, chromeIcon } from "../svg";
 import { DesktopAppSize, DesktopBackground } from "../types/style.d";
 import { App, DesktopOption, District, SettingOpenFn, SettingPageType, Shortcut } from "../types/windows.d";
 import getNearNumIndex from "../utils/getNearNumIndex";
@@ -53,6 +53,11 @@ class DesktopAppEls {
       if (this.__viewSize) {
         this.sliceDesktop(this.__viewSize); // 重新切割网格区域
       }
+      if (this.shortcutList && this.shortcutList.length) {
+        // 如果有快捷方式，拷贝一份应用列表重新比较渲染
+        const appList = this.shortcutList.map(app => Object.assign({}, app))
+        this.setShortcutPosition(appList).renderShortcut(appList);
+      }
     }
     this.shortcutSize = v
   }
@@ -67,7 +72,13 @@ class DesktopAppEls {
     const oldSize = this.viewSize;
     if (v && (v.width !== oldSize.width || v.height !== oldSize.height)) {
       this.viewSize = Object.assign({}, v)
-      this.sliceDesktop(v); // 桌面大小发生变化，切割桌面
+      // 桌面大小发生变化，切割桌面
+      this.sliceDesktop(v);
+      if (this.shortcutList && this.shortcutList.length) {
+        // 如果有快捷方式，拷贝一份应用列表重新比较渲染
+        const appList = this.shortcutList.map(app => Object.assign({}, app));
+        this.setShortcutPosition(appList).renderShortcut(appList);
+      }
     }
   }
 
@@ -114,6 +125,7 @@ class DesktopAppEls {
                   --shortcutPadding: ${this.shortcutPadding} !important;
                 }
               `;
+    return this
   }
 
   /** 切割桌面 */
@@ -142,6 +154,8 @@ class DesktopAppEls {
       })
       this.districtList.push(column)
     })
+
+    return this
   }
   /** 获取可用的网格坐标 */
   private getDistrict(): District {
@@ -221,53 +235,38 @@ class DesktopAppEls {
         district.occupy = true; // 标记占用
       })
     }
-    // 和已经渲染的快捷方式作比较,判断是否需要重新渲染
-    let isUpdate = false;
-    for (let i = 0; i < appList.length; i++) {
-      const app = appList[i], shortcut = this.shortcutList[i];
-      if (!shortcut) {
-        isUpdate = true;
-        break
-      }
-      if (app.id !== shortcut.id || app.title !== shortcut.title || app.desktopX !== shortcut.desktopX || app.desktopY !== shortcut.desktopY) {
-        console.log(app.id, shortcut.id)
-        isUpdate = true;
-        break
-      }
-    }
-    if (isUpdate) {
-      console.log("新的应用数据和旧的应用数据有差异。渲染快捷方式")
-      // 渲染快捷方式
-      this.renderShortcut(appList);
-    }
+
+    return this
   }
-  /**
-   * 清除桌面应用
-   */
+  /** 清除桌面快捷方式   */
   private removeShortcut() {
     for (let i = this.shortcutList.length - 1; i >= 0; i--) {
       this.box.removeChild(this.shortcutList[i].shortcutEls); // 移除视图元素
-      this.shortcutList.splice(i, 1); // 移除储存的快捷方式对象
+      this.shortcutList.splice(i, 1); // 释放内存
     }
+    return this
   }
-  /**
-   * 在桌面添加应用
-   */
-  private appendShortcut(app: App) {
-    const appBox = createElement("windows10-desktop-app-item");
+  /** 创建快捷方式元素   */
+  private createShortcutEls(app: App) {
+    let appBox = (app as Shortcut).shortcutEls; // 图标大小变化/桌面大小变化时可继续使用上次的元素
+    if (!appBox || !appBox.nodeName) {
+      appBox = createElement("windows10-desktop-app-item");
+      const icon = createElement("windows10-desktop-app-icon-box");
+      if (typeof app.icon === "string") {
+        icon.innerHTML = app.icon;
+      } else if (app.icon.nodeName) {
+        icon.appendChild(app.icon);
+      } else {
+        icon.innerHTML = chromeIcon;
+      }
+      const title = createElement("windows10-desktop-app-title");
+      title.innerText = app.title;
+      appBox.appendChild(icon);
+      appBox.appendChild(title);
+    }
     // 加载位置属性
     appBox.style["left"] = `${app.desktopX}px`
     appBox.style["top"] = `${app.desktopY}px`
-    const icon = createElement("windows10-desktop-app-icon-box");
-    if (typeof app.icon === "string") {
-      icon.innerHTML = app.icon
-    } else if (app.icon.nodeName) {
-      icon.appendChild(app.icon)
-    }
-    const title = createElement("windows10-desktop-app-title");
-    title.innerText = app.title;
-    appBox.appendChild(icon);
-    appBox.appendChild(title);
     this.box.appendChild(appBox);
     const shortcut = Object.assign({ shortcutEls: appBox }, app)
     this.shortcutList.push(shortcut);
@@ -275,14 +274,36 @@ class DesktopAppEls {
 
   /** 渲染应用快捷方式 */
   private renderShortcut(appList: App[]) {
-    console.log("开始渲染快捷方式")
-    // 清除之前的应用
-    this.removeShortcut();
-    // 重新加载快捷方式
-    appList.forEach((app) => {
-      this.appendShortcut(app)
-    })
-    this.methods.onAppChange(appList)
+    // 和已经渲染的快捷方式作比较,判断是否需要重新渲染
+    let isUpdate = false;
+    console.log("开始比较应用数据差异")
+    for (let i = 0; i < appList.length; i++) {
+      const app = appList[i], shortcut = this.shortcutList[i];
+      if (!shortcut) {
+        isUpdate = true;
+        break
+      }
+      if (app.id !== shortcut.id || app.title !== shortcut.title || app.desktopX !== shortcut.desktopX || app.desktopY !== shortcut.desktopY) {
+        isUpdate = true;
+        break
+      }
+    }
+    if (isUpdate) {
+      console.log("新的应用数据和旧的应用数据有差异。开始渲染快捷方式")
+      // 清除之前的快捷方式
+      console.log("清除旧的桌面快捷方式")
+      this.removeShortcut();
+      // 重新加载快捷方式
+      console.log("渲染新的快捷方式")
+      appList.forEach((app) => {
+        this.createShortcutEls(app)
+      })
+      // 渲染之后 通知监听函数
+      this.methods.onAppChange(appList)
+    } else {
+      console.log("应用数据与旧的数据没有差异。不用重新渲染")
+    }
+
     return this
   }
 
@@ -291,9 +312,10 @@ class DesktopAppEls {
   public setShortcut(appList: App[]) {
     const vw = this.box.offsetWidth, vh = this.box.offsetHeight;
     // 设置桌面大小
+    console.log("获取并重置桌面大小")
     this.__viewSize = { width: vw, height: vh };
-    // 设置快捷方式坐标
-    this.setShortcutPosition(appList);
+    // 设置快捷方式坐标 =》 渲染快捷方式
+    this.setShortcutPosition(appList).renderShortcut(appList);
   }
 
   /** 设置桌面应用图标大小 */
@@ -317,6 +339,7 @@ class DesktopAppEls {
     this.methods.onAppChange = fn;
     return this
   }
+
 }
 
 

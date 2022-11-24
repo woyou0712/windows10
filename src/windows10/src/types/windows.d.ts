@@ -45,7 +45,7 @@ export type SettingPageType = "default" | "taskbar" | "system" | "individuation"
 export type SettingOpenFn = (type?: SettingPageType) => void;
 
 export interface App {
-  /** 唯一ID，传唯一ID窗口只开一个，不传唯一ID会随机生成ID，窗口可以多开 */
+  /** 唯一ID，传唯一ID应用只可开一个，不传唯一应用可以多开 */
   id?: number | string;
   /** 窗口标题 */
   title: string;
@@ -74,7 +74,7 @@ export interface App {
   /** 在桌面上的位置Y */
   desktopY?: number;
 }
-
+/** 桌面快捷方式 */
 export interface Shortcut extends App {
   shortcutEls: HTMLElement
 }
