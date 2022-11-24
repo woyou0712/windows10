@@ -150,6 +150,7 @@ class TaskbarAppListEls {
 
   private set __queryStatus(v) {
     if (this.queryStatus !== v) {
+      console.log(`【任务栏搜索框】渲染`)
       // 按需更新视图
       switch (v) {
         case "show":
@@ -262,6 +263,7 @@ export default class TaskbarEls {
   private set __theme(v) {
     if (!v) { return }
     if (!this.theme || this.theme.backgroundColor !== v.backgroundColor || this.theme.color !== v.color) {
+      console.log(`【任务栏主题】渲染`)
       // 按需更新
       const styleId = "style-taskbar-theme"
       let style = document.getElementById(styleId)

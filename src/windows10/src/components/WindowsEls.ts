@@ -14,6 +14,8 @@ export default class WindowsEls {
   /** 任务栏盒子 */
   private taskbarEls: TaskbarEls;
 
+  private direaction?: "bottom" | "top";
+
   constructor() {
     this.appBox = createElement(["windows10-app", "bottom"])
     this.desktopEls = new DesktopEls()
@@ -21,10 +23,32 @@ export default class WindowsEls {
     this.__init__();
   }
 
+  private get __direaction() {
+    return this.direaction
+  }
+  private set __direaction(v) {
+    if (v && this.direaction !== v) {
+      console.log("【任务栏方向】渲染")
+      this.direaction = v;
+      switch (v) {
+        case "top":
+          this.appBox.classList.add("top");
+          this.appBox.classList.remove("bottom");
+          break;
+        default:
+          this.appBox.classList.add("bottom");
+          this.appBox.classList.remove("top");
+          break;
+      }
+
+    }
+  }
+
   private __init__() {
     this.appBox.appendChild(this.desktopEls.box);
     this.appBox.appendChild(this.taskbarEls.box);
   }
+
   /**
    * 通知任务栏应用打开
    * @param app 
@@ -61,19 +85,8 @@ export default class WindowsEls {
     // 任务栏
     if (option.taskbar) {
       const taskbar = option.taskbar
+      this.__direaction = taskbar.direaction
       this.taskbarEls.updateView(taskbar)
-      if (taskbar.direaction) {
-        switch (taskbar.direaction) {
-          case "top":
-            this.appBox.classList.add("top");
-            this.appBox.classList.remove("bottom");
-            break;
-          default:
-            this.appBox.classList.add("bottom");
-            this.appBox.classList.remove("top");
-            break;
-        }
-      }
     }
     // 更新桌面视图
     if (option.desktop) {
