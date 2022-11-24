@@ -17,24 +17,47 @@ class ShortcutView {
   public box: HTMLElement;
   public iconBox: HTMLElement;
   public titleBox: HTMLElement;
+  private config: App;
   constructor(app: App) {
+    this.config = app;
     this.box = createElement("windows10-desktop-app-item");
     this.iconBox = createElement("windows10-desktop-app-icon-box");
     this.titleBox = createElement("windows10-desktop-app-title");
-    this.__init__(app);
+    this.__init__();
+    this.setEvent();
   }
-  private __init__(app: App) {
-    if (typeof app.icon === "string") {
-      this.iconBox.innerHTML = app.icon;
-    } else if (app.icon.nodeName) {
-      this.iconBox.appendChild(app.icon);
+  private __init__() {
+    if (typeof this.config.icon === "string") {
+      this.iconBox.innerHTML = this.config.icon;
+    } else if (this.config.icon.nodeName) {
+      this.iconBox.appendChild(this.config.icon);
     } else {
       this.iconBox.innerHTML = chromeIcon;
     }
-    this.titleBox.innerText = app.title;
+    this.titleBox.innerText = this.config.title;
+    this.iconBox.appendChild(createElement("windows10-desktop-app-item-shade"));
     this.box.appendChild(this.iconBox);
     this.box.appendChild(this.titleBox);
-    this.box.appendChild(createElement("windows10-desktop-app-item-shade"));
+  }
+
+  private setEvent() {
+    // 应用名称=>鼠标按下事件停止冒泡（不触发拖拽动作）
+    this.titleBox.onmousedown = (e) => { e.stopPropagation() };
+    // 应用名称双击修改
+    // pass
+    // 为应用图标添加右键菜单
+    // new Menu(this.box,
+    //   [
+    //     {
+    //       id: 1,
+    //       name: "打开",
+    //       method: () => {
+    //         console.log("打开应用", this.config)
+    //       }
+    //     },
+
+    //   ]
+    // )
   }
 }
 
@@ -73,7 +96,7 @@ class DesktopOperationView {
   }
   constructor() {
     this.box = createElement("windows10-desktop-app-box");
-    this.shade = createElement("windows10-desktop-app-shade");
+    this.shade = createElement("windows10-desktop-operation-view-shade");
   }
 
   private get __shortcutSize() {
@@ -308,8 +331,9 @@ class DesktopOperationView {
     if (!shortcutView || !shortcutView.box) {
       console.log("【快捷方式】首次渲染，创建节点");
       shortcutView = new ShortcutView(app);
+      // 包装成快捷方式对象
       shortcut = Object.assign({ shortcutView }, app);
-      // 为快捷方式添加移动方法
+      // 为快捷方式添加拖拽方法
       console.log("【快捷方式】首次渲染，添加移动事件");
       this.setShortcutMove(shortcut);
     }
@@ -321,6 +345,7 @@ class DesktopOperationView {
   }
   /** 为快捷方式设置移动方法 */
   private setShortcutMove(shortcut: Shortcut) {
+    // 将移动事件挂在在icon图标上
     this.moveNode(shortcut.shortcutView.box, ({ left, top }) => {
       // 移动结束之后，将新的应用数据装载到列表
       this.newAppList = this.shortcutList.map(s => {

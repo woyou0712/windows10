@@ -34,6 +34,7 @@
       border-color: rgba($color: #000000, $alpha: 0);
       position: absolute;
       z-index: 2;
+      overflow: hidden;
 
       &:hover {
         border-color: rgba($color: #FFFFFF, $alpha: .3);
@@ -41,27 +42,33 @@
       }
 
       &>.windows10-desktop-app-icon-box {
-        width: var(--shortcutWidth);
+        width: 100%;
         padding: var(--shortcutPadding);
+        position: relative;
 
         &>svg,
         &>img {
           width: 100%;
           height: 100%;
         }
+
+        &>.windows10-desktop-app-item-shade {
+          position: absolute;
+          top: 0;
+          left: 0;
+          bottom: 0;
+          right: 0;
+          z-index: 1;
+        }
       }
 
-      &>.windows10-desktop-app-item-shade {
+      &>.windows10-desktop-app-title {
         width: 100%;
-        height: 100%;
-        position: absolute;
-        top: 0;
-        left: 0;
-        z-index: 5;
       }
+
     }
 
-    &>.windows10-desktop-app-shade {
+    &>.windows10-desktop-operation-view-shade {
       position: absolute;
       left: 0;
       top: 0;
