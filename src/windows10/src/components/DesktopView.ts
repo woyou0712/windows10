@@ -4,10 +4,40 @@ import createElement from "new-dream/src/utils/createElement";
 import { defaultOptions } from "../defaultData";
 import { appIcon, chromeIcon } from "../svg";
 import { DesktopAppSize, DesktopBackground } from "../types/style";
-import { App, DesktopOption, District, SettingOpenFn, SettingPageType, Shortcut } from "../types/windows";
+import { App, DesktopOption, District, SettingOpenFn, SettingPageType } from "../types/windows";
 import getNearNumIndex from "../utils/getNearNumIndex";
-
+/** 视图区域大小 */
 interface ViewSize { width: number; height: number }
+/** 桌面快捷方式 */
+interface Shortcut extends App {
+  shortcutView: ShortcutView
+}
+/** 快捷方式视图对象 */
+class ShortcutView {
+  public box: HTMLElement;
+  public iconBox: HTMLElement;
+  public titleBox: HTMLElement;
+  constructor(app: App) {
+    this.box = createElement("windows10-desktop-app-item");
+    this.iconBox = createElement("windows10-desktop-app-icon-box");
+    this.titleBox = createElement("windows10-desktop-app-title");
+    this.__init__(app);
+  }
+  private __init__(app: App) {
+    if (typeof app.icon === "string") {
+      this.iconBox.innerHTML = app.icon;
+    } else if (app.icon.nodeName) {
+      this.iconBox.appendChild(app.icon);
+    } else {
+      this.iconBox.innerHTML = chromeIcon;
+    }
+    this.titleBox.innerText = app.title;
+    this.box.appendChild(this.iconBox);
+    this.box.appendChild(this.titleBox);
+    this.box.appendChild(createElement("windows10-desktop-app-item-shade"));
+  }
+}
+
 
 /** 桌面应用操作区域视图 */
 class DesktopOperationView {
@@ -264,46 +294,34 @@ class DesktopOperationView {
   /** 清除桌面快捷方式   */
   private removeShortcut() {
     for (let i = this.shortcutList.length - 1; i >= 0; i--) {
-      this.box.removeChild(this.shortcutList[i].shortcutEls); // 移除视图元素
+      const shortcut = this.shortcutList[i];
+      this.box.removeChild(shortcut.shortcutView.box); // 移除视图元素
       this.shortcutList.splice(i, 1); // 释放内存
     }
     return this
   }
-  /** 创建快捷方式元素   */
-  private createShortcutEls(app: App) {
-    let appBox = (app as Shortcut).shortcutEls; // 图标大小变化/桌面大小变化时可继续使用上次的元素
-    let shortcut = Object.assign({ shortcutEls: appBox }, app);
-    // 如果是第一次渲染，没有旧的元素，创建元素
-    if (!appBox || !appBox.nodeName) {
+  /** 创建快捷方式   */
+  private createShortcut(app: App) {
+    let shortcutView = (app as Shortcut).shortcutView; // 图标大小变化/桌面大小变化时可继续使用上次的元素
+    let shortcut = Object.assign({ shortcutView }, app);
+    // 如果没有旧的元素，是第一次渲染，创建元素
+    if (!shortcutView || !shortcutView.box) {
       console.log("【快捷方式】首次渲染，创建节点");
-      appBox = createElement("windows10-desktop-app-item");
-      const icon = createElement("windows10-desktop-app-icon-box");
-      if (typeof app.icon === "string") {
-        icon.innerHTML = app.icon;
-      } else if (app.icon.nodeName) {
-        icon.appendChild(app.icon);
-      } else {
-        icon.innerHTML = chromeIcon;
-      }
-      const title = createElement("windows10-desktop-app-title");
-      title.innerText = app.title;
-      appBox.appendChild(icon);
-      appBox.appendChild(title);
-      appBox.appendChild(createElement("windows10-desktop-app-item-shade"));
-      shortcut = Object.assign({ shortcutEls: appBox }, app);
+      shortcutView = new ShortcutView(app);
+      shortcut = Object.assign({ shortcutView }, app);
       // 为快捷方式添加移动方法
       console.log("【快捷方式】首次渲染，添加移动事件");
       this.setShortcutMove(shortcut);
     }
     // 加载位置属性
-    appBox.style["left"] = `${app.desktopX}px`
-    appBox.style["top"] = `${app.desktopY}px`
-    this.box.appendChild(appBox);
+    shortcutView.box.style["left"] = `${app.desktopX}px`
+    shortcutView.box.style["top"] = `${app.desktopY}px`
+    this.box.appendChild(shortcutView.box);
     this.shortcutList.push(shortcut);
   }
   /** 为快捷方式设置移动方法 */
   private setShortcutMove(shortcut: Shortcut) {
-    this.moveNode(shortcut.shortcutEls, ({ left, top }) => {
+    this.moveNode(shortcut.shortcutView.box, ({ left, top }) => {
       // 移动结束之后，将新的应用数据装载到列表
       this.newAppList = this.shortcutList.map(s => {
         const newShortcut = Object.assign({}, s);
@@ -350,7 +368,7 @@ class DesktopOperationView {
       this.removeShortcut();
       // 重新加载快捷方式
       this.newAppList.forEach((app) => {
-        this.createShortcutEls(app)
+        this.createShortcut(app)
       })
       // 渲染完成，通知监听函数
       this.methods.onAppChange(this.newAppList);

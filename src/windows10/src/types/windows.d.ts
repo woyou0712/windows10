@@ -62,7 +62,7 @@ export interface App {
   /** 图标 */
   icon: string | HTMLIFrameElement;
   /** VUE组件所需的参数 */
-  props?: { [key]: any };
+  props?: { [key: string]: any };
   /** VUE组件 */
   component?: DefaultComputed;
   /** 网站URL地址 */
@@ -73,10 +73,6 @@ export interface App {
   desktopX?: number;
   /** 在桌面上的位置Y */
   desktopY?: number;
-}
-/** 桌面快捷方式 */
-export interface Shortcut extends App {
-  shortcutEls: HTMLElement
 }
 
 /** Windows配置项 */
