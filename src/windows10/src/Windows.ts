@@ -5,16 +5,16 @@ Win.showMiniList = false; // 关闭组件自带的最小化列表
 import { WindowsOption, SettingPageType, App } from "./types/windows.d";
 import { defaultAppList, defaultOptions } from "./defaultData";
 import SystemSetting from "./systemApps/SystemSetting/index.vue";
-import WindowsEls from "./components/WindowsEls";
+import WindowsView from "./components/WindowsView";
 
 
-class Windows {
+export default class Windows {
   /** 监听任务变化(应用打开/关闭)   */
   static onTask: (data: { [key: string]: Win }) => void = () => null;
 
   public option: WindowsOption = defaultOptions;
   private appList: App[] = [];
-  private els: WindowsEls;
+  private els: WindowsView;
   private updateViewTime = 0;
   private updateAppViewTime = 0;
   /** 内部监听事件 */
@@ -25,7 +25,7 @@ class Windows {
   }
 
   constructor(option?: WindowsOption, appList?: App[]) {
-    this.els = new WindowsEls();
+    this.els = new WindowsView();
     this.__option = option ? option : defaultOptions;
     this.__appList = appList ? appList : defaultAppList;
     /** 监听应用启动关闭  监听用户操作事件 */
@@ -158,5 +158,3 @@ class Windows {
     return this
   }
 }
-
-export default Windows

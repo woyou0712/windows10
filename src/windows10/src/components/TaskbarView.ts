@@ -119,8 +119,8 @@ class TaskbarWinEls {
   }
 
 }
-/** 任务栏APP */
-class TaskbarAppListEls {
+/** 任务栏APP视图 */
+class TaskbarAppListView {
   /** 任务区域 */
   public appListBox = createElement("windows10-taskbar-app-list");
   /** 搜索框 */
@@ -184,8 +184,8 @@ class TaskbarAppListEls {
 
 
 }
-/** 任务栏时间 */
-class TaskbarTimeEls {
+/** 任务栏时间视图 */
+class TaskbarTimeView {
   public timeBox = createElement("windows10-taskbar-datetime");
   private time = createElement("windows10-taskbar-datetime-time");
   private date = createElement("windows10-taskbar-datetime-date");
@@ -206,8 +206,8 @@ class TaskbarTimeEls {
     this.date.innerText = `${d.getFullYear()}/${M >= 10 ? M : "0" + M}/${D >= 10 ? D : "0" + D}`;
   }
 }
-/** 任务栏消息 */
-class TaskbarMsgEls {
+/** 任务栏消息视图 */
+class TaskbarMsgView {
   public messageBox = createElement("windows10-taskbar-message");
   constructor() {
     this.messageBox.innerHTML = messageIcon;
@@ -223,7 +223,7 @@ class TaskbarMsgEls {
 
 
 /** 任务栏元素 */
-export default class TaskbarEls {
+export default class TaskbarView {
   /** 设置任务栏APP置顶高亮的防抖定时器 */
   private setAppTopTime = 0;
   /** 任务栏盒子 */
@@ -231,12 +231,12 @@ export default class TaskbarEls {
   /** WIN键 */
   private win = new TaskbarWinEls();
   /** 任务区域 */
-  private appList = new TaskbarAppListEls();
+  private appList = new TaskbarAppListView();
 
   /** 时间 */
-  private taskbarTime = new TaskbarTimeEls();
+  private taskbarTime = new TaskbarTimeView();
   /** 消息 */
-  private taskbarMessage = new TaskbarMsgEls();
+  private taskbarMessage = new TaskbarMsgView();
 
   /** 打开是应用列表 */
   private openAppList: Win[] = []

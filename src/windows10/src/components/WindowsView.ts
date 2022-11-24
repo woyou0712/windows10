@@ -1,25 +1,25 @@
 import { Win } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
-import { App, SettingOpenFn, SettingPageType, UserInfo, WindowsOption } from "../types/windows";
-import DesktopEls from "./desktopEls";
-import TaskbarEls from "./TaskbarEls";
+import { App, SettingOpenFn, UserInfo, WindowsOption } from "../types/windows";
+import DesktopView from "./DesktopView";
+import TaskbarView from "./TaskbarView";
 
 
-export default class WindowsEls {
+export default class WindowsView {
   /** 系统盒子 */
   public appBox: HTMLElement;
   /** 桌面盒子 */
-  private desktopEls: DesktopEls;
+  private desktopEls: DesktopView;
 
   /** 任务栏盒子 */
-  private taskbarEls: TaskbarEls;
-
+  private taskbarEls: TaskbarView;
+  /** 任务栏方向 */
   private direaction?: "bottom" | "top";
 
   constructor() {
     this.appBox = createElement(["windows10-app", "bottom"])
-    this.desktopEls = new DesktopEls()
-    this.taskbarEls = new TaskbarEls()
+    this.desktopEls = new DesktopView()
+    this.taskbarEls = new TaskbarView()
     this.__init__();
   }
 

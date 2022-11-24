@@ -3,14 +3,14 @@ import { dirSvg, disSvg, indSvg } from "new-dream/src/svg/button";
 import createElement from "new-dream/src/utils/createElement";
 import { defaultOptions } from "../defaultData";
 import { appIcon, chromeIcon } from "../svg";
-import { DesktopAppSize, DesktopBackground } from "../types/style.d";
-import { App, DesktopOption, District, SettingOpenFn, SettingPageType, Shortcut } from "../types/windows.d";
+import { DesktopAppSize, DesktopBackground } from "../types/style";
+import { App, DesktopOption, District, SettingOpenFn, SettingPageType, Shortcut } from "../types/windows";
 import getNearNumIndex from "../utils/getNearNumIndex";
 
 interface ViewSize { width: number; height: number }
 
-/** 桌面APP列表 */
-class DesktopAppEls {
+/** 桌面应用操作区域视图 */
+class DesktopOperationView {
   /** 桌面盒子 */
   public box: HTMLElement;
   /** 拖拽遮罩层 */
@@ -432,10 +432,10 @@ class DesktopAppEls {
 
 
 /** 桌面元素 */
-export default class DesktopEls {
+export default class DesktopView {
   public box = createElement("windows10-desktop");
   private background = createElement("windows10-desktop-background");
-  private desktopApp: DesktopAppEls;
+  private desktopView: DesktopOperationView;
   private methods = {
     openSetting: (type?: SettingPageType) => { console.log("打开设置") },
   };
@@ -445,8 +445,8 @@ export default class DesktopEls {
     Win.defaultContentBox = this.box; // 将弹窗组件的顶级盒子设定为桌面
     Message.defaultContentBox = this.box; // 将消息提示框的默认盒子设定为桌面
     MessageBox.defaultContentBox = this.box;
-    this.desktopApp = new DesktopAppEls();
-    this.box.appendChild(this.desktopApp.box);
+    this.desktopView = new DesktopOperationView();
+    this.box.appendChild(this.desktopView.box);
     this.box.appendChild(this.background);
     this.setRmenu();
   }
@@ -523,14 +523,14 @@ export default class DesktopEls {
         id: 1,
         name: "自动对齐锁定",
         method: () => {
-          this.desktopApp.setAlignAoto(true);
+          this.desktopView.setAlignAoto(true);
         }
       },
       {
         id: 2,
         name: "解锁自动对齐",
         method: () => {
-          this.desktopApp.setAlignAoto(false);
+          this.desktopView.setAlignAoto(false);
         }
       },
       {
@@ -576,7 +576,7 @@ export default class DesktopEls {
       /** 设置桌面背景 */
       this.setBackground(option.theme.background);
       /**  设置快捷方式图标大小 、设置字体颜色 、设置网格自动对齐 */
-      this.desktopApp.setShortcutSize(option.theme.shortcutSize).setTextColor(option.theme.color).setAlignAoto(option.alignAuto);
+      this.desktopView.setShortcutSize(option.theme.shortcutSize).setTextColor(option.theme.color).setAlignAoto(option.alignAuto);
     }
   }
   /**
@@ -584,14 +584,14 @@ export default class DesktopEls {
    */
   public setAppShortcut(appList: App[]) {
     /** 设置桌面快捷方式 */
-    this.desktopApp.setShortcut(appList)
+    this.desktopView.setShortcut(appList)
     return this
   }
 
   /** 事件监听 */
   public onEvent({ onAppChange, openSetting }: { onAppChange: (data: App[]) => void, openSetting: SettingOpenFn }) {
     this.methods.openSetting = openSetting
-    this.desktopApp.onAppChange(onAppChange)
+    this.desktopView.onAppChange(onAppChange)
     return this
   }
 }
