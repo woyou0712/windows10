@@ -33,6 +33,8 @@ class DesktopAppEls {
   private rowList: number[] = [];
   /** 桌面网列表（可放置快捷方式的区域列表） */
   private districtList: District[][] = [];
+  /** 桌面字体颜色 */
+  private textColor?: string
 
   private methods = {
     onAppChange: (data: App[]) => { console.log("应用数据发生变化", data) }
@@ -56,7 +58,7 @@ class DesktopAppEls {
       if (this.shortcutList && this.shortcutList.length) {
         // 如果有快捷方式，拷贝一份应用列表重新比较渲染
         const appList = this.shortcutList.map(app => Object.assign({}, app))
-        this.setShortcutPosition(appList).renderShortcut(appList);
+        this.renderShortcut(appList);
       }
     }
     this.shortcutSize = v
@@ -71,13 +73,14 @@ class DesktopAppEls {
     }
     const oldSize = this.viewSize;
     if (v && (v.width !== oldSize.width || v.height !== oldSize.height)) {
-      this.viewSize = Object.assign({}, v)
+      this.viewSize = Object.assign({}, v);
+      console.log("桌面可视区域大小有变化")
       // 桌面大小发生变化，切割桌面
       this.sliceDesktop(v);
       if (this.shortcutList && this.shortcutList.length) {
         // 如果有快捷方式，拷贝一份应用列表重新比较渲染
         const appList = this.shortcutList.map(app => Object.assign({}, app));
-        this.setShortcutPosition(appList).renderShortcut(appList);
+        this.renderShortcut(appList);
       }
     }
   }
@@ -87,11 +90,49 @@ class DesktopAppEls {
   }
 
   private set __alignAuto(v) {
-    // 如果是设置网格对其
-    if (v && !this.alignAuto) {
-      // 
+    // 如果数据有更新
+    if (this.alignAuto !== v) {
+      this.alignAuto = v;
+      // 拷贝一份新的应用数据列表
+      const newAppList = this.shortcutList.map(app => {
+        return Object.assign({}, app)
+      })
+      if (v) {
+        // 如果是设置自动对齐 
+        console.log("图标自动对齐，取消拖拽方法")
+        // 移除拖拽方法
+        newAppList.forEach(app => {
+          app.shortcutEls.onmousedown = null;
+        })
+        // 重新渲染快捷方式(对齐到网格)
+        this.renderShortcut(newAppList);
+      } else {
+        // 如果是取消自动对齐 // 添加拖拽方法
+        console.log("取消自动对齐，加载拖拽方法")
+        newAppList.forEach(app => {
+          this.moveNode(app.shortcutEls, ({ left, top }) => {
+            console.log("移动结束，准备重新渲染")
+            app.desktopX = left;
+            app.desktopY = top;
+            // 移动之后重新渲染(对齐到网格)
+            this.renderShortcut(newAppList);
+          })
+        })
+      }
     }
-    this.alignAuto = v;
+
+  }
+
+  private get __textColor() {
+    return this.textColor
+  }
+
+  private set __textColor(v) {
+    if (v && v !== this.textColor) {
+      console.log("桌面字体颜色变化，更新视图")
+      this.box.style["color"] = v;
+      this.textColor = v
+    }
   }
 
   /** 设置图标大小 */
@@ -203,7 +244,7 @@ class DesktopAppEls {
     // 将所有网格对象置空
     this.districtList.forEach(colnum => { colnum.forEach(row => row.occupy = false) })
     // 为快捷方式添加坐标
-    if (this.alignAuto) {
+    if (this.__alignAuto) {
       // 如果是自动对齐，直接按序添加
       appList.forEach((app) => {
         const district = this.getDistrict();
@@ -263,6 +304,7 @@ class DesktopAppEls {
       title.innerText = app.title;
       appBox.appendChild(icon);
       appBox.appendChild(title);
+      appBox.appendChild(createElement("windows10-desktop-app-item-shade"));
     }
     // 加载位置属性
     appBox.style["left"] = `${app.desktopX}px`
@@ -274,6 +316,8 @@ class DesktopAppEls {
 
   /** 渲染应用快捷方式 */
   private renderShortcut(appList: App[]) {
+    // 为快捷方式设置位置
+    this.setShortcutPosition(appList);
     // 和已经渲染的快捷方式作比较,判断是否需要重新渲染
     let isUpdate = false;
     console.log("开始比较应用数据差异")
@@ -307,15 +351,52 @@ class DesktopAppEls {
     return this
   }
 
+  /** 移动桌面节点 */
+  private moveNode(node: HTMLElement, moveEndCallback: ({ left, top }: { left: number; top: number }) => void) {
+    // 鼠标按下
+    node.onmousedown = (e) => {
+      let left = parseInt(node.style.left), top = parseInt(node.style.top); // 获取初始值
+      const appX = e.offsetX, appY = e.offsetY;
+      this.box.appendChild(this.shade); // 挂载遮罩层
 
+      this.shade.onmousemove = (s) => {
+        console.log("s", s)
+        const sX = s.offsetX, sY = s.offsetY;
+        left = sX - appX;
+        top = sY - appY;
+        if (top < 0) {
+          top = 0
+        }
+        if (left < 0) {
+          left = 0
+        }
+        node.style["left"] = `${left}px`;
+        node.style["top"] = `${top}px`;
+      }
+      // 鼠标抬起,移动结束
+      this.shade.addEventListener("mouseup", () => {
+        // 去除遮罩层
+        // 清空移动事件
+        this.shade.onmousemove = null
+        const parentNode = this.shade.parentNode;
+        if (parentNode) {
+          parentNode.removeChild(this.shade)
+        }
+        // 调用结束回调函数
+        moveEndCallback({ left, top })
+      })
+    }
+
+    return this
+  }
   /** 设置快捷方式 */
   public setShortcut(appList: App[]) {
     const vw = this.box.offsetWidth, vh = this.box.offsetHeight;
     // 设置桌面大小
-    console.log("获取并重置桌面大小")
+    console.log("获取桌面视图区域大小")
     this.__viewSize = { width: vw, height: vh };
     // 设置快捷方式坐标 =》 渲染快捷方式
-    this.setShortcutPosition(appList).renderShortcut(appList);
+    this.renderShortcut(appList);
   }
 
   /** 设置桌面应用图标大小 */
@@ -325,12 +406,12 @@ class DesktopAppEls {
   }
   /** 设置桌面应用字体颜色 */
   public setTextColor(color: string) {
-    this.box.style["color"] = color;
+    this.__textColor = color
     return this
   }
   /** 设置自动对齐 */
   public setAlignAoto(alignAuto: boolean) {
-    this.alignAuto = alignAuto;
+    this.__alignAuto = alignAuto;
     return this
   }
 
@@ -391,7 +472,10 @@ export default class DesktopEls {
       isUpdate = true
     }
     // 如果有更新，重新渲染
-    if (isUpdate) { this.renderBackground(v) }
+    if (isUpdate) {
+      console.log("桌面背景有更新，开始渲染桌面背景")
+      this.renderBackground(v)
+    }
     this.backgroundOption = Object.assign({}, v);
   }
 
@@ -433,14 +517,14 @@ export default class DesktopEls {
         id: 1,
         name: "快捷方式自动对齐",
         method: () => {
-          console.log("你点击了【快捷方式自动对齐】")
+          this.desktopApp.setAlignAoto(true);
         }
       },
       {
         id: 2,
         name: "取消自动对齐",
         method: () => {
-          console.log("你点击了【取消自动对齐】")
+          this.desktopApp.setAlignAoto(false);
         }
       },
       {

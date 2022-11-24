@@ -126,7 +126,7 @@ class TaskbarAppListEls {
   /** 搜索框 */
   public queryBox = createElement("windows10-taskbar-query");
   public queryIcon = createElement("windows10-taskbar-query-icon");
-  public queryInput = createElement({ name: "queryInput", class: "windows10-taskbar-query-input" });
+  public queryInput = createElement({ name: "input", class: "windows10-taskbar-query-input" }) as HTMLInputElement;
   public queryButton = createElement("windows10-taskbar-query-button");
   public queryStatus?: QueryStatus;
 
@@ -140,7 +140,8 @@ class TaskbarAppListEls {
     iptBox.appendChild(this.queryButton);
     this.queryBox.appendChild(iptBox);
     this.appListBox.appendChild(this.queryBox);
-    this.__queryStatus = "show"
+    this.__queryStatus = "show";
+    this.queryButton.addEventListener("click", () => { this.toQuery() })
   }
 
   private get __queryStatus() {
@@ -162,6 +163,17 @@ class TaskbarAppListEls {
     }
   }
 
+  private toQuery() {
+    new Win({
+      id: "window10-query",
+      title: "必应",
+      icon: chromeIcon,
+      url: `https://cn.bing.com/search?q=${this.queryInput.value}`,
+      maxBtn: true,
+      miniBtn: true,
+      resize: true,
+    })
+  }
 
   /** 设置搜索框显示状态 */
   public setQueryStatus(status: QueryStatus) {

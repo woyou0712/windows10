@@ -35,7 +35,7 @@ export const defaultOptions: WindowsOption = {
 
 export const defaultAppList = [
   {
-    id: "windows10-git-hub",
+    id: "windows10-git-hub-001",
     title: "GitHub",
     maxBtn: true,
     miniBtn: true,
@@ -55,7 +55,7 @@ export const defaultAppList = [
     desktopShow: true,
   },
   {
-    id: "windows10-git-hub",
+    id: "windows10-git-hub-002",
     title: "GitHub",
     maxBtn: true,
     miniBtn: true,
