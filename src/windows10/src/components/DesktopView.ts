@@ -2,7 +2,7 @@ import { Menu, Message, MessageBox, Win } from "new-dream";
 import { dirSvg, disSvg, indSvg } from "new-dream/src/svg/button";
 import createElement from "new-dream/src/utils/createElement";
 import { defaultOptions } from "../defaultData";
-import { appIcon, chromeIcon } from "../svg";
+import { appIcon, chromeIcon, lockIcon } from "../svg";
 import { DesktopAppSize, DesktopBackground } from "../types/style";
 import { App, DesktopOption, District, SettingOpenFn, SettingPageType } from "../types/windows";
 import getNearNumIndex from "../utils/getNearNumIndex";
@@ -20,9 +20,9 @@ class ShortcutView {
   private config: App;
   constructor(app: App) {
     this.config = app;
-    this.box = createElement("windows10-desktop-app-item");
-    this.iconBox = createElement("windows10-desktop-app-icon-box");
-    this.titleBox = createElement("windows10-desktop-app-title");
+    this.box = createElement("windows10-desktop-shortcut-item");
+    this.iconBox = createElement("windows10-desktop-shortcut-icon-box");
+    this.titleBox = createElement("windows10-desktop-shortcut-title");
     this.__init__();
     this.setEvent();
   }
@@ -35,7 +35,10 @@ class ShortcutView {
       this.iconBox.innerHTML = chromeIcon;
     }
     this.titleBox.innerText = this.config.title;
-    this.iconBox.appendChild(createElement("windows10-desktop-app-item-shade"));
+    const lock = createElement("windows10-desktop-shortcut-item-lock");
+    lock.innerHTML = lockIcon;
+    this.iconBox.appendChild(lock);
+    this.iconBox.appendChild(createElement("windows10-desktop-shortcut-item-shade"));
     this.box.appendChild(this.iconBox);
     this.box.appendChild(this.titleBox);
   }
@@ -95,8 +98,8 @@ class DesktopOperationView {
     onAppChange: (data: App[]) => { console.log("应用数据发生变化", data) }
   }
   constructor() {
-    this.box = createElement("windows10-desktop-app-box");
-    this.shade = createElement("windows10-desktop-operation-view-shade");
+    this.box = createElement("windows10-desktop-operation-box");
+    this.shade = createElement("windows10-desktop-operation-move-shade");
   }
 
   private get __shortcutSize() {
@@ -153,6 +156,11 @@ class DesktopOperationView {
       if (v) {
         // 重新渲染快捷方式(对齐到网格)
         this.renderShortcut();
+        // 快捷方式上锁
+        this.box.classList.remove("not-lock")
+      } else {
+        // 快捷方式解锁
+        this.box.classList.add("not-lock")
       }
     }
 

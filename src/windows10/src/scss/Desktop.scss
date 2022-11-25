@@ -4,6 +4,7 @@
   position: relative;
   z-index: 99;
 
+  // 桌面背景
   &>.windows10-desktop-background {
     width: 100%;
     height: 100%;
@@ -14,7 +15,8 @@
     z-index: 0;
   }
 
-  &>.windows10-desktop-app-box {
+  // 桌面操作区域
+  &>.windows10-desktop-operation-box {
     width: 100%;
     height: 100%;
     overflow: hidden;
@@ -24,7 +26,8 @@
     z-index: 1;
     padding: 5px;
 
-    &>.windows10-desktop-app-item {
+    // 快捷方式
+    &>.windows10-desktop-shortcut-item {
       width: var(--shortcutWidth);
       height: var(--shortcutHeight);
       display: flex;
@@ -41,7 +44,8 @@
         background-color: var(--hoverColor);
       }
 
-      &>.windows10-desktop-app-icon-box {
+      // 快捷方式图标
+      &>.windows10-desktop-shortcut-icon-box {
         width: 100%;
         padding: var(--shortcutPadding);
         position: relative;
@@ -52,23 +56,45 @@
           height: 100%;
         }
 
-        &>.windows10-desktop-app-item-shade {
+        // 快捷方式锁，设置自动对其无法拖动
+        &>.windows10-desktop-shortcut-item-lock {
+          width: 25px;
+          height: 25px;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          z-index: 1;
+          background-color: var(--hoverColor);
+          padding: 5px;
+
+          &>svg {
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        // 应用遮罩层，防止拖拽时鼠标事件位置异常
+        &>.windows10-desktop-shortcut-item-shade {
           position: absolute;
           top: 0;
           left: 0;
           bottom: 0;
           right: 0;
-          z-index: 1;
+          z-index: 2;
         }
+
+
       }
 
-      &>.windows10-desktop-app-title {
+      // 快捷方式名称（应用名称）
+      &>.windows10-desktop-shortcut-title {
         width: 100%;
       }
 
     }
 
-    &>.windows10-desktop-operation-view-shade {
+    // 桌面移动遮罩层（防止卡顿）
+    &>.windows10-desktop-operation-move-shade {
       position: absolute;
       left: 0;
       top: 0;
@@ -77,7 +103,11 @@
       z-index: 999999;
     }
 
+    // 解锁
+    &.not-lock {
+      .windows10-desktop-shortcut-item-lock {
+        display: none;
+      }
+    }
   }
-
-
 }
