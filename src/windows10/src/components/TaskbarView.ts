@@ -2,7 +2,8 @@ import createElement from "new-dream/src/utils/createElement";
 import { QueryStatus, TaskbarTheme } from "../types/style";
 import { chromeIcon, winIcon, queryIcon, quitIcon, setIcon, userIcon, messageIcon, taskIcon, topIcon } from "../svg";
 import { SettingOpenFn, SettingPageType, TaskbarOption, UserInfo } from "../types/windows";
-import { Menu, Win } from "new-dream";
+import { Win } from "new-dream";
+import { Menu } from "./Rclick/index"
 import TaskManager from "../systemApps/TaskManager.vue";
 
 /** Win菜单元素 */

@@ -1,4 +1,4 @@
-import { Menu, Message, MessageBox, Win } from "new-dream";
+import { Message, MessageBox, Win } from "new-dream";
 import { dirSvg, disSvg, indSvg } from "new-dream/src/svg/button";
 import createElement from "new-dream/src/utils/createElement";
 import { defaultOptions } from "../defaultData";
@@ -6,6 +6,7 @@ import { appIcon, chromeIcon, lockIcon } from "../svg";
 import { DesktopAppSize, DesktopBackground } from "../types/style";
 import { App, DesktopOption, District, SettingOpenFn, SettingPageType } from "../types/windows";
 import getNearNumIndex from "../utils/getNearNumIndex";
+import { Menu } from "./Rclick/index"
 /** 视图区域大小 */
 interface ViewSize { width: number; height: number }
 /** 桌面快捷方式 */
@@ -21,10 +22,10 @@ class ShortcutView {
   constructor(app: App) {
     this.config = app;
     this.box = createElement("windows10-desktop-shortcut-item");
+    this.box.setAttribute("app-id", app.id);
     this.iconBox = createElement("windows10-desktop-shortcut-icon-box");
     this.titleBox = createElement("windows10-desktop-shortcut-title");
     this.__init__();
-    this.setEvent();
   }
   private __init__() {
     if (typeof this.config.icon === "string") {
@@ -43,39 +44,6 @@ class ShortcutView {
     this.box.appendChild(this.titleBox);
   }
 
-  private setEvent() {
-    // 应用名称=>鼠标按下事件停止冒泡（不触发拖拽动作）
-    this.titleBox.onmousedown = (e) => { e.stopPropagation() };
-    // 应用名称双击修改
-    // pass
-    // 为应用图标添加右键菜单
-    new Menu(this.box,
-      [
-        {
-          id: 1,
-          name: "打开",
-          method: () => {
-            console.log("打开应用", this.config)
-          }
-        },
-        {
-          id: 2,
-          name: "删除快捷方式",
-          method: () => {
-            console.log("删除快捷方式")
-          }
-        },
-        {
-          id: 3,
-          name: "删除快捷方式",
-          method: () => {
-            console.log("删除快捷方式")
-          }
-        },
-
-      ]
-    )
-  }
 }
 
 
@@ -384,7 +352,8 @@ class DesktopOperationView {
           const item = this.newAppList[i];
           const next = this.newAppList[n];
           if (item.desktopY && item.desktopX && next.desktopY && next.desktopX) {
-            if (item.desktopY > next.desktopY || item.desktopX - next.desktopX > this.shortcutWidth / 2) {
+            const bool = (item.desktopX - next.desktopX > this.shortcutWidth / 2) || (item.desktopY > next.desktopY && next.desktopX - item.desktopX < this.shortcutWidth / 2)
+            if (bool) {
               this.newAppList[i] = next
               this.newAppList[n] = item
             }
@@ -430,6 +399,31 @@ class DesktopOperationView {
       this.newAppList.forEach((app) => {
         this.createShortcut(app)
       })
+      // 加载完成后，为快捷方式添加右键菜单
+      new Menu(this.shortcutList.map(shortcut => shortcut.shortcutView.box),
+        [
+          {
+            id: 1,
+            name: "打开",
+            method: (el) => {
+              console.log("打开应用", el)
+            }
+          },
+          {
+            id: 2,
+            name: "删除快捷方式",
+            method: () => {
+              console.log("删除快捷方式")
+            }
+          },
+          {
+            id: 3,
+            name: "删除快捷方式",
+            method: () => {
+              console.log("删除快捷方式")
+            }
+          },
+        ])
       // 渲染完成，通知监听函数
       this.methods.onAppChange(this.newAppList);
     }

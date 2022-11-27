@@ -46,7 +46,7 @@ export type SettingOpenFn = (type?: SettingPageType) => void;
 
 export interface App {
   /** 唯一ID，传唯一ID应用只可开一个，不传唯一应用可以多开 */
-  id?: number | string;
+  id: string;
   /** 窗口标题 */
   title: string;
   /** 窗口宽 */
