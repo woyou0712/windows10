@@ -49,18 +49,32 @@ class ShortcutView {
     // 应用名称双击修改
     // pass
     // 为应用图标添加右键菜单
-    // new Menu(this.box,
-    //   [
-    //     {
-    //       id: 1,
-    //       name: "打开",
-    //       method: () => {
-    //         console.log("打开应用", this.config)
-    //       }
-    //     },
+    new Menu(this.box,
+      [
+        {
+          id: 1,
+          name: "打开",
+          method: () => {
+            console.log("打开应用", this.config)
+          }
+        },
+        {
+          id: 2,
+          name: "删除快捷方式",
+          method: () => {
+            console.log("删除快捷方式")
+          }
+        },
+        {
+          id: 3,
+          name: "删除快捷方式",
+          method: () => {
+            console.log("删除快捷方式")
+          }
+        },
 
-    //   ]
-    // )
+      ]
+    )
   }
 }
 
@@ -364,6 +378,19 @@ class DesktopOperationView {
         }
         return newShortcut
       })
+      // 移动结束之后，对应用进行重新排序开始排序
+      for (let i = 0; i < this.newAppList.length - 1; i++) {
+        for (let n = i + 1; n < this.newAppList.length; n++) {
+          const item = this.newAppList[i];
+          const next = this.newAppList[n];
+          if (item.desktopY && item.desktopX && next.desktopY && next.desktopX) {
+            if (item.desktopY > next.desktopY || item.desktopX - next.desktopX > this.shortcutWidth / 2) {
+              this.newAppList[i] = next
+              this.newAppList[n] = item
+            }
+          }
+        }
+      }
       // 开始渲染
       this.renderShortcut();
     })
