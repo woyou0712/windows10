@@ -526,13 +526,14 @@ export default class DesktopView {
 
   private backgroundOption?: DesktopBackground;
   constructor() {
-    Win.defaultContentBox = this.box; // 将弹窗组件的顶级盒子设定为桌面
+    this.desktopView = new DesktopOperationView();
+    Win.defaultContentBox = this.desktopView.box; // 将弹窗组件的顶级盒子设定为桌面
     Message.defaultContentBox = this.box; // 将消息提示框的默认盒子设定为桌面
     MessageBox.defaultContentBox = this.box;
-    this.desktopView = new DesktopOperationView();
     this.box.appendChild(this.desktopView.box);
     this.box.appendChild(this.background);
     this.setRmenu();
+
   }
 
   private get __backgroundOption() {

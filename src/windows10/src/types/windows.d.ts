@@ -65,6 +65,8 @@ export interface App {
   props?: { [key: string]: any };
   /** VUE组件 */
   component?: DefaultComputed;
+  /** 是否用外部窗口打开 */
+  externalWindow?: boolean;
   /** 网站URL地址 */
   url?: string;
   /** 是否在桌面显示 */
