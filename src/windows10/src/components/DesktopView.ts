@@ -1,4 +1,4 @@
-import { Message, MessageBox, Win } from "new-dream";
+import { Message, MessageBox, Win, Menu } from "new-dream";
 import { dirSvg, disSvg, indSvg } from "new-dream/src/svg/button";
 import createElement from "new-dream/src/utils/createElement";
 import { defaultOptions } from "../defaultData";
@@ -6,7 +6,7 @@ import { appIcon, chromeIcon, lockIcon } from "../svg";
 import { DesktopAppSize, DesktopBackground } from "../types/style";
 import { App, DesktopOption, District, SettingOpenFn, SettingPageType } from "../types/windows";
 import getNearNumIndex from "../utils/getNearNumIndex";
-import { Menu } from "./Rclick/index"
+import openApp from "../utils/openApp";
 /** 视图区域大小 */
 interface ViewSize { width: number; height: number }
 /** 桌面快捷方式 */
@@ -39,9 +39,9 @@ class ShortcutView {
     const lock = createElement("windows10-desktop-shortcut-item-lock");
     lock.innerHTML = lockIcon;
     this.iconBox.appendChild(lock);
-    this.iconBox.appendChild(createElement("windows10-desktop-shortcut-item-shade"));
     this.box.appendChild(this.iconBox);
     this.box.appendChild(this.titleBox);
+    this.box.appendChild(createElement("windows10-desktop-shortcut-item-shade"));
   }
 
 }
@@ -346,7 +346,7 @@ class DesktopOperationView {
         }
         return newShortcut
       })
-      // 移动结束之后，对应用进行重新排序开始排序
+      // 移动结束之后，对应用进行重新排序
       for (let i = 0; i < this.newAppList.length - 1; i++) {
         for (let n = i + 1; n < this.newAppList.length; n++) {
           const item = this.newAppList[i];
@@ -377,6 +377,39 @@ class DesktopOperationView {
     }
     return false
   }
+  /** 设置快捷方式的右键菜单  */
+  private setShortcutRmenu() {
+    new Menu(this.shortcutList.map(shortcut => shortcut.shortcutView.box),
+      [
+        {
+          id: 1,
+          name: "打开",
+          method: (el) => {
+            const appId = el?.getAttribute("app-id");
+            console.log("打开应用", appId);
+            for (const shortcut of this.shortcutList) {
+              if (shortcut.id === appId) {
+                return openApp(shortcut)
+              }
+            }
+          }
+        },
+        {
+          id: 2,
+          name: "删除快捷方式",
+          method: () => {
+            console.log("删除快捷方式")
+          }
+        },
+        {
+          id: 3,
+          name: "删除快捷方式",
+          method: () => {
+            console.log("删除快捷方式")
+          }
+        },
+      ])
+  }
   /** 渲染应用快捷方式 */
   private renderShortcut() {
     // 将新的数据和旧的快捷方式作比较,判断是否需要重新渲染
@@ -400,30 +433,7 @@ class DesktopOperationView {
         this.createShortcut(app)
       })
       // 加载完成后，为快捷方式添加右键菜单
-      new Menu(this.shortcutList.map(shortcut => shortcut.shortcutView.box),
-        [
-          {
-            id: 1,
-            name: "打开",
-            method: (el) => {
-              console.log("打开应用", el)
-            }
-          },
-          {
-            id: 2,
-            name: "删除快捷方式",
-            method: () => {
-              console.log("删除快捷方式")
-            }
-          },
-          {
-            id: 3,
-            name: "删除快捷方式",
-            method: () => {
-              console.log("删除快捷方式")
-            }
-          },
-        ])
+      this.setShortcutRmenu();
       // 渲染完成，通知监听函数
       this.methods.onAppChange(this.newAppList);
     }
@@ -431,6 +441,8 @@ class DesktopOperationView {
     this.newAppList = [];
     return this
   }
+
+
 
   /** 移动桌面节点 */
   private moveNode(node: HTMLElement, moveEndCallback: ({ left, top }: { left: number; top: number }) => void) {

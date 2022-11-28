@@ -1,4 +1,4 @@
-import { baiduIcon, githubIcon, userIcon } from "./svg";
+import { githubIcon, userIcon, blogsIcon, chromeIcon } from "./svg";
 import { desktopImage0, desktopImage1, desktopImage2, loginImage } from "./images";
 import { WindowsOption } from "./types/windows";
 
@@ -27,7 +27,7 @@ export const defaultOptions: WindowsOption = {
       },
       backgroundList: ["http://demo.bauble.vip/bg001.jpg"],
       color: "#ffffff",
-      shortcutSize: "mini",
+      shortcutSize: "default",
     },
     alignAuto: true
   },
@@ -35,7 +35,7 @@ export const defaultOptions: WindowsOption = {
 
 export const defaultAppList = [
   {
-    id: "windows10-git-hub-001",
+    id: "windows10-git-hub",
     title: "GitHub",
     maxBtn: true,
     miniBtn: true,
@@ -45,23 +45,23 @@ export const defaultAppList = [
     desktopShow: true,
   },
   {
-    id: "windows10-bai-du",
-    title: "百度",
+    id: "windows10-bing",
+    title: "必应",
     maxBtn: true,
     miniBtn: true,
     resize: true,
-    icon: baiduIcon,
-    url: "http://baidu.com",
+    icon: chromeIcon,
+    url: "https://cn.bing.com",
     desktopShow: true,
   },
   {
-    id: "windows10-git-hub-002",
-    title: "GitHub",
+    id: "windows10-bauble-blogs",
+    title: "博客",
     maxBtn: true,
     miniBtn: true,
     resize: true,
-    icon: githubIcon,
-    url: "https://github.com/woyou0712",
+    icon: blogsIcon,
+    url: "http://www.bauble.vip/",
     desktopShow: true,
   },
 ]

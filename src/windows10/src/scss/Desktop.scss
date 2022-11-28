@@ -72,26 +72,24 @@
             height: 100%;
           }
         }
-
-        // 应用遮罩层，防止拖拽时鼠标事件位置异常
-        &>.windows10-desktop-shortcut-item-shade {
-          position: absolute;
-          top: 0;
-          left: 0;
-          bottom: 0;
-          right: 0;
-          z-index: 2;
-        }
-
-
       }
 
+      // 应用遮罩层，防止拖拽时鼠标事件位置异常
+      &>.windows10-desktop-shortcut-item-shade {
+        position: absolute;
+        top: 0;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        z-index: 2;
+      }
       // 快捷方式名称（应用名称）
       &>.windows10-desktop-shortcut-title {
         width: 100%;
       }
 
     }
+
 
     // 桌面移动遮罩层（防止卡顿）
     &>.windows10-desktop-operation-move-shade {

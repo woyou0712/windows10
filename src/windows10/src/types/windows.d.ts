@@ -60,7 +60,7 @@ export interface App {
   /** 窗口是否可缩放 */
   resize?: boolean;
   /** 图标 */
-  icon: string | HTMLIFrameElement;
+  icon: string | HTMLImageElement;
   /** VUE组件所需的参数 */
   props?: { [key: string]: any };
   /** VUE组件 */
