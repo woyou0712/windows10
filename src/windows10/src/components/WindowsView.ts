@@ -109,14 +109,14 @@ export default class WindowsView {
   public updateAppView(appList: App[]) {
     this.appList = appList;
     // 桌面应用列表
-    const desktopAllList = appList.filter(app => {
+    const desktopAppList = appList.filter(app => {
       // 过滤出桌面显示的应用列表
       if (app.desktopShow) {
         return Object.assign({}, app)
       }
     })
     // 设置应用快捷方式
-    this.desktopEls.setAppShortcut(desktopAllList);
+    this.desktopEls.setAppShortcut(desktopAppList);
   }
   /**
    * 监听任务栏事件
@@ -133,7 +133,7 @@ export default class WindowsView {
       openSetting,
       onShortcutChange: (newAppList: App[]) => {
         console.log("监听到桌面快捷方式变化，更新应用列表")
-        // 快捷方式改变，跟新对应的APP
+        // 快捷方式改变，更新对应的APP
         this.appList.forEach(oldApp => {
           let desktopShow = false;
           for (let index = 0; index < newAppList.length; index++) {

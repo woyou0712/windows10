@@ -33,7 +33,7 @@ export const defaultOptions: WindowsOption = {
   },
 }
 
-export const defaultAppList:App[] = [
+export const defaultAppList: App[] = [
   {
     id: "windows10-git-hub",
     title: "GitHub",
@@ -61,12 +61,13 @@ export const defaultAppList:App[] = [
     icon: blogsIcon,
     url: "http://www.bauble.vip/",
     desktopShow: true,
+    desktopIndex: 1,
   },
   {
     id: "windows10-calculator",
     title: "计算器",
     desktopShow: true,
     icon: calculatorIcon,
-    component:Calculator
+    component: Calculator
   },
 ]

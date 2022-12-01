@@ -5,6 +5,7 @@ import { defaultOptions } from "../defaultData";
 import { appIcon, chromeIcon, lockIcon } from "../svg";
 import { DesktopAppSize, DesktopBackground } from "../types/style";
 import { App, DesktopOption, District, SettingOpenFn, SettingPageType } from "../types/windows";
+import { appDesktopSort } from "../utils/appSort";
 import getNearNumIndex from "../utils/getNearNumIndex";
 import openApp from "../utils/openApp";
 /** 视图区域大小 */
@@ -268,11 +269,6 @@ class DesktopOperationView {
   private setShortcutPosition() {
     // 将所有网格对象置空
     this.districtList.forEach(colnum => { colnum.forEach(row => row.occupy = false) });
-    // 按照排序规则排序
-    // for (let i = 0; i < this.newAppList.length - 1; i++) {
-    //   for (let n = i + 1; n < this.newAppList.length; n++) {
-    //   }
-    // }
     // 为快捷方式添加坐标
     if (this.__alignAuto) {
       // 如果是自动对齐，直接按序添加
@@ -344,6 +340,7 @@ class DesktopOperationView {
     this.moveNode(shortcut.shortcutView.box, ({ left, top }) => {
       // 移动结束之后，将新的应用数据装载到列表
       this.newAppList = this.shortcutList.map(s => {
+        // 拷贝应用数据
         const newShortcut = Object.assign({}, s);
         if (newShortcut.id === shortcut.id) {
           newShortcut.desktopX = left;
@@ -364,8 +361,9 @@ class DesktopOperationView {
             }
           }
         }
-        this.newAppList[i].desktopIndex = i; // 记录下排序信息
       }
+      // 为应用设置桌面显示顺序
+      this.newAppList.forEach((app, index) => app.desktopIndex = index)
       // 开始渲染
       this.renderShortcut();
     })
@@ -498,8 +496,8 @@ class DesktopOperationView {
 
   /** 设置快捷方式 */
   public setShortcut(appList: App[]) {
-    // 保存新的数据
-    this.newAppList = appList;
+    // 先按规则排序
+    this.newAppList = appDesktopSort(appList);
     // 渲染快捷方式
     this.renderShortcut();
   }

@@ -76,6 +76,7 @@ export default {
   width: 100%;
   height: 100%;
   padding: 5px 0;
+  color: #444;
 
   & > .system-task-manager-content {
     width: 100%;
