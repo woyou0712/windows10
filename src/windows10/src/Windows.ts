@@ -60,7 +60,7 @@ export default class Windows {
     clearTimeout(this.updateAppViewTime);
     this.updateAppViewTime = setTimeout(() => {
       console.log("set __appList监听到赋值，通知更新视图")
-      // 更新基础视图 和 应用视图
+      // 更新 应用视图
       this.els.updateAppView(v);
       // 通知监听对象
       console.log("通知onAppChange监听函数");
@@ -109,13 +109,15 @@ export default class Windows {
     })
     // 监听桌面事件
     this.els.onDesktopEvent({
-      onAppChange: (appList: App[]) => {
-        console.log("监听到桌面应用数据有变化，重新为__appList赋值")
-        this.__appList = appList;
-      },
       openSetting: (type?: SettingPageType) => {
         this.openSetting(type)
       }
+    })
+    // 监听应用变化
+    this.els.onAppChange((appList: App[]) => {
+      console.log("app-list", appList)
+      console.log("监听到应用数据有变化，重新为__appList赋值")
+      this.__appList = appList;
     })
     return this
   }

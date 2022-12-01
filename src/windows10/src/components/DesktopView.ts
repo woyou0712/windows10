@@ -77,7 +77,7 @@ class DesktopOperationView {
   private textColor?: string
 
   private methods = {
-    onAppChange: (data: App[]) => { console.log("应用数据发生变化", data) }
+    onShortcutChange: (data: App[]) => { console.log("应用数据发生变化", data) }
   }
   constructor() {
     this.box = createElement("windows10-desktop-operation-box");
@@ -267,7 +267,12 @@ class DesktopOperationView {
   /** 为快捷方式添加网格坐标 */
   private setShortcutPosition() {
     // 将所有网格对象置空
-    this.districtList.forEach(colnum => { colnum.forEach(row => row.occupy = false) })
+    this.districtList.forEach(colnum => { colnum.forEach(row => row.occupy = false) });
+    // 按照排序规则排序
+    // for (let i = 0; i < this.newAppList.length - 1; i++) {
+    //   for (let n = i + 1; n < this.newAppList.length; n++) {
+    //   }
+    // }
     // 为快捷方式添加坐标
     if (this.__alignAuto) {
       // 如果是自动对齐，直接按序添加
@@ -359,6 +364,7 @@ class DesktopOperationView {
             }
           }
         }
+        this.newAppList[i].desktopIndex = i; // 记录下排序信息
       }
       // 开始渲染
       this.renderShortcut();
@@ -386,7 +392,6 @@ class DesktopOperationView {
           name: "打开",
           method: (el) => {
             const appId = el?.getAttribute("app-id");
-            console.log("打开应用", appId);
             for (const shortcut of this.shortcutList) {
               if (shortcut.id === appId) {
                 return openApp(shortcut)
@@ -397,15 +402,24 @@ class DesktopOperationView {
         {
           id: 2,
           name: "删除快捷方式",
-          method: () => {
-            console.log("删除快捷方式")
+          method: (el) => {
+            const appId = el?.getAttribute("app-id");
+            const newAppList: App[] = [];
+            for (const shortcut of this.shortcutList) {
+              if (shortcut.id === appId) {
+                shortcut.desktopShow = false
+              } else {
+                newAppList.push(shortcut)
+              }
+            }
+            this.setShortcut(newAppList);
           }
         },
         {
           id: 3,
-          name: "删除快捷方式",
+          name: "属性",
           method: () => {
-            console.log("删除快捷方式")
+            console.log("属性")
           }
         },
       ])
@@ -435,7 +449,7 @@ class DesktopOperationView {
       // 加载完成后，为快捷方式添加右键菜单
       this.setShortcutRmenu();
       // 渲染完成，通知监听函数
-      this.methods.onAppChange(this.newAppList);
+      this.methods.onShortcutChange(this.newAppList);
     }
     // 清空新的应用列表
     this.newAppList = [];
@@ -506,9 +520,9 @@ class DesktopOperationView {
     return this
   }
 
-  /** 监听事件 */
-  public onAppChange(fn: (data: App[]) => void) {
-    this.methods.onAppChange = fn;
+  /** 监听快捷方式改变 */
+  public onShortcutChange(fn: (data: App[]) => void) {
+    this.methods.onShortcutChange = fn;
     return this
   }
 
@@ -674,9 +688,9 @@ export default class DesktopView {
   }
 
   /** 事件监听 */
-  public onEvent({ onAppChange, openSetting }: { onAppChange: (data: App[]) => void, openSetting: SettingOpenFn }) {
+  public onEvent({ onShortcutChange, openSetting }: { onShortcutChange: (data: App[]) => void, openSetting: SettingOpenFn }) {
     this.methods.openSetting = openSetting
-    this.desktopView.onAppChange(onAppChange)
+    this.desktopView.onShortcutChange(onShortcutChange)
     return this
   }
 }

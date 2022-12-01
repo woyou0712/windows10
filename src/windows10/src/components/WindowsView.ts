@@ -15,6 +15,13 @@ export default class WindowsView {
   private taskbarEls: TaskbarView;
   /** 任务栏方向 */
   private direaction?: "bottom" | "top";
+  /** 全部应用列表 */
+  private appList: App[] = []
+  /** 监听函数 */
+  private methods: { [key: string]: any } = {
+    onAppChange: (data: App[]) => { console.log("应用发送变化！") }
+  }
+
 
   constructor() {
     this.appBox = createElement(["windows10-app", "bottom"])
@@ -49,6 +56,8 @@ export default class WindowsView {
     this.appBox.appendChild(this.taskbarEls.box);
   }
 
+
+
   /**
    * 通知任务栏应用打开
    * @param app 
@@ -75,7 +84,7 @@ export default class WindowsView {
   }
 
   /**
-   * 更新视图
+   * 更新基础视图
    */
   public updateView(option: WindowsOption) {
     // 用户信息
@@ -98,6 +107,7 @@ export default class WindowsView {
    * 更新应用视图
    */
   public updateAppView(appList: App[]) {
+    this.appList = appList;
     // 桌面应用列表
     const desktopAllList = appList.filter(app => {
       // 过滤出桌面显示的应用列表
@@ -118,7 +128,32 @@ export default class WindowsView {
   /**
    * 监听桌面事件
    */
-  public onDesktopEvent({ onAppChange, openSetting }: { onAppChange: (data: App[]) => void; openSetting: SettingOpenFn; }) {
-    this.desktopEls.onEvent({ onAppChange, openSetting })
+  public onDesktopEvent({ openSetting }: { openSetting: SettingOpenFn; }) {
+    this.desktopEls.onEvent({
+      openSetting,
+      onShortcutChange: (newAppList: App[]) => {
+        console.log("监听到桌面快捷方式变化，更新应用列表")
+        // 快捷方式改变，跟新对应的APP
+        this.appList.forEach(oldApp => {
+          let desktopShow = false;
+          for (let index = 0; index < newAppList.length; index++) {
+            const newApp = newAppList[index];
+            if (newApp.id === oldApp.id) {
+              desktopShow = true;
+              Object.assign(oldApp, newApp);
+              break
+            }
+          }
+          oldApp.desktopShow = desktopShow;
+        })
+        // 通知监听函数
+        this.methods.onAppChange(this.appList);
+      }
+    })
+  }
+
+  /** 监听应用变更事件 */
+  public onAppChange(fn: (data: App[]) => void) {
+    this.methods.onAppChange = fn;
   }
 }

@@ -69,8 +69,11 @@ export interface App {
   externalWindow?: boolean;
   /** 网站URL地址 */
   url?: string;
+
   /** 是否在桌面显示 */
   desktopShow?: boolean;
+  /** 桌面排序 */
+  desktopIndex?: number;
   /** 在桌面上的位置X */
   desktopX?: number;
   /** 在桌面上的位置Y */
