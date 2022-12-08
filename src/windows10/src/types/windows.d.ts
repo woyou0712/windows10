@@ -78,6 +78,13 @@ export interface App {
   desktopX?: number;
   /** 在桌面上的位置Y */
   desktopY?: number;
+
+  /** 是否固定到开始屏幕 */
+  startScreenShow?: boolean;
+  /** 开始屏幕排序 */
+  startScreenIndex?: number;
+  /** 备注 */
+  remark?: string;
 }
 
 /** Windows配置项 */

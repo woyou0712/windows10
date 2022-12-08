@@ -8,6 +8,7 @@ import { App, DesktopOption, District, SettingOpenFn, SettingPageType } from "..
 import { appDesktopSort } from "../utils/appSort";
 import getNearNumIndex from "../utils/getNearNumIndex";
 import openApp from "../utils/openApp";
+import AppDetail from "../systemApps/AppDetail/index.vue";
 /** 视图区域大小 */
 interface ViewSize { width: number; height: number }
 /** 桌面快捷方式 */
@@ -416,8 +417,47 @@ class DesktopOperationView {
         {
           id: 3,
           name: "属性",
-          method: () => {
-            console.log("属性")
+          method: (el) => {
+            const appId = el?.getAttribute("app-id");
+            if (!appId) {
+              return console.error("应用数据异常！")
+            }
+            let app = null;
+            for (const shortcut of this.shortcutList) {
+              if (shortcut.id === appId) {
+                app = shortcut;
+                break
+              }
+            }
+            if (!app) {
+              return console.error("应用数据异常！")
+            }
+            const win = new Win({
+              id: appId,
+              title: app.title,
+              icon: app.icon,
+              component: AppDetail,
+              props: {
+                data: app,
+                change: (option: App) => {
+                  const newAppList: App[] = [];
+                  for (const shortcut of this.shortcutList) {
+                    if (shortcut.id === appId) {
+                      newAppList.push(option);
+                    } else {
+                      newAppList.push(shortcut)
+                    }
+                  }
+                  console.log(newAppList);
+                  this.setShortcut(newAppList);
+                  win.close();
+                },
+                close: () => {
+                  win.close();
+                }
+              }
+            })
+
           }
         },
       ])

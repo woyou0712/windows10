@@ -21,6 +21,11 @@ export default {
       tags: ["+", "-", "×", "÷"],
     };
   },
+  methods: {
+    test(){
+      console.log("???????????????")
+    }
+  }
 };
 </script>
 
