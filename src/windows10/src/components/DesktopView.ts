@@ -441,15 +441,22 @@ class DesktopOperationView {
                 data: app,
                 change: (option: App) => {
                   const newAppList: App[] = [];
+                  let updateShortcut = false; // 是否更新快捷方式
                   for (const shortcut of this.shortcutList) {
                     if (shortcut.id === appId) {
-                      newAppList.push(option);
-                    } else {
-                      newAppList.push(shortcut)
+                      // 如果快捷方式显示与否有变化，则需要更新快捷方式
+                      if (shortcut.desktopShow !== option.desktopShow) {
+                        updateShortcut = true;
+                      }
+                      Object.assign(shortcut, option); // 更新
+                      console.log(shortcut.desktopShow)
                     }
+                    newAppList.push(shortcut)
                   }
-                  console.log(newAppList);
-                  this.setShortcut(newAppList);
+                  if (updateShortcut) {
+                    console.log("快捷方式更新")
+                    this.setShortcut(newAppList);
+                  }
                   win.close();
                 },
                 close: () => {
