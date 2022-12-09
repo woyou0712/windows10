@@ -135,16 +135,13 @@ export default class WindowsView {
         console.log("监听到桌面快捷方式变化，更新应用列表")
         // 快捷方式改变，更新对应的APP
         this.appList.forEach(oldApp => {
-          let desktopShow = false;
           for (let index = 0; index < newAppList.length; index++) {
             const newApp = newAppList[index];
             if (newApp.id === oldApp.id) {
-              desktopShow = true;
               Object.assign(oldApp, newApp);
-              break
+              return
             }
           }
-          oldApp.desktopShow = desktopShow;
         })
         // 通知监听函数
         this.methods.onAppChange(this.appList);

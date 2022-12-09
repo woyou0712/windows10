@@ -239,16 +239,22 @@ export default class DesktopOperationView {
     if (this.__alignAuto) {
       // 如果是自动对齐，直接按序添加
       this.newAppList.forEach((app) => {
+        // 无需显示快捷方式的直接退出
+        if (!app.desktopShow) { return }
+        // 按序获取位置
         const district = this.getDistrict();
         app.desktopX = district.x;
         app.desktopY = district.y;
         district.occupy = true; // 标记占用
+
       })
     } else {
       // 如果不是自动对齐，则按自定义坐标就近插入网格
       // 没有坐标的APP列表
       const notPositionApp: App[] = [];
       this.newAppList.forEach((app) => {
+        // 如果是自动对齐，直接按序添加
+        if (!app.desktopShow) { return }
         if (app.desktopX && app.desktopY) {
           // 先将有坐标的应用就近放入对应的网格
           const district = this.getNearDistrict(app.desktopX, app.desktopY);
@@ -262,6 +268,9 @@ export default class DesktopOperationView {
       })
       // 将没有坐标的APP按网格顺序自动排列
       notPositionApp.forEach((app) => {
+        // 如果是自动对齐，直接按序添加
+        if (!app.desktopShow) { return }
+        // 按序获取位置
         const district = this.getDistrict();
         app.desktopX = district.x;
         app.desktopY = district.y;
@@ -341,7 +350,7 @@ export default class DesktopOperationView {
       if (!shortcut) {
         return true;
       }
-      if (app.id !== shortcut.id || app.title !== shortcut.title || app.desktopX !== shortcut.desktopX || app.desktopY !== shortcut.desktopY) {
+      if (app.id !== shortcut.id || app.title !== shortcut.title || app.desktopX !== shortcut.desktopX || app.desktopY !== shortcut.desktopY || app.desktopShow !== shortcut.desktopShow) {
         return true;
       }
     }
@@ -372,9 +381,8 @@ export default class DesktopOperationView {
             for (const shortcut of this.shortcutList) {
               if (shortcut.id === appId) {
                 shortcut.desktopShow = false
-              } else {
-                newAppList.push(shortcut)
               }
+              newAppList.push(shortcut)
             }
             this.setShortcut(newAppList);
           }
@@ -456,6 +464,7 @@ export default class DesktopOperationView {
       this.removeShortcut();
       // 重新加载快捷方式
       this.newAppList.forEach((app) => {
+        if (!app.desktopShow) { return }
         this.createShortcut(app)
       })
       // 加载完成后，为快捷方式添加右键菜单
