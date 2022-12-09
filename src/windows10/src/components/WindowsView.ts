@@ -1,8 +1,8 @@
 import { Win } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
 import { App, SettingOpenFn, UserInfo, WindowsOption } from "../types/windows";
-import DesktopView from "./DesktopView";
-import TaskbarView from "./TaskbarView";
+import DesktopView from "./DesktopView/index";
+import TaskbarView from "./TaskbarView/index";
 
 
 export default class WindowsView {
