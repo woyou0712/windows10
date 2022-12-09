@@ -9,10 +9,10 @@ export default class WindowsView {
   /** 系统盒子 */
   public appBox: HTMLElement;
   /** 桌面盒子 */
-  private desktopEls: DesktopView;
+  private desktopView: DesktopView;
 
   /** 任务栏盒子 */
-  private taskbarEls: TaskbarView;
+  private taskbarView: TaskbarView;
   /** 任务栏方向 */
   private direaction?: "bottom" | "top";
   /** 全部应用列表 */
@@ -25,8 +25,8 @@ export default class WindowsView {
 
   constructor() {
     this.appBox = createElement(["windows10-app", "bottom"])
-    this.desktopEls = new DesktopView()
-    this.taskbarEls = new TaskbarView()
+    this.desktopView = new DesktopView()
+    this.taskbarView = new TaskbarView()
     this.__init__();
   }
 
@@ -52,8 +52,8 @@ export default class WindowsView {
   }
 
   private __init__() {
-    this.appBox.appendChild(this.desktopEls.box);
-    this.appBox.appendChild(this.taskbarEls.box);
+    this.appBox.appendChild(this.desktopView.box);
+    this.appBox.appendChild(this.taskbarView.box);
   }
 
 
@@ -63,7 +63,7 @@ export default class WindowsView {
    * @param app 
    */
   public pushTaskbarOpenApp(app: Win) {
-    this.taskbarEls.setOpenApp(app)
+    this.taskbarView.setOpenApp(app)
     return this
   }
   /**
@@ -71,7 +71,7 @@ export default class WindowsView {
    * @param app 
    */
   public pushTaskbarCloseApp(appId: string) {
-    this.taskbarEls.setCloseApp(appId)
+    this.taskbarView.setCloseApp(appId)
     return this
   }
   /**
@@ -79,7 +79,7 @@ export default class WindowsView {
    * @param userInfo 
    */
   public setUserInfo(userInfo: UserInfo) {
-    this.taskbarEls.setWinUserInfo(userInfo)
+    this.taskbarView.setWinUserInfo(userInfo)
     return this
   }
 
@@ -95,11 +95,11 @@ export default class WindowsView {
     if (option.taskbar) {
       const taskbar = option.taskbar
       this.__direaction = taskbar.direaction
-      this.taskbarEls.updateView(taskbar)
+      this.taskbarView.updateView(taskbar)
     }
     // 更新桌面视图
     if (option.desktop) {
-      this.desktopEls.updateView(option.desktop)
+      this.desktopView.updateView(option.desktop)
     }
     return this
   }
@@ -116,20 +116,21 @@ export default class WindowsView {
       }
     })
     // 设置应用快捷方式
-    this.desktopEls.setAppShortcut(desktopAppList);
+    this.desktopView.setAppShortcut(desktopAppList);
+    this.taskbarView.setAppList(this.appList)
   }
   /**
    * 监听任务栏事件
    */
   public onTaskbarEvent({ onQuit, openSetting }: { onQuit: () => void; openSetting: SettingOpenFn }) {
-    this.taskbarEls.onEvent({ onQuit, openSetting })
+    this.taskbarView.onEvent({ onQuit, openSetting })
   }
 
   /**
    * 监听桌面事件
    */
   public onDesktopEvent({ openSetting }: { openSetting: SettingOpenFn; }) {
-    this.desktopEls.onEvent({
+    this.desktopView.onEvent({
       openSetting,
       onShortcutChange: (newAppList: App[]) => {
         console.log("监听到桌面快捷方式变化，更新应用列表")

@@ -378,12 +378,13 @@ export default class DesktopOperationView {
           method: (el) => {
             const appId = el?.getAttribute("app-id");
             const newAppList: App[] = [];
-            for (const shortcut of this.shortcutList) {
-              if (shortcut.id === appId) {
-                shortcut.desktopShow = false
+            this.shortcutList.forEach(shortcut => {
+              const newApp = Object.assign({}, shortcut); // 拷贝新的应用数据
+              if (newApp.id === appId) {
+                newApp.desktopShow = false
               }
-              newAppList.push(shortcut)
-            }
+              newAppList.push(newApp)
+            })
             this.setShortcut(newAppList);
           }
         },
@@ -415,16 +416,17 @@ export default class DesktopOperationView {
                 change: (option: App) => {
                   const newAppList: App[] = [];
                   let updateShortcut = false; // 是否更新快捷方式
-                  for (const shortcut of this.shortcutList) {
+                  this.shortcutList.forEach(shortcut => {
+                    const newApp = Object.assign({}, shortcut);
                     if (shortcut.id === appId) {
                       // 如果快捷方式显示与否有变化，则需要更新快捷方式
-                      if (shortcut.desktopShow !== option.desktopShow) {
+                      if (newApp.desktopShow !== option.desktopShow) {
                         updateShortcut = true;
                       }
-                      Object.assign(shortcut, option); // 更新
+                      Object.assign(newApp, option); // 更新应用数据
                     }
-                    newAppList.push(shortcut)
-                  }
+                    newAppList.push(newApp)
+                  })
                   if (updateShortcut) {
                     console.log("快捷方式更新")
                     this.setShortcut(newAppList);
@@ -457,7 +459,6 @@ export default class DesktopOperationView {
       // 如果之前的数据没有变化，查看重新设置了位置的数据是否有更新
       isUpdate = this.differentShortcut();
     }
-
     if (isUpdate) {
       console.log("---------------渲染快捷方式---------------")
       // 清除之前的快捷方式

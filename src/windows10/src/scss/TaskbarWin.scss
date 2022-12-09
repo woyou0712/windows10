@@ -92,6 +92,32 @@
       height: 100%;
       border-left: var(--border);
 
+      &>.windows10-taskbar-win-view-content-app-item {
+        padding: 5px 10px;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+
+        &:hover{
+          background-color: var(--hoverColor);
+        }
+
+        &>.windows10-taskbar-win-view-content-app-icon {
+          width: 26px;
+          height: 26px;
+
+          svg,
+          img {
+            width: 100%;
+            height: 100%;
+          }
+        }
+
+        &>.windows10-taskbar-win-view-content-app-title {
+          width: calc(100% - 40px);
+          overflow: hidden;
+        }
+      }
     }
 
     &>.windows10-taskbar-win-view-right {

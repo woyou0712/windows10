@@ -1,8 +1,35 @@
 import createElement from "new-dream/src/utils/createElement";
 import { winIcon, quitIcon, setIcon, userIcon } from "../../svg";
-import { UserInfo } from "../../types/windows";
+import { App, UserInfo } from "../../types/windows";
 
+/** Win菜单应用 */
+interface WinApp extends App {
+  winAppEl: WinAppEl
+}
 
+class WinAppEl {
+  public box: HTMLElement;
+  private icon: HTMLElement;
+  private title: HTMLElement;
+  constructor() {
+    this.box = createElement("windows10-taskbar-win-view-content-app-item");
+    this.icon = createElement("windows10-taskbar-win-view-content-app-icon");
+    this.title = createElement("windows10-taskbar-win-view-content-app-title");
+    this.box.appendChild(this.icon);
+    this.box.appendChild(this.title);
+  }
+
+  public setInfo(app: App) {
+    if (typeof app.icon === "string") {
+      this.icon.innerHTML = app.icon;
+    } else if (app.icon) {
+      this.icon.appendChild(app.icon);
+    }
+    this.title.innerText = app.title;
+    return this
+  }
+
+}
 
 /** Win菜单元素 */
 export default class TaskbarWinEls {
@@ -117,4 +144,21 @@ export default class TaskbarWinEls {
     return this
   }
 
+  /**
+   * 渲染应用列表
+   */
+  public renderAppList(appList: App[]) {
+    // 清空之前的应用列表
+    this.viewConten.innerHTML = "";
+    appList.forEach(app => {
+      let winAppEl: WinAppEl;
+      if ((app as WinApp).winAppEl) {
+        winAppEl = (app as WinApp).winAppEl;
+      } else {
+        winAppEl = new WinAppEl();
+      }
+      winAppEl.setInfo(app);
+      this.viewConten.appendChild(winAppEl.box);
+    })
+  }
 }

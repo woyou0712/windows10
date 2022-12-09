@@ -1,7 +1,7 @@
 import createElement from "new-dream/src/utils/createElement";
 import { TaskbarTheme } from "../../types/style";
 import { chromeIcon, queryIcon, setIcon, taskIcon, topIcon } from "../../svg";
-import { SettingOpenFn, SettingPageType, TaskbarOption, UserInfo } from "../../types/windows";
+import { App, SettingOpenFn, SettingPageType, TaskbarOption, UserInfo } from "../../types/windows";
 import { Win, Menu } from "new-dream";
 import TaskManager from "../../systemApps/TaskManager.vue";
 
@@ -306,5 +306,11 @@ export default class TaskbarView {
       this.appList.setQueryStatus(option.queryStatus)
     }
   }
-
+  /**
+   * 设置应用列表
+   */
+  public setAppList(appList: App[]) {
+    this.win.renderAppList(appList);
+    return this
+  }
 }
