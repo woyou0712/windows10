@@ -41,7 +41,7 @@ export default class TaskbarView {
     this.box.appendChild(this.appList.appListBox);
     this.box.appendChild(this.taskbarTime.timeBox);
     this.box.appendChild(this.taskbarMessage.messageBox);
-    this.setMenu()
+    this.setAppListMenu(); // 设置应用列表区域右键菜单
   }
 
   private get __theme() {
@@ -72,10 +72,10 @@ export default class TaskbarView {
 
 
   /**
-   * 设置右键菜单
+   * 设置应用列表区域右键菜单
    */
-  private setMenu() {
-    new Menu(this.box, [
+  private setAppListMenu() {
+    new Menu(this.appList.appListBox, [
       {
         id: 1,
         name: "显示搜索框",
