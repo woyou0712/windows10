@@ -302,6 +302,15 @@ export default class DesktopOperationView {
       // 为快捷方式添加拖拽方法
       console.log("【快捷方式】首次渲染，添加移动事件");
       this.setShortcutMove(shortcut);
+    } else {
+      // 判断快捷方式标题是否需要更新
+      if (shortcutView.title !== app.title) {
+        shortcutView.setTitle(app.title);
+      }
+      // 判断快捷方式图标是否需要更新
+      if (shortcutView.icon !== app.icon) {
+        shortcutView.setIcon(app.icon)
+      }
     }
     // 加载位置属性
     shortcutView.box.style["left"] = `${app.desktopX}px`

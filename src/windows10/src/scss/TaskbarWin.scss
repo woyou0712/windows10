@@ -91,6 +91,7 @@
       width: 220px;
       height: 100%;
       border-left: var(--border);
+      padding-top: 10px;
 
       &>.windows10-taskbar-win-view-content-app-item {
         padding: 5px 10px;
@@ -98,7 +99,7 @@
         justify-content: space-between;
         align-items: center;
 
-        &:hover{
+        &:hover {
           background-color: var(--hoverColor);
         }
 

@@ -1,5 +1,5 @@
 import createElement from "new-dream/src/utils/createElement";
-import { winIcon, quitIcon, setIcon, userIcon } from "../../svg";
+import { winIcon, quitIcon, setIcon, userIcon, chromeIcon } from "../../svg";
 import { App, UserInfo } from "../../types/windows";
 
 /** Win菜单应用 */
@@ -22,8 +22,10 @@ class WinAppEl {
   public setInfo(app: App) {
     if (typeof app.icon === "string") {
       this.icon.innerHTML = app.icon;
-    } else if (app.icon) {
+    } else if (app.icon.nodeName) {
       this.icon.appendChild(app.icon);
+    } else {
+      this.icon.innerHTML = chromeIcon;
     }
     this.title.innerText = app.title;
     return this
