@@ -1,6 +1,8 @@
+import { Menu } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
 import { winIcon, quitIcon, setIcon, userIcon, chromeIcon } from "../../svg";
 import { App, UserInfo } from "../../types/windows";
+import openApp from "../../utils/openApp";
 
 /** Win菜单应用 */
 interface WinApp extends App {
@@ -9,25 +11,48 @@ interface WinApp extends App {
 
 class WinAppEl {
   public box: HTMLElement;
-  private icon: HTMLElement;
-  private title: HTMLElement;
-  constructor() {
+  private iconEl: HTMLElement;
+  private titleEl: HTMLElement;
+  private icon?: string | HTMLImageElement;
+  private title?: string;
+  constructor(app: App) {
     this.box = createElement("windows10-taskbar-win-view-content-app-item");
-    this.icon = createElement("windows10-taskbar-win-view-content-app-icon");
-    this.title = createElement("windows10-taskbar-win-view-content-app-title");
-    this.box.appendChild(this.icon);
-    this.box.appendChild(this.title);
+    this.box.setAttribute("app-id", app.id);
+    this.iconEl = createElement("windows10-taskbar-win-view-content-app-icon");
+    this.titleEl = createElement("windows10-taskbar-win-view-content-app-title");
+    this.box.appendChild(this.iconEl);
+    this.box.appendChild(this.titleEl);
+    this.setIcon(app.icon);
+    this.setTitle(app.title);
   }
 
-  public setInfo(app: App) {
-    if (typeof app.icon === "string") {
-      this.icon.innerHTML = app.icon;
-    } else if (app.icon.nodeName) {
-      this.icon.appendChild(app.icon);
-    } else {
-      this.icon.innerHTML = chromeIcon;
+  private set __icon(v: string | HTMLImageElement) {
+    if (v !== this.icon) {
+      this.icon = v;
+      if (typeof v === "string") {
+        this.iconEl.innerHTML = v;
+      } else if (v.nodeName) {
+        this.iconEl.appendChild(v);
+      } else {
+        this.iconEl.innerHTML = chromeIcon;
+      }
     }
-    this.title.innerText = app.title;
+  }
+
+  private set __title(v: string) {
+    if (v !== this.title) {
+      this.title = v
+      this.titleEl.innerText = v;
+    }
+  }
+
+  public setIcon(icon: string | HTMLImageElement) {
+    this.__icon = icon
+    return this
+  }
+
+  public setTitle(title: string) {
+    this.__title = title;
     return this
   }
 
@@ -137,6 +162,45 @@ export default class TaskbarWinEls {
   }
 
   /**
+   * 设置应用列表右键菜单
+   */
+  private setAppListMenu(winAppList: WinApp[]) {
+    new Menu(winAppList.map(winapp => winapp.winAppEl.box), [
+      {
+        id: 1,
+        name: "打开",
+        method: (el) => {
+          const appId = el?.getAttribute("app-id");
+          if (appId) {
+            for (const app of winAppList) {
+              if (app.id === appId) {
+                openApp(app);
+                return
+              }
+            }
+          }
+        }
+      },
+      {
+        id: 2,
+        name: "卸载",
+        method: (el) => {
+          const appId = el?.getAttribute("app-id");
+          if (appId) {
+            for (const app of winAppList) {
+              if (app.id === appId) {
+                console.log("卸载应用", app)
+                return
+              }
+            }
+          }
+        }
+      },
+    ])
+  }
+
+
+  /**
    * 渲染用户信息
    */
   public renderUserInfo(userInfo: UserInfo) {
@@ -152,15 +216,20 @@ export default class TaskbarWinEls {
   public renderAppList(appList: App[]) {
     // 清空之前的应用列表
     this.viewConten.innerHTML = "";
+    const winAppList: WinApp[] = [];
     appList.forEach(app => {
-      let winAppEl: WinAppEl;
-      if ((app as WinApp).winAppEl) {
-        winAppEl = (app as WinApp).winAppEl;
-      } else {
-        winAppEl = new WinAppEl();
+      const winApp: WinApp = Object.assign({ winAppEl: (app as WinApp).winAppEl }, app)
+      if (!winApp.winAppEl) {
+        winApp.winAppEl = new WinAppEl(app);
       }
-      winAppEl.setInfo(app);
-      this.viewConten.appendChild(winAppEl.box);
+      winApp.winAppEl.setIcon(app.icon).setTitle(app.title);
+      this.viewConten.appendChild(winApp.winAppEl.box);
+      winAppList.push(winApp);
     })
+    this.setAppListMenu(winAppList);
+    return this
   }
+
+
+
 }
