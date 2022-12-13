@@ -15,6 +15,8 @@
         <individuation v-if="type === 'individuation'" :data="data.desktop.theme" @change="individuationChange" />
         <!-- 任务栏设置 -->
         <taskbar v-if="type === 'taskbar'" :data="data.taskbar" @change="taskbarChange" />
+        <!-- 应用设置 -->
+        <app v-if="type === 'app'" :data="data.taskbar" @change="taskbarChange" />
       </div>
     </div>
   </div>
@@ -28,6 +30,7 @@ import summarize from "./components/summarize.vue";
 import system from "./components/system.vue";
 import individuation from "./components/individuation.vue";
 import taskbar from "./components/taskbar.vue";
+import app from "./components/app.vue";
 export default {
   name: "SystemSetting",
   id: "windows10-system-setting",
@@ -36,7 +39,7 @@ export default {
   resize: true,
   miniBtn: true,
   maxBtn: true,
-  components: { summarize, system, individuation, taskbar },
+  components: { summarize, system, individuation, taskbar, app },
   props: {
     /** 当前显示的页面 */
     pageType: {

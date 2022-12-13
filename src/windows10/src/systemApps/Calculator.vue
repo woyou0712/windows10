@@ -1,6 +1,6 @@
 <template>
   <div class="windows10-calculator">
-    <div class="calculator-view"></div>
+    <div class="calculator-view">这是一个还没完成的VUE组件</div>
     <div class="calculator-keys"></div>
   </div>
 </template>

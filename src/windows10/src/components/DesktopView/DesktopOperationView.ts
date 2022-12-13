@@ -491,36 +491,43 @@ export default class DesktopOperationView {
 
   /** 移动桌面节点 */
   private moveNode(node: HTMLElement, moveEndCallback: ({ left, top }: { left: number; top: number }) => void) {
+    let timeAuto = 0;
     // 鼠标按下
     node.onmousedown = (e) => {
-      let left = parseInt(node.style.left), top = parseInt(node.style.top); // 获取初始值
-      const appX = e.offsetX, appY = e.offsetY;
-      this.box.appendChild(this.shade); // 挂载遮罩层
-      this.shade.onmousemove = (s) => {
-        const sX = s.offsetX, sY = s.offsetY;
-        left = sX - appX;
-        top = sY - appY;
-        if (top < 0) {
-          top = 0
+      // 延时触发移动（避免和单击、双击冲突）
+      timeAuto = setTimeout(() => {
+        let left = parseInt(node.style.left), top = parseInt(node.style.top); // 获取初始值
+        const appX = e.offsetX, appY = e.offsetY;
+        this.box.appendChild(this.shade); // 挂载遮罩层
+        this.shade.onmousemove = (s) => {
+          const sX = s.offsetX, sY = s.offsetY;
+          left = sX - appX;
+          top = sY - appY;
+          if (top < 0) {
+            top = 0
+          }
+          if (left < 0) {
+            left = 0
+          }
+          node.style["left"] = `${left}px`;
+          node.style["top"] = `${top}px`;
         }
-        if (left < 0) {
-          left = 0
+        // 鼠标抬起,移动结束
+        this.shade.onmouseup = () => {
+          // 去除遮罩层
+          // 清空移动事件
+          this.shade.onmousemove = null
+          const parentNode = this.shade.parentNode;
+          if (parentNode) {
+            parentNode.removeChild(this.shade)
+          }
+          // 调用结束回调函数
+          moveEndCallback({ left, top })
         }
-        node.style["left"] = `${left}px`;
-        node.style["top"] = `${top}px`;
-      }
-      // 鼠标抬起,移动结束
-      this.shade.onmouseup = () => {
-        // 去除遮罩层
-        // 清空移动事件
-        this.shade.onmousemove = null
-        const parentNode = this.shade.parentNode;
-        if (parentNode) {
-          parentNode.removeChild(this.shade)
-        }
-        // 调用结束回调函数
-        moveEndCallback({ left, top })
-      }
+      }, 300);
+    }
+    node.onmouseup = () => {
+      clearTimeout(timeAuto)
     }
 
     return this

@@ -1,6 +1,7 @@
 import createElement from "new-dream/src/utils/createElement";
 import { chromeIcon, lockIcon } from "../../svg";
 import { App } from "../../types/windows";
+import openApp from "../../utils/openApp";
 
 /** 快捷方式视图对象 */
 export default class ShortcutView {
@@ -12,7 +13,7 @@ export default class ShortcutView {
   public title: string;
   /** icon图标 */
   public icon: string | HTMLImageElement;
-  
+
   constructor(app: App) {
     this.title = app.title;
     this.icon = app.icon;
@@ -21,6 +22,10 @@ export default class ShortcutView {
     this.iconBox = createElement("windows10-desktop-shortcut-icon-box");
     this.titleBox = createElement("windows10-desktop-shortcut-title");
     this.__init__();
+    // 添加双击打开事件
+    this.box.ondblclick = () => {
+      openApp(app)
+    }
   }
   private __init__() {
     this.setTitle(this.title).setIcon(this.icon);

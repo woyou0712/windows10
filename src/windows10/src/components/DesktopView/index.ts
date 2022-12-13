@@ -120,7 +120,7 @@ export default class DesktopView {
       {
         id: 4,
         icon: disSvg,
-        name: "显示设置",
+        name: "系统设置",
         method: () => {
           this.methods.openSetting("system");
         }
