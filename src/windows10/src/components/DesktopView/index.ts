@@ -7,7 +7,7 @@ import { DesktopBackground } from "../../types/style";
 import { App, DesktopOption, SettingOpenFn, SettingPageType } from "../../types/windows";
 import OperationView from "./OperationView";
 
-/** 桌面元素 */
+/** 桌面视图 */
 export default class DesktopView {
   /** 桌面盒子 */
   public box = createElement("windows10-desktop");

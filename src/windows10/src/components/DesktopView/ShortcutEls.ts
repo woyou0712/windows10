@@ -3,8 +3,8 @@ import { chromeIcon, lockIcon } from "../../svg";
 import { App } from "../../types/windows";
 import openApp from "../../utils/openApp";
 
-/** 快捷方式视图对象 */
-export default class ShortcutView {
+/** 快捷方式元素类 */
+export default class ShortcutEls {
   /** 盒子 */
   public box: HTMLElement;
   public titleBox: HTMLElement;

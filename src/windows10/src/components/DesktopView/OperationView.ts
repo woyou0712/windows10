@@ -3,7 +3,7 @@ import { DesktopAppSize } from "../../types/style";
 import { App } from "../../types/windows";
 import ShortcutViews from "./ShortcutViews";
 
-/** 桌面操作区域视图 */
+/** 桌面操作区域视图类 */
 export default class OperationView {
   /** 视图盒子 */
   public viewBox: HTMLElement;
@@ -100,7 +100,7 @@ export default class OperationView {
       fn(data);
       // 为快捷方式添加移动方法
       data.forEach(s => {
-        this.moveNode(s.shortcutItem.box, ({ left, top }) => {
+        this.moveNode(s.shortcutEls.box, ({ left, top }) => {
           // 移动结束后，对快捷方式重新排序渲染
           this.shortcutViews.moveShortcutSortRender(s, { left, top });
         })

@@ -1,4 +1,4 @@
-import { Win, Menu } from "new-dream"; ShortcutItem
+import { Win, Menu } from "new-dream";
 import createElement from "new-dream/src/utils/createElement";
 import { DesktopAppSize } from "../../types/style";
 import { App, District } from "../../types/windows";
@@ -6,15 +6,15 @@ import { appDesktopSort } from "../../utils/appSort";
 import getNearNumIndex from "../../utils/getNearNumIndex";
 import openApp from "../../utils/openApp";
 import AppDetail from "../../systemApps/AppDetail/index.vue";
-import ShortcutItem from "./ShortcutItem"
+import ShortcutEls from "./ShortcutEls"
 /** 视图区域大小 */
 interface ViewSize { width: number; height: number }
 /** 桌面快捷方式 */
 interface Shortcut extends App {
-  shortcutItem: ShortcutItem
+  shortcutEls: ShortcutEls
 }
 
-/** 桌面快捷方式列表 */
+/** 桌面快捷方式视图类 */
 export default class ShortcutViews {
   /** 桌面操作区域视图盒子 */
   public operationViewBox: HTMLElement;
@@ -27,8 +27,8 @@ export default class ShortcutViews {
   private alignAuto?: boolean;
   /** 应用图标大小 */
   private shortcutSize?: DesktopAppSize;
-  public shortcutWidth = 76;
-  public shortcutHeight = 90;
+  private shortcutWidth = 76;
+  private shortcutHeight = 90;
   private shortcutPadding = "4px 12px";
   /** 桌面可视区域大小 */
   private viewSize?: ViewSize;
@@ -106,12 +106,12 @@ export default class ShortcutViews {
         this.renderShortcut();
         // 快捷方式上锁
         this.shortcutList.forEach(s => {
-          s.shortcutItem.box.classList.remove("not-lock")
+          s.shortcutEls.box.classList.remove("not-lock")
         })
       } else {
         // 快捷方式解锁
         this.shortcutList.forEach(s => {
-          s.shortcutItem.box.classList.add("not-lock")
+          s.shortcutEls.box.classList.add("not-lock")
         })
       }
     }
@@ -126,7 +126,7 @@ export default class ShortcutViews {
       console.log("【快捷方式字体颜色】更新")
       // 设置快捷方式字体颜色
       this.shortcutList.forEach(s => {
-        s.shortcutItem.box.style["color"] = v;
+        s.shortcutEls.box.style["color"] = v;
       })
       this.textColor = v
     }
@@ -289,9 +289,9 @@ export default class ShortcutViews {
   private removeShortcut() {
     for (let i = this.shortcutList.length - 1; i >= 0; i--) {
       const shortcut = this.shortcutList[i];
-      const parentEl = shortcut.shortcutItem.box.parentElement;
+      const parentEl = shortcut.shortcutEls.box.parentElement;
       if (parentEl) {
-        parentEl.removeChild(shortcut.shortcutItem.box); // 移除视图元素
+        parentEl.removeChild(shortcut.shortcutEls.box); // 移除视图元素
       }
       this.shortcutList.splice(i, 1); // 释放内存
     }
@@ -299,30 +299,30 @@ export default class ShortcutViews {
   }
   /** 创建快捷方式   */
   private createShortcut(app: App) {
-    let shortcutItem = (app as Shortcut).shortcutItem; // 图标大小变化/桌面大小变化时可继续使用上次的元素
-    let shortcut: Shortcut = Object.assign({ shortcutItem }, app);
+    let shortcutEls = (app as Shortcut).shortcutEls; // 图标大小变化/桌面大小变化时可继续使用上次的元素
+    let shortcut: Shortcut = Object.assign({ shortcutEls }, app);
     // 如果没有旧的元素，是第一次渲染，创建元素
-    if (!shortcutItem || !shortcutItem.box) {
+    if (!shortcutEls || !shortcutEls.box) {
       console.log("【快捷方式】首次渲染，创建节点");
-      shortcutItem = new ShortcutItem(app);
+      shortcutEls = new ShortcutEls(app);
       // 初始化快捷方式字体颜色
-      if (this.__textColor) shortcutItem.box.style["color"] = this.__textColor;
+      if (this.__textColor) shortcutEls.box.style["color"] = this.__textColor;
       // 包装成快捷方式对象
-      shortcut = Object.assign({ shortcutItem }, app);
+      shortcut = Object.assign({ shortcutEls }, app);
     } else {
       // 判断快捷方式标题是否需要更新
-      if (shortcutItem.title !== app.title) {
-        shortcutItem.setTitle(app.title);
+      if (shortcutEls.title !== app.title) {
+        shortcutEls.setTitle(app.title);
       }
       // 判断快捷方式图标是否需要更新
-      if (shortcutItem.icon !== app.icon) {
-        shortcutItem.setIcon(app.icon)
+      if (shortcutEls.icon !== app.icon) {
+        shortcutEls.setIcon(app.icon)
       }
     }
     // 加载位置属性
-    shortcutItem.box.style["left"] = `${app.desktopX}px`
-    shortcutItem.box.style["top"] = `${app.desktopY}px`
-    this.operationViewBox.appendChild(shortcutItem.box);
+    shortcutEls.box.style["left"] = `${app.desktopX}px`
+    shortcutEls.box.style["top"] = `${app.desktopY}px`
+    this.operationViewBox.appendChild(shortcutEls.box);
     this.shortcutList.push(shortcut);
     return shortcut
   }
@@ -341,7 +341,7 @@ export default class ShortcutViews {
   }
   /** 设置快捷方式的右键菜单  */
   private setShortcutRmenu() {
-    new Menu(this.shortcutList.map(shortcut => shortcut.shortcutItem.box),
+    new Menu(this.shortcutList.map(shortcut => shortcut.shortcutEls.box),
       [
         {
           id: 1,
