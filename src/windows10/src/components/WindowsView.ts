@@ -132,7 +132,7 @@ export default class WindowsView {
   public onDesktopEvent({ openSetting }: { openSetting: SettingOpenFn; }) {
     this.desktopView.onEvent({
       openSetting,
-      onShortcutChange: (newAppList: App[]) => {
+      onAppOptionChange: (newAppList: App[]) => {
         console.log("监听到桌面快捷方式变化，更新应用列表")
         // 快捷方式改变，更新对应的APP
         this.appList.forEach(oldApp => {

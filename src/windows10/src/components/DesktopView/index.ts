@@ -19,10 +19,10 @@ export default class DesktopView {
   private backgroundOption?: DesktopBackground;
   constructor() {
     this.desktopView = new DesktopOperationView();
-    Win.defaultContentBox = this.desktopView.box; // 将弹窗组件的顶级盒子设定为桌面
+    Win.defaultContentBox = this.desktopView.viewBox; // 将弹窗组件的顶级盒子设定为桌面
     Message.defaultContentBox = this.box; // 将消息提示框的默认盒子设定为桌面
     MessageBox.defaultContentBox = this.box;
-    this.box.appendChild(this.desktopView.box);
+    this.box.appendChild(this.desktopView.viewBox);
     this.box.appendChild(this.background);
     this.setRmenu();
 
@@ -166,9 +166,9 @@ export default class DesktopView {
   }
 
   /** 事件监听 */
-  public onEvent({ onShortcutChange, openSetting }: { onShortcutChange: (data: App[]) => void, openSetting: SettingOpenFn }) {
+  public onEvent({ onAppOptionChange, openSetting }: { onAppOptionChange: (data: App[]) => void, openSetting: SettingOpenFn }) {
     this.methods.openSetting = openSetting
-    this.desktopView.onShortcutChange(onShortcutChange)
+    this.desktopView.onAppOptionChange(onAppOptionChange)
     return this
   }
 }
