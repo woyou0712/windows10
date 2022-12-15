@@ -3,8 +3,8 @@ import { DesktopAppSize } from "../../types/style";
 import { App } from "../../types/windows";
 import ShortcutViews from "./ShortcutViews";
 
-/** 桌面应用操作区域视图 */
-export default class DesktopOperationView {
+/** 桌面操作区域视图 */
+export default class OperationView {
   /** 视图盒子 */
   public viewBox: HTMLElement;
   /** 拖拽遮罩层 */
@@ -15,6 +15,7 @@ export default class DesktopOperationView {
   constructor() {
     this.viewBox = createElement("windows10-desktop-operation-box");
     this.shade = createElement("windows10-desktop-operation-move-shade");
+    // 创建快捷方式视图
     this.shortcutViews = new ShortcutViews(this.viewBox);
   }
 
@@ -26,6 +27,8 @@ export default class DesktopOperationView {
     node.onmousedown = (e) => {
       // 延时触发移动（避免和单击、双击冲突）
       timeAuto = setTimeout(() => {
+        // 添加移动状态样式
+        node.classList.add("move");
         let left = parseInt(node.style.left), top = parseInt(node.style.top); // 获取初始值
         const appX = e.offsetX, appY = e.offsetY;
         this.viewBox.appendChild(this.shade); // 挂载遮罩层
@@ -44,19 +47,22 @@ export default class DesktopOperationView {
         }
         // 鼠标抬起,移动结束
         this.shade.onmouseup = () => {
+          // 去除移动状态样式
+          node.classList.remove("move");
           // 去除遮罩层
-          // 清空移动事件
-          this.shade.onmousemove = null
           const parentNode = this.shade.parentNode;
           if (parentNode) {
             parentNode.removeChild(this.shade)
           }
+          // 清空移动事件
+          this.shade.onmousemove = null;
           // 调用结束回调函数
           moveEndCallback({ left, top })
         }
-      }, 100);
+      }, 200);
     }
-    node.onmouseup = () => {
+    // 如果在缓冲期抬起鼠标或者移出鼠标，说明用户无需移动元素，则清除定时任务
+    node.onmouseup = node.onmouseleave = () => {
       clearTimeout(timeAuto)
     }
 
@@ -64,8 +70,8 @@ export default class DesktopOperationView {
   }
 
 
-  /** 设置快捷方式 */
-  public setShortcut(appList: App[]) {
+  /** 设置应用快捷方式 */
+  public setAppShortcut(appList: App[]) {
     this.shortcutViews.setShortcut(appList);
     return this
   }

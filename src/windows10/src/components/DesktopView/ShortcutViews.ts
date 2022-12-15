@@ -16,8 +16,8 @@ interface Shortcut extends App {
 
 /** 桌面快捷方式列表 */
 export default class ShortcutViews {
-  /** 桌面视图盒子 */
-  public desktopViewBox: HTMLElement;
+  /** 桌面操作区域视图盒子 */
+  public operationViewBox: HTMLElement;
   /** 快捷方式列表 */
   public shortcutList: Shortcut[] = [];
   /** 新的应用列表（按序更新） */
@@ -46,8 +46,8 @@ export default class ShortcutViews {
     onAppOptionChange: (data: App[]) => { console.log("应用数据发生变化", data) },
   }
   // 桌面盒子
-  constructor(desktopViewBox: HTMLElement) {
-    this.desktopViewBox = desktopViewBox;
+  constructor(operationViewBox: HTMLElement) {
+    this.operationViewBox = operationViewBox;
   }
 
   private get __shortcutSize() {
@@ -124,7 +124,7 @@ export default class ShortcutViews {
   private set __textColor(v) {
     if (v && v !== this.textColor) {
       console.log("【快捷方式字体颜色】更新")
-      // 快捷方式解锁
+      // 设置快捷方式字体颜色
       this.shortcutList.forEach(s => {
         s.shortcutItem.box.style["color"] = v;
       })
@@ -305,6 +305,8 @@ export default class ShortcutViews {
     if (!shortcutItem || !shortcutItem.box) {
       console.log("【快捷方式】首次渲染，创建节点");
       shortcutItem = new ShortcutItem(app);
+      // 初始化快捷方式字体颜色
+      if (this.__textColor) shortcutItem.box.style["color"] = this.__textColor;
       // 包装成快捷方式对象
       shortcut = Object.assign({ shortcutItem }, app);
     } else {
@@ -320,7 +322,7 @@ export default class ShortcutViews {
     // 加载位置属性
     shortcutItem.box.style["left"] = `${app.desktopX}px`
     shortcutItem.box.style["top"] = `${app.desktopY}px`
-    this.desktopViewBox.appendChild(shortcutItem.box);
+    this.operationViewBox.appendChild(shortcutItem.box);
     this.shortcutList.push(shortcut);
     return shortcut
   }
@@ -433,7 +435,7 @@ export default class ShortcutViews {
     let isUpdate = false;
     isUpdate = this.differentShortcut();
     // 更新桌面大小
-    this.__viewSize = { width: this.desktopViewBox.offsetWidth, height: this.desktopViewBox.offsetHeight };
+    this.__viewSize = { width: this.operationViewBox.offsetWidth, height: this.operationViewBox.offsetHeight };
     // 为快捷方式设置位置
     this.setShortcutPosition();
     if (!isUpdate) {

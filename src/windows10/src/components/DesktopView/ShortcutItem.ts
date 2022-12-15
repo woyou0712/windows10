@@ -7,8 +7,8 @@ import openApp from "../../utils/openApp";
 export default class ShortcutView {
   /** 盒子 */
   public box: HTMLElement;
+  public titleBox: HTMLElement;
   private iconBox: HTMLElement;
-  private titleBox: HTMLElement;
   /** 标题名称 */
   public title: string;
   /** icon图标 */

@@ -5,24 +5,29 @@ import { defaultOptions } from "../../defaultData";
 import { appIcon } from "../../svg";
 import { DesktopBackground } from "../../types/style";
 import { App, DesktopOption, SettingOpenFn, SettingPageType } from "../../types/windows";
-import DesktopOperationView from "./DesktopOperationView";
+import OperationView from "./OperationView";
 
 /** 桌面元素 */
 export default class DesktopView {
+  /** 桌面盒子 */
   public box = createElement("windows10-desktop");
+  /** 桌面背景 */
   private background = createElement("windows10-desktop-background");
-  private desktopView: DesktopOperationView;
+  /** 操作区域视图 */
+  private operationView: OperationView;
+  /** 操作方法监听map */
   private methods = {
+    /** 监听(打开设置)操作 */
     openSetting: (type?: SettingPageType) => { console.log("打开设置") },
   };
 
   private backgroundOption?: DesktopBackground;
   constructor() {
-    this.desktopView = new DesktopOperationView();
-    Win.defaultContentBox = this.desktopView.viewBox; // 将弹窗组件的顶级盒子设定为桌面
+    this.operationView = new OperationView();
+    Win.defaultContentBox = this.operationView.viewBox; // 将弹窗组件的顶级盒子设定为桌面
     Message.defaultContentBox = this.box; // 将消息提示框的默认盒子设定为桌面
     MessageBox.defaultContentBox = this.box;
-    this.box.appendChild(this.desktopView.viewBox);
+    this.box.appendChild(this.operationView.viewBox);
     this.box.appendChild(this.background);
     this.setRmenu();
 
@@ -100,14 +105,14 @@ export default class DesktopView {
         id: 1,
         name: "自动对齐锁定",
         method: () => {
-          this.desktopView.setAlignAoto(true);
+          this.operationView.setAlignAoto(true);
         }
       },
       {
         id: 2,
         name: "解锁自动对齐",
         method: () => {
-          this.desktopView.setAlignAoto(false);
+          this.operationView.setAlignAoto(false);
         }
       },
       {
@@ -153,22 +158,23 @@ export default class DesktopView {
       /** 设置桌面背景 */
       this.setBackground(option.theme.background);
       /**  设置快捷方式图标大小 、设置字体颜色 、设置网格自动对齐 */
-      this.desktopView.setShortcutSize(option.theme.shortcutSize).setTextColor(option.theme.color).setAlignAoto(option.alignAuto);
+      this.operationView.setShortcutSize(option.theme.shortcutSize).setTextColor(option.theme.color).setAlignAoto(option.alignAuto);
     }
   }
   /**
    * 设置应用快捷方式
    */
   public setAppShortcut(appList: App[]) {
-    /** 设置桌面快捷方式 */
-    this.desktopView.setShortcut(appList)
+    /** 设置应用快捷方式 */
+    this.operationView.setAppShortcut(appList)
     return this
   }
 
   /** 事件监听 */
   public onEvent({ onAppOptionChange, openSetting }: { onAppOptionChange: (data: App[]) => void, openSetting: SettingOpenFn }) {
     this.methods.openSetting = openSetting
-    this.desktopView.onAppOptionChange(onAppOptionChange)
+    this.operationView.onAppOptionChange(onAppOptionChange)
     return this
   }
+
 }
